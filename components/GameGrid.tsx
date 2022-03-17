@@ -1,4 +1,5 @@
 import TimeControlButton from './TimeControlButton';
+import styles from '../styles/GameGrid.module.scss';
 
 const timeControls = [
   createTimeControl(1, 0, 'bullet'),
@@ -14,22 +15,6 @@ const timeControls = [
   createTimeControl(30, 20, 'classical'),
   createTimeControl(null, null, 'custom'),
 ];
-
-const CreateGameGrid = () => {
-  return (
-    <div>
-      {timeControls.map((tc, i) => (
-        <TimeControlButton
-          key={i}
-          time={tc.time}
-          increment={tc.increment}
-          type={tc.type}
-        />
-      ))}
-    </div>
-  );
-};
-
 function createTimeControl(
   time: number | null,
   increment: number | null,
@@ -38,4 +23,20 @@ function createTimeControl(
   return { time, increment, type };
 }
 
-export default CreateGameGrid;
+const GameGrid = () => {
+  return (
+    <div className={styles.game_grid}>
+      {timeControls.map((tc, i) => (
+        <TimeControlButton
+          key={i}
+          time={tc.time}
+          increment={tc.increment}
+          type={tc.type}
+          className={styles['tc-btn']}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default GameGrid;

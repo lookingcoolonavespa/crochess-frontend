@@ -1,0 +1,17 @@
+@use './mixins';
+
+$grid_gap: 20px;
+
+.game_grid {
+  display: grid;
+  column-gap: $grid_gap;
+  row-gap: $grid_gap;
+  grid-template-columns: repeat(3, 1fr);
+  padding: $grid_gap * 1.25;
+  max-width: 700px;
+}
+
+.tc-btn {
+  @include mixins.flexCenter(column);
+  @include mixins.outline(black);
+}

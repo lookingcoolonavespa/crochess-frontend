@@ -8,7 +8,10 @@ type Layout = {
 const Layout = ({ children }: Layout) => {
   return (
     <>
-      <NavBar />;<main>{children}</main>
+      <NavBar />
+      <main>{children}</main>
     </>
   );
 };
+
+export default Layout;
