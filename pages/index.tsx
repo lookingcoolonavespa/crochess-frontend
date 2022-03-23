@@ -4,20 +4,18 @@ import Image from 'next/image';
 
 import Layout from '../components/Layout';
 import GameGrid from '../components/GameGrid';
+import TwoColumnView from '../components/TwoColumnView';
+import ListOfGames from '../components/ListOfGames';
 
 const Home: NextPage = () => {
   return (
     <Layout>
-      <section className="two-column-view">
-        <h3 className="section-title">Create a game</h3>
-        <div>
-          <GameGrid />
-        </div>
-      </section>
-      <section className="two-column-view">
-        <h3 className="section-title">Local games</h3>
-        <div></div>
-      </section>
+      <TwoColumnView title="Create a game">
+        <GameGrid />
+      </TwoColumnView>
+      <TwoColumnView title="Local games">
+        <ListOfGames />
+      </TwoColumnView>
     </Layout>
   );
 };

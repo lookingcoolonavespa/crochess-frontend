@@ -1,9 +1,9 @@
 import NavBar from './NavBar';
 import React from 'react';
 
-type Layout = {
+interface Layout {
   children: React.ReactNode;
-};
+}
 
 const Layout = ({ children }: Layout) => {
   return (
