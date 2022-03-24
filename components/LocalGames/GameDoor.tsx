@@ -10,10 +10,12 @@ export default function GameDoor({
   gameType,
 }: GameDoorProps) {
   return (
-    <div>
-      <p>{color}</p>
-      <p>{timeControl}</p>
-      <p>{gameType}</p>
+    <div className="hover-highlight space-evenly">
+      {[color, timeControl, gameType].map((t, i) => (
+        <p key={i} className="text-center">
+          {t}
+        </p>
+      ))}
     </div>
   );
 }

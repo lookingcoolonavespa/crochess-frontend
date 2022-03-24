@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import GameDoor from './GameDoor';
 
-import { GameInterface } from '../types/interfaces';
+import { GameInterface } from '../../types/interfaces';
 
-export default function ListOfGames() {
+interface ListOfGamesProps {
+  className?: string;
+}
+
+export default function ListOfGames({ className }: ListOfGamesProps) {
   const [listOfGames, setListOfGames] = useState<GameInterface[]>([
     {
       color: 'white',
@@ -14,12 +18,14 @@ export default function ListOfGames() {
   ]);
 
   return (
-    <div>
+    <div className={className || ''}>
       <header>
-        <ul>
-          <li>Color</li>
-          <li>Time Control</li>
-          <li>Game Type</li>
+        <ul className="space-evenly">
+          {['Color', 'Time Control', 'Game Type'].map((t, i) => (
+            <li key={i} className="text-center">
+              {t}
+            </li>
+          ))}
         </ul>
       </header>
       {listOfGames.map((g) => (

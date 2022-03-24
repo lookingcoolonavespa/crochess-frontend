@@ -1,8 +1,19 @@
 @use './mixins';
 @use './variables';
 
+:root[color-mode='light'] {
+  --background: rgb(225, 225, 225);
+  --foreground: rgb(250, 250, 250);
+  --primary: #8a1c7c;
+}
+:root[color-mode='dark'] {
+  --background: rgb(225, 225, 225);
+  --foreground: rgb(250, 250, 250);
+  --primary: #c6dea6;
+}
 html,
 body {
+  background-color: var(--background);
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
@@ -45,4 +56,31 @@ ul {
     @include mixins.flexCenter(row);
     flex: 1 1 200px;
   }
+}
+.two-column-view:not(:first-child) {
+  margin-top: 50px;
+}
+
+.space-evenly {
+  display: flex;
+  justify-content: space-evenly;
+}
+.space-evenly > * {
+  flex: 1 1 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.max-width-700 {
+  max-width: 700px;
+}
+
+.hover-highlight:hover {
+  background-color: var(--primary);
+  cursor: pointer;
+}
+.hover-highlight {
+  transition: all 0.3s ease-out;
 }

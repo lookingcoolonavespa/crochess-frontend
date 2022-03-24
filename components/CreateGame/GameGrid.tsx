@@ -1,5 +1,9 @@
 import TimeControlButton from './TimeControlButton';
-import styles from '../styles/GameGrid.module.scss';
+import styles from '../../styles/GameGrid.module.scss';
+
+interface GameGridProps {
+  className?: string;
+}
 
 const timeControls = [
   createTimeControl(1, 0, 'bullet'),
@@ -23,9 +27,9 @@ function createTimeControl(
   return { time, increment, type };
 }
 
-const GameGrid = () => {
+const GameGrid = ({ className }: GameGridProps) => {
   return (
-    <div className={styles.game_grid}>
+    <div className={styles.main + ' ' + className || ''}>
       {timeControls.map((tc, i) => (
         <TimeControlButton
           key={i}
