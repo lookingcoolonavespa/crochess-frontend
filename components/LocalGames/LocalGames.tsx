@@ -1,16 +1,14 @@
-import TwoColumnView from '../TwoColumnView';
+import TwoColumnViewTitle from '../TwoColumnViewWithTitle';
 import ListOfGames from './ListOfGames';
-
-import styles from '../../styles/HomePageForeground.module.scss';
 
 interface LocalGamesProps {
   className?: string;
 }
 
-export default function LocalGames({ className }: LocalGamesProps) {
+export default function LocalGames({}: LocalGamesProps) {
   return (
-    <TwoColumnView title="Local games" className={className}>
-      <ListOfGames className={styles.content} />
-    </TwoColumnView>
+    <TwoColumnViewTitle title="Local games" className="align-start">
+      <ListOfGames />
+    </TwoColumnViewTitle>
   );
 }

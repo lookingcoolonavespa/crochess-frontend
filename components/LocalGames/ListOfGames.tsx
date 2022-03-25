@@ -3,12 +3,18 @@ import GameDoor from './GameDoor';
 
 import { GameInterface } from '../../types/interfaces';
 
-interface ListOfGamesProps {
-  className?: string;
-}
+import styles from '../../styles/ListOfGames.module.scss';
 
-export default function ListOfGames({ className }: ListOfGamesProps) {
+interface ListOfGamesProps {}
+
+export default function ListOfGames({}: ListOfGamesProps) {
   const [listOfGames, setListOfGames] = useState<GameInterface[]>([
+    {
+      color: 'white',
+      timeControl: '3+2',
+      gameType: 'blitz',
+      _id: '5',
+    },
     {
       color: 'white',
       timeControl: '3+2',
@@ -18,8 +24,8 @@ export default function ListOfGames({ className }: ListOfGamesProps) {
   ]);
 
   return (
-    <div className={className || ''}>
-      <header>
+    <div className={styles.main}>
+      <header className="section-header">
         <ul className="space-evenly">
           {['Color', 'Time Control', 'Game Type'].map((t, i) => (
             <li key={i} className="text-center">
@@ -28,14 +34,16 @@ export default function ListOfGames({ className }: ListOfGamesProps) {
           ))}
         </ul>
       </header>
-      {listOfGames.map((g) => (
-        <GameDoor
-          key={g._id}
-          color={g.color}
-          timeControl={g.timeControl}
-          gameType={g.gameType}
-        />
-      ))}
+      <section className={styles['game_door-ctn']}>
+        {listOfGames.map((g) => (
+          <GameDoor
+            key={g._id}
+            color={g.color}
+            timeControl={g.timeControl}
+            gameType={g.gameType}
+          />
+        ))}
+      </section>
     </div>
   );
 }

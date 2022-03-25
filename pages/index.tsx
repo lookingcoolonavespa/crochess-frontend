@@ -16,6 +16,7 @@ const Home: NextPage = () => {
         <CreateGame />
         <LocalGames />
       </Layout>
+      <footer></footer>
     </>
   );
 };

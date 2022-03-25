@@ -1,16 +1,12 @@
-import TwoColumnView from '../TwoColumnView';
+import TwoColumnViewTitle from '../TwoColumnViewWithTitle';
 import GameGrid from './GameGrid';
 
-import styles from '../../styles/HomePageForeground.module.scss';
+interface CreateGameProps {}
 
-interface CreateGameProps {
-  className?: string;
-}
-
-export default function CreateGame({ className }: CreateGameProps) {
+export default function CreateGame({}: CreateGameProps) {
   return (
-    <TwoColumnView title="Create a game" className={styles.main}>
-      <GameGrid className={styles.content} />
-    </TwoColumnView>
+    <TwoColumnViewTitle title="Create a game">
+      <GameGrid />
+    </TwoColumnViewTitle>
   );
 }

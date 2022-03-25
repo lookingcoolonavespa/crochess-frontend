@@ -29,7 +29,7 @@ function createTimeControl(
 
 const GameGrid = ({ className }: GameGridProps) => {
   return (
-    <div className={styles.main + ' ' + className || ''}>
+    <div className={styles.main + ' foreground ' + className || ''}>
       {timeControls.map((tc, i) => (
         <TimeControlButton
           key={i}

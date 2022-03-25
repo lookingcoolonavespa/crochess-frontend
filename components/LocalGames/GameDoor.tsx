@@ -1,3 +1,5 @@
+import styles from '../../styles/GameDoor.module.scss';
+
 interface GameDoorProps {
   color: 'white' | 'black' | 'random';
   timeControl: string;
@@ -10,7 +12,7 @@ export default function GameDoor({
   gameType,
 }: GameDoorProps) {
   return (
-    <div className="hover-highlight space-evenly">
+    <div className={'game_door foreground hover-highlight space-evenly'}>
       {[color, timeControl, gameType].map((t, i) => (
         <p key={i} className="text-center">
           {t}
