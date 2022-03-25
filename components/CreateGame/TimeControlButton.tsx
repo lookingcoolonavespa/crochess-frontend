@@ -12,16 +12,16 @@ const TimeControlButton = ({
   className,
 }: TimeControlButtonProps) => {
   return (
-    <div className={'hover-highlight ' + className || ''}>
+    <div className={'hover-highlight outline ' + className || ''}>
       {typeof time === 'number' && typeof increment === 'number' ? (
         <>
-          <h3>
+          <h3 className="title">
             {time}+{increment}
           </h3>
-          <p>{type}</p>
+          <p className="caption">{type}</p>
         </>
       ) : (
-        <h3>{type}</h3>
+        <h3 className="title">{type}</h3>
       )}
     </div>
   );

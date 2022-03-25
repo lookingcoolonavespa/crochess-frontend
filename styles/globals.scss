@@ -1,16 +1,32 @@
 @use './mixins';
 @use './variables';
 
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../public/fonts/Montserrat-VariableFont_wght.ttf')
+      format('truetype supports variations'),
+    url('../public/fonts/Montserrat-VariableFont_wght.ttf')
+      format('truetype-variations');
+  // url('../public/fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 1000;
+  font-stretch: 25% 151%;
+}
+
 :root[color-mode='light'] {
-  --background: rgb(225, 225, 225);
-  --foreground: rgb(250, 250, 250);
-  --primary: #8a1c7c;
+  @include mixins.getThemeColors(variables.$colors-light);
+  --box-shadow: 5px 0 10px rgb(220, 220, 220), -5px 0 10px rgb(220, 220, 220),
+    0 5px 10px rgb(210, 210, 210);
 }
 :root[color-mode='dark'] {
   --background: rgb(225, 225, 225);
   --foreground: rgb(250, 250, 250);
   --primary: #c6dea6;
 }
+
+* {
+  box-sizing: border-box;
+}
+
 html,
 body {
   background-color: var(--background);
@@ -18,6 +34,16 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  color: var(--text-primary);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Montserrat';
 }
 
 a {
@@ -36,12 +62,8 @@ ul {
   list-style: none;
 }
 
-* {
-  box-sizing: border-box;
-}
-
 .outline {
-  border: 1px solid black;
+  border: 1px solid var(--border-primary);
 }
 
 .two-column-view {
@@ -78,7 +100,7 @@ ul {
 }
 
 .hover-highlight:hover {
-  background-color: var(--primary);
+  background-color: rgba(var(--RGB_action-primary), 0.8);
   cursor: pointer;
 }
 .hover-highlight {

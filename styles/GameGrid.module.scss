@@ -1,15 +1,31 @@
 @use './mixins';
 
-$grid_gap: 20px;
+$grid_gap: 10px;
 
 .main {
   display: grid;
   column-gap: $grid_gap;
   row-gap: $grid_gap;
   grid-template-columns: repeat(3, 1fr);
+  box-shadow: var(--box-shadow);
 }
 
 .tc-btn {
   @include mixins.flexCenter(column);
-  @include mixins.outline(black);
+  border-radius: 5px;
+  height: 130px;
+
+  :global(.title) {
+    font-weight: 400;
+    font-size: 33px;
+    margin: 0;
+    margin-top: 10px;
+  }
+
+  :global(.caption) {
+    margin: 0;
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 300;
+  }
 }

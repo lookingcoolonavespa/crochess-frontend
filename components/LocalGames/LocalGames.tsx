@@ -9,7 +9,7 @@ interface LocalGamesProps {
 
 export default function LocalGames({ className }: LocalGamesProps) {
   return (
-    <TwoColumnView title="Local games" className={styles.main}>
+    <TwoColumnView title="Local games" className={className}>
       <ListOfGames className={styles.content} />
     </TwoColumnView>
   );
