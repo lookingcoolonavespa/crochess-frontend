@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import TimeControlButton from './TimeControlButton';
 import styles from '../../styles/GameGrid.module.scss';
 
@@ -28,17 +30,27 @@ function createTimeControl(
 }
 
 const GameGrid = ({ className }: GameGridProps) => {
+  const [activeSearch, setActiveSearch] = useState<null | number>(null);
+
   return (
-    <div className={styles.main + ' foreground ' + className || ''}>
-      {timeControls.map((tc, i) => (
-        <TimeControlButton
-          key={i}
-          time={tc.time}
-          increment={tc.increment}
-          type={tc.type}
-          className={styles['tc-btn']}
-        />
-      ))}
+    <div className={styles.main + ' foreground ' + (className || '')}>
+      {timeControls.map((tc, i) => {
+        let className;
+        if (typeof activeSearch === 'number') {
+          className = activeSearch === i ? 'searching' : 'passive';
+        }
+        return (
+          <TimeControlButton
+            key={i}
+            time={tc.time}
+            increment={tc.increment}
+            type={tc.type}
+            className={styles['tc-btn'] + ' ' + (className || '')}
+            search={activeSearch === i}
+            onClick={() => setActiveSearch(i)}
+          />
+        );
+      })}
     </div>
   );
 };
