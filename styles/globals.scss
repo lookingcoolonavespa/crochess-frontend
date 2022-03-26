@@ -110,12 +110,13 @@ footer {
   max-width: 700px;
 }
 
-.hover-highlight:hover {
-  background-color: rgba(var(--RGB_action-primary), 0.8);
-  cursor: pointer;
-}
 .hover-highlight {
   transition: all 0.3s ease-out;
+
+  &:not(.no-hover):hover {
+    background-color: rgba(var(--RGB_action-primary), 0.8);
+    cursor: pointer;
+  }
 }
 
 .foreground {
@@ -127,22 +128,13 @@ footer {
   pointer-events: none;
 }
 
-.loader {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: inline-block;
-  border-top: 3px solid var(--action-primary);
-  border-right: 3px solid transparent;
-  box-sizing: border-box;
-  animation: rotation 1s linear infinite;
+.sm-loader {
+  width: 24px;
+  height: 24px;
+
+  @include mixins.loader();
 }
 
-@keyframes rotation {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.sm-box-shadow {
+  box-shadow: var(--sm-box-shadow);
 }

@@ -1,5 +1,9 @@
 @use './mixins';
 
+$breakpoints: (
+  1200px: 200px,
+);
+
 $title-width: 400px;
 
 .main {
@@ -13,7 +17,7 @@ $title-width: 400px;
 
   .content {
     max-width: 800px;
-    margin-right: $title-width;
+    min-width: 50%;
   }
 }
 
@@ -25,5 +29,15 @@ $title-width: 400px;
 :global(.align-start) {
   .title {
     align-self: start;
+  }
+}
+
+@each $width, $maxWidth in $breakpoints {
+  @media screen and (max-width: $width) {
+    .main {
+      .title {
+        max-width: $maxWidth;
+      }
+    }
   }
 }

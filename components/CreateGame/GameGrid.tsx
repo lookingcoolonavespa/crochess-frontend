@@ -47,7 +47,15 @@ const GameGrid = ({ className }: GameGridProps) => {
             type={tc.type}
             className={styles['tc-btn'] + ' ' + (className || '')}
             search={activeSearch === i}
-            onClick={() => setActiveSearch(i)}
+            onClick={() => {
+              if (
+                typeof tc.time !== 'number' ||
+                typeof tc.increment !== 'number'
+              )
+                return;
+              setActiveSearch(i);
+              createGame(tc.time, tc.increment, 'random');
+            }}
           />
         );
       })}
@@ -56,3 +64,17 @@ const GameGrid = ({ className }: GameGridProps) => {
 };
 
 export default GameGrid;
+
+function createGame(
+  time: number,
+  increment: number,
+  color: 'white' | 'black' | 'random'
+) {
+  fetch('http://localhost:8000/games', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ time, increment, color }),
+  });
+}

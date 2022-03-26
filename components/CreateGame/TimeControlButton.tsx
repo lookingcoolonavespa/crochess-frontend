@@ -17,20 +17,21 @@ const TimeControlButton = ({
 }: TimeControlButtonProps) => {
   return (
     <div
-      className={'hover-highlight outline ' + (className || '')}
+      className={
+        'hover-highlight outline ' +
+        ((search && 'no-hover sm-box-shadow ') || '') +
+        (className || '')
+      }
       onClick={onClick}
     >
-      {type !== 'custom' ? (
-        <>
-          <h3 className="title">
-            {time}+{increment}
-          </h3>
-          <p className="caption">{type}</p>
-        </>
+      <h3 className="title">
+        {type === 'custom' ? type : `${time} + ${increment}`}
+      </h3>
+      {search ? (
+        <div className="sm-loader"></div>
       ) : (
-        <h3 className="title">{type}</h3>
+        type !== 'custom' && <p className="caption">{type}</p>
       )}
-      {search && <div className="loader"></div>}
     </div>
   );
 };
