@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import GameDoor from './GameDoor';
 
-import { GameInterface } from '../../types/interfaces';
+import useListOfGames from '../../utils/hooks/useListOfGames';
 
 import styles from '../../styles/ListOfGames.module.scss';
 
 interface ListOfGamesProps {}
 
 export default function ListOfGames({}: ListOfGamesProps) {
-  const [listOfGames, setListOfGames] = useState<GameInterface[]>([
+  const { listOfGames } = useListOfGames([
     {
       color: 'white',
       timeControl: '3+2',
