@@ -2,7 +2,8 @@ import { GameType, ColorOptions } from './types';
 
 export interface GameInterface {
   color: ColorOptions;
-  timeControl: string;
+  time: number;
+  increment: number;
   gameType: GameType;
   _id: string;
 }

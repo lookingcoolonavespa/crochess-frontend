@@ -11,15 +11,17 @@ export default function ListOfGames({}: ListOfGamesProps) {
   const { listOfGames } = useListOfGames([
     {
       color: 'white',
-      timeControl: '3+2',
+      time: 3,
+      increment: 2,
       gameType: 'blitz',
       _id: '5',
     },
     {
       color: 'white',
-      timeControl: '3+2',
+      time: 3,
+      increment: 2,
       gameType: 'blitz',
-      _id: '5',
+      _id: '2',
     },
   ]);
 
@@ -39,7 +41,7 @@ export default function ListOfGames({}: ListOfGamesProps) {
           <GameDoor
             key={g._id}
             color={g.color}
-            timeControl={g.timeControl}
+            timeControl={`${g.time}+${g.increment}`}
             gameType={g.gameType}
           />
         ))}

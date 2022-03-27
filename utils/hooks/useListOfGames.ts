@@ -15,24 +15,26 @@ export default function useListOfGames(init: GameInterface[]) {
           throw new Error('something went wrong fetching games');
 
         const games = await res.data;
-        setListOfGames(games);
+        console.log(games);
+        setListOfGames((prev) => [...prev, ...games]);
       } catch (error) {
         console.log(error);
       }
     })();
-  });
+  }, []);
 
   useEffect(function connectToSocket() {
     const socket = io(urls.games);
 
     socket.on('newGame', (game) => {
-      setListOfGames([...listOfGames, game]);
+      console.log(game);
+      setListOfGames((prev) => [...prev, game]);
     });
 
     socket.on('deletedGame', (id) => {
-      setListOfGames(listOfGames.filter((g) => g._id !== id));
+      setListOfGames((prev) => prev.filter((g) => g._id !== id));
     });
-  });
+  }, []);
 
   return { listOfGames };
 }
