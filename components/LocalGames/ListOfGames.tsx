@@ -9,6 +9,7 @@ import { SeekerContext } from '../../utils/contexts/seekerContext';
 interface ListOfGamesProps {}
 
 export default function ListOfGames({}: ListOfGamesProps) {
+  const { seeker, setSeeker } = useContext(SeekerContext);
   const { listOfGames } = useListOfGames(
     [
       {
@@ -16,6 +17,7 @@ export default function ListOfGames({}: ListOfGamesProps) {
         time: 3,
         increment: 2,
         gameType: 'blitz',
+        seeker: 'falafel',
         _id: '5',
       },
       {
@@ -23,10 +25,11 @@ export default function ListOfGames({}: ListOfGamesProps) {
         time: 3,
         increment: 2,
         gameType: 'blitz',
+        seeker: 'chuck',
         _id: '2',
       },
     ],
-    useContext(SeekerContext).setSeeker
+    setSeeker
   );
 
   return (
@@ -47,6 +50,7 @@ export default function ListOfGames({}: ListOfGamesProps) {
             color={g.color}
             timeControl={`${g.time}+${g.increment}`}
             gameType={g.gameType}
+            mySeek={g.seeker === seeker}
           />
         ))}
       </section>
