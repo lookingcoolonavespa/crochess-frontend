@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import urls from '../socket/urls';
 import { GameInterface } from '../../types/interfaces';
 import axios from 'axios';
 
-export default function useListOfGames(init: GameInterface[]) {
+export default function useListOfGames(
+  init: GameInterface[],
+  setSeeker: React.Dispatch<React.SetStateAction<string>>
+) {
   const [listOfGames, setListOfGames] = useState<GameInterface[]>(init);
 
   useEffect(function getGamesOnMount() {
@@ -26,8 +29,9 @@ export default function useListOfGames(init: GameInterface[]) {
   useEffect(function connectToSocket() {
     const socket = io(urls.games);
 
+    socket.on('connect', () => setSeeker(socket.id));
+
     socket.on('newGame', (game) => {
-      console.log(game);
       setListOfGames((prev) => [...prev, game]);
     });
 

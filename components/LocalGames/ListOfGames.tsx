@@ -1,29 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useContext } from 'react';
 import GameDoor from './GameDoor';
 
 import useListOfGames from '../../utils/hooks/useListOfGames';
 
 import styles from '../../styles/ListOfGames.module.scss';
+import { SeekerContext } from '../../utils/contexts/seekerContext';
 
 interface ListOfGamesProps {}
 
 export default function ListOfGames({}: ListOfGamesProps) {
-  const { listOfGames } = useListOfGames([
-    {
-      color: 'white',
-      time: 3,
-      increment: 2,
-      gameType: 'blitz',
-      _id: '5',
-    },
-    {
-      color: 'white',
-      time: 3,
-      increment: 2,
-      gameType: 'blitz',
-      _id: '2',
-    },
-  ]);
+  const { listOfGames } = useListOfGames(
+    [
+      {
+        color: 'white',
+        time: 3,
+        increment: 2,
+        gameType: 'blitz',
+        _id: '5',
+      },
+      {
+        color: 'white',
+        time: 3,
+        increment: 2,
+        gameType: 'blitz',
+        _id: '2',
+      },
+    ],
+    useContext(SeekerContext).setSeeker
+  );
 
   return (
     <div className={styles.main}>
