@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { io } from 'socket.io-client';
 import urls from '../socket/urls';
 import { GameSeekInterface } from '../../types/interfaces';
@@ -6,8 +7,9 @@ import axios from 'axios';
 
 export default function useListOfGames(
   init: GameSeekInterface[],
-  setSeeker: React.Dispatch<React.SetStateAction<string>>
+  setUser: React.Dispatch<React.SetStateAction<string>>
 ) {
+  const router = useRouter();
   const [listOfGames, setListOfGames] = useState<GameSeekInterface[]>(init);
 
   useEffect(function getGamesOnMount() {
@@ -30,7 +32,7 @@ export default function useListOfGames(
     function connectToSocket() {
       const socket = io(urls.games);
 
-      socket.on('connect', () => setSeeker(socket.id));
+      socket.on('connect', () => setUser(socket.id));
 
       socket.on('newGame', (game) => {
         setListOfGames((prev) => {
@@ -45,11 +47,15 @@ export default function useListOfGames(
         });
       });
 
-      socket.on('deletedGame', (id) => {
-        setListOfGames((prev) => prev.filter((g) => g._id !== id));
+      socket.on('startGame', (gameId) => {
+        router.push(`/${gameId}`);
+      });
+
+      socket.on('deletedGame', (d) => {
+        setListOfGames((prev) => prev.filter((g) => g._id !== d._id));
       });
     },
-    [setSeeker]
+    [setUser, router]
   );
 
   return { listOfGames };

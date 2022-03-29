@@ -4,12 +4,11 @@ import GameDoor from './GameDoor';
 import useListOfGames from '../../utils/hooks/useListOfGames';
 
 import styles from '../../styles/ListOfGames.module.scss';
-import { SeekerContext } from '../../utils/contexts/seekerContext';
+import { UserContext } from '../../utils/contexts/UserContext';
 
 interface ListOfGamesProps {}
 
 export default function ListOfGames({}: ListOfGamesProps) {
-  const { seeker, setSeeker } = useContext(SeekerContext);
   const { listOfGames } = useListOfGames(
     [
       {
@@ -29,7 +28,7 @@ export default function ListOfGames({}: ListOfGamesProps) {
         _id: '2',
       },
     ],
-    setSeeker
+    useContext(UserContext).setUser
   );
 
   return (
@@ -45,13 +44,7 @@ export default function ListOfGames({}: ListOfGamesProps) {
       </header>
       <section className={styles['game_door-ctn']}>
         {listOfGames.map((g) => (
-          <GameDoor
-            key={g._id}
-            color={g.color}
-            timeControl={`${g.time}+${g.increment}`}
-            gameType={g.gameType}
-            mySeek={g.seeker === seeker}
-          />
+          <GameDoor key={g._id} game={g} />
         ))}
       </section>
     </div>

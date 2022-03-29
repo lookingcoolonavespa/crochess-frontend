@@ -1,33 +1,54 @@
+import { useRouter } from 'next/router';
+import { useContext } from 'react';
+import { UserContext } from '../../utils/contexts/UserContext';
 import styles from '../../styles/GameDoor.module.scss';
+import axios from 'axios';
+import urls from '../../utils/urls';
+import { GameSeekInterface } from '../../types/interfaces';
 
 interface GameDoorProps {
-  color: 'white' | 'black' | 'random';
-  timeControl: string;
-  gameType: 'blitz' | 'bullet' | 'rapid' | 'classical';
-  mySeek: boolean;
+  game: GameSeekInterface;
 }
 
-export default function GameDoor({
-  color,
-  timeControl,
-  gameType,
-  mySeek,
-}: GameDoorProps) {
+export default function GameDoor({ game }: GameDoorProps) {
+  const { user } = useContext(UserContext);
+  const router = useRouter();
+
   const rootClasses = [
     'game_door',
     'foreground',
     'hover-highlight',
     'space-evenly',
   ];
-  if (mySeek) rootClasses.push(styles.my_seek);
+  if (game.seeker === user) rootClasses.push(styles.my_seek);
 
   return (
-    <div className={rootClasses.join(' ')}>
-      {[color, timeControl, gameType].map((t, i) => (
-        <p key={i} className="text-center">
-          {t}
-        </p>
-      ))}
+    <div
+      className={rootClasses.join(' ')}
+      onClick={async () => {
+        const oppColor = game.color === 'white' ? 'black' : 'white';
+        const res = await axios.post(`${urls.backend}/games/${game._id}`, {
+          [game.color]: user,
+          [oppColor]: game.seeker,
+          time: game.time,
+          increment: game.increment,
+          seeker: game.seeker,
+        });
+        if (res.status !== 200 || res.statusText !== 'OK')
+          throw new Error('something went wrong fetching the game');
+
+        const gameId = await res.data;
+        console.log(gameId);
+        router.push(`/${gameId}`);
+      }}
+    >
+      {[game.color, `${game.time}+${game.increment}`, game.gameType].map(
+        (t, i) => (
+          <p key={i} className="text-center">
+            {t}
+          </p>
+        )
+      )}
     </div>
   );
 }

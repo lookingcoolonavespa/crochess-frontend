@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SeekerContext } from '../utils/contexts/seekerContext';
+import { UserContext } from '../utils/contexts/UserContext';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -9,17 +9,17 @@ import LocalGames from '../components/LocalGames/LocalGames';
 import CreateGame from '../components/CreateGame/CreateGame';
 
 const Home: NextPage = () => {
-  const [seeker, setSeeker] = useState(null);
+  const [user, setUser] = useState(null);
   return (
     <>
       <Head>
         <html color-mode="light" />
       </Head>
       <Layout>
-        <SeekerContext.Provider value={{ seeker, setSeeker }}>
+        <UserContext.Provider value={{ user, setUser }}>
           <CreateGame />
           <LocalGames />
-        </SeekerContext.Provider>
+        </UserContext.Provider>
       </Layout>
       <footer></footer>
     </>

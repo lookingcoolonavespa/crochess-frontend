@@ -4,7 +4,7 @@ import TimeControlButton from './TimeControlButton';
 import styles from '../../styles/GameGrid.module.scss';
 import { GameType } from '../../types/types';
 import timeControls from '../../utils/timeControls';
-import { SeekerContext } from '../../utils/contexts/seekerContext';
+import { UserContext } from '../../utils/contexts/UserContext';
 
 interface GameGridProps {
   className?: string;
@@ -12,7 +12,7 @@ interface GameGridProps {
 
 const GameGrid = ({ className }: GameGridProps) => {
   const [activeSearch, setActiveSearch] = useState<null | number>(null);
-  const { seeker } = useContext(SeekerContext);
+  const { user } = useContext(UserContext);
 
   return (
     <div className={styles.main + ' foreground ' + (className || '')}>
@@ -37,7 +37,7 @@ const GameGrid = ({ className }: GameGridProps) => {
               )
                 return;
               setActiveSearch(i);
-              createGame(tc.time, tc.increment, 'random', seeker, tc.type);
+              createGame(tc.time, tc.increment, 'random', user, tc.type);
             }}
           />
         );
