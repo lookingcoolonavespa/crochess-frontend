@@ -39,7 +39,7 @@ export default function GameDoor({ game }: GameDoorProps) {
 
         const gameId = await res.data;
         console.log(gameId);
-        router.push(`/${gameId}`);
+        window.location.pathname = `/${gameId}`;
       }}
     >
       {[game.color, `${game.time}+${game.increment}`, game.gameType].map(
