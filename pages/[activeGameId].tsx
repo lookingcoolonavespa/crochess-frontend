@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
+import Gameboard from '../components/ActiveGame/Gameboard';
 
 export default function ActiveGame() {
-  return <div>there is going to be a game here</div>;
+  return <Gameboard color="white" />;
 }
