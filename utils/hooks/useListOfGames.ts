@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { io } from 'socket.io-client';
-import urls from '../socket/urls';
+import urls from '../urls';
 import { GameSeekInterface } from '../../types/interfaces';
 import axios from 'axios';
 
@@ -12,10 +12,19 @@ export default function useListOfGames(
   const router = useRouter();
   const [listOfGames, setListOfGames] = useState<GameSeekInterface[]>(init);
 
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
   useEffect(function getGamesOnMount() {
     (async () => {
       try {
-        const res = await axios.get(urls.games);
+        const res = await axios.get(`${urls.backend}/gameSeeks`);
         if (!res || res.status !== 200 || res.statusText !== 'OK')
           throw new Error('something went wrong fetching games');
 
@@ -30,7 +39,7 @@ export default function useListOfGames(
 
   useEffect(
     function connectToSocket() {
-      const socket = io(urls.games);
+      const socket = io(`${urls.backend}/games`);
 
       socket.on('connect', () => setUser(socket.id));
 
@@ -52,7 +61,8 @@ export default function useListOfGames(
       });
 
       socket.on('deletedGame', (d) => {
-        setListOfGames((prev) => prev.filter((g) => g._id !== d._id));
+        if (mounted.current)
+          setListOfGames((prev) => prev.filter((g) => g._id !== d._id));
       });
     },
     [setUser, router]

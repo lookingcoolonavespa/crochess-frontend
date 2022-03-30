@@ -25,7 +25,8 @@ export default function GameDoor({ gameSeek }: GameDoorProps) {
   return (
     <div
       className={rootClasses.join(' ')}
-      onClick={async () => {
+      onClick={async (e) => {
+        e.stopPropagation();
         const oppColor = gameSeek.color === 'white' ? 'black' : 'white';
 
         const [res] = await Promise.all([
