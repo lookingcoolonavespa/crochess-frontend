@@ -48,7 +48,7 @@ export default function useListOfGames(
       });
 
       socket.on('startGame', (gameId) => {
-        window.location.pathname = `/${gameId}`;
+        router.push(`/${gameId}`);
       });
 
       socket.on('deletedGame', (d) => {

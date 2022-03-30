@@ -43,8 +43,8 @@ export default function ListOfGames({}: ListOfGamesProps) {
         </ul>
       </header>
       <section className={styles['game_door-ctn']}>
-        {listOfGames.map((g) => (
-          <GameDoor key={g._id} game={g} />
+        {listOfGames.map((gs) => (
+          <GameDoor key={gs._id} gameSeek={gs} />
         ))}
       </section>
     </div>

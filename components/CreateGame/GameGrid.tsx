@@ -55,7 +55,7 @@ function createGame(
   seeker: string,
   gameType: GameType
 ) {
-  fetch('http://localhost:8000/games', {
+  fetch('http://localhost:8000/gameSeeks', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
