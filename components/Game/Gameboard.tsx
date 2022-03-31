@@ -1,4 +1,6 @@
 import styles from '../../styles/Gameboard.module.scss';
+import { PieceType, PiecePos } from '../../types/types';
+import Piece from './Piece';
 
 const cols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const rows = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -9,9 +11,11 @@ const squares: string[] = cols.reduce((acc: string[], curr) => {
 
 interface GameboardProps {
   color: 'white' | 'black';
+  startingPos: PiecePos[];
 }
 
-export default function Gameboard({ color }: GameboardProps) {
+export default function Gameboard({ color, startingPos }: GameboardProps) {
+  console.log(startingPos);
   return (
     <div className={styles.main}>
       {squares.map((s, i) => {
@@ -34,6 +38,11 @@ export default function Gameboard({ color }: GameboardProps) {
             {startRow && <div className={`${styles.file} label`}>{col}</div>}
             {endCol && <div className={`${styles.rank} label`}>{row}</div>}
           </div>
+        );
+      })}
+      {startingPos.map((p, i) => {
+        return (
+          <Piece key={i} color={p.color} square={p.square} type={p.piece} />
         );
       })}
     </div>

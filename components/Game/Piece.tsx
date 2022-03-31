@@ -4,10 +4,14 @@ import styles from '../../styles/Piece.module.scss';
 interface PieceProps {
   type: PieceType;
   color: 'white' | 'black';
+  square: string;
 }
 
-export default function Piece({ type, color }: PieceProps) {
+export default function Piece({ type, color, square }: PieceProps) {
   return (
-    <div className={`${styles.main} ${styles[type]} ${styles[color]}`}></div>
+    <div
+      className={`${styles.main} ${styles[type]} ${styles[color]}`}
+      style={{ gridArea: square }}
+    ></div>
   );
 }

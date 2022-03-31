@@ -9,3 +9,9 @@ export type PieceType =
   | 'bishop'
   | 'rook'
   | 'pawn';
+
+export type PiecePos = {
+  piece: PieceType;
+  square: string;
+  color: 'white' | 'black';
+};
