@@ -1,5 +1,6 @@
 $light-square: #f0d9b5;
 $dark-square: #b58863;
+$square-size: 75px;
 
 .main {
   display: grid;
@@ -13,17 +14,43 @@ $dark-square: #b58863;
     'a2 b2 c2 d2 e2 f2 g2 h2'
     'a1 b1 c1 d1 e1 f1 g1 h1';
   width: fit-content;
+
+  :global(.label) {
+    margin: 3px;
+    color: $light-square;
+  }
 }
 
 .boardSquare {
-  width: 50px;
-  height: 50px;
+  position: relative;
+  width: $square-size;
+  height: $square-size;
   background-color: $dark-square;
 }
 
 .col-even.boardSquare:nth-child(even) {
   background-color: $light-square;
+
+  :global(.label) {
+    color: $dark-square;
+  }
 }
+
 .col-odd.boardSquare:nth-child(odd) {
   background-color: $light-square;
+
+  :global(.label) {
+    color: $dark-square;
+  }
+}
+
+.file {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.rank {
+  position: absolute;
+  top: 0;
+  right: 0;
 }

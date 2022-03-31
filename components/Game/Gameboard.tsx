@@ -15,10 +15,11 @@ export default function Gameboard({ color }: GameboardProps) {
   return (
     <div className={styles.main}>
       {squares.map((s, i) => {
-        const evenColumn = cols.indexOf(s.charAt(0)) % 2 === 0;
-        const startRow =
-          color === 'white' ? s.charAt(1) === '1' : s.charAt(1) === '8';
-        const startCol = s.charAt(0) === 'a';
+        const [col, row] = s.split('');
+
+        const evenColumn = cols.indexOf(col) % 2 === 0;
+        const startRow = color === 'white' ? row === '1' : row === '8';
+        const endCol = color === 'white' ? col === 'h' : col === 'a';
 
         return (
           <div
@@ -30,8 +31,8 @@ export default function Gameboard({ color }: GameboardProps) {
               gridArea: s,
             }}
           >
-            {startRow && <div className={styles.file}>{s.charAt(0)}</div>}
-            {startCol && <div className={styles.rank}>{s.charAt(1)}</div>}
+            {startRow && <div className={`${styles.file} label`}>{col}</div>}
+            {endCol && <div className={`${styles.rank} label`}>{row}</div>}
           </div>
         );
       })}
