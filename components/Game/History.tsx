@@ -15,7 +15,7 @@ export default function History({ moves }: HistoryProps) {
   return (
     <section className={styles.main}>
       <Controls
-        className={styles.controls}
+        className={styles['controls-ctn']}
         list={[
           createControlBtnObj(rewindIcon, 'go to start of game'),
           createControlBtnObj(backIcon, 'last move'),

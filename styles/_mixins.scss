@@ -1,4 +1,5 @@
 @use './functions';
+@use 'sass:string';
 
 @mixin flexCenter($direction) {
   display: flex;
@@ -13,8 +14,12 @@
 
 @mixin getThemeColors($colors) {
   @each $color, $value in $colors {
-    --#{$color}: #{$value};
-    --RGB_#{$color}: #{functions.hexToRGB($value)};
+    @if (string.index($color, 'filter') != null) {
+      --#{$color}: #{$value};
+    } @else {
+      --#{$color}: #{$value};
+      --RGB_#{$color}: #{functions.hexToRGB($value)};
+    }
   }
 }
 

@@ -12,6 +12,11 @@
   font-stretch: 25% 151%;
 }
 
+@font-face {
+  font-family: 'Hubballi';
+  src: url('../public/fonts/Hubballi-Regular.ttf') format('truetype');
+}
+
 :root[color-mode='light'] {
   @include mixins.getThemeColors(variables.$colors-light);
   --box-shadow: 5px 0 10px rgb(220, 220, 220), -5px 0 10px rgb(220, 220, 220),
@@ -22,7 +27,6 @@
 :root[color-mode='dark'] {
   --background: rgb(225, 225, 225);
   --foreground: rgb(250, 250, 250);
-  --primary: #c6dea6;
 }
 
 * {
@@ -143,4 +147,23 @@ footer {
 
 .label {
   font-weight: 600;
+}
+
+.icon-btn {
+  @include mixins.flexCenter(row);
+
+  transition: all 0.1s ease-out;
+  color: var(--text-primary);
+
+  img {
+    filter: var(--filter-text-primary);
+  }
+
+  &:hover {
+    color: var(--foreground);
+
+    img {
+      filter: var(--filter-foreground);
+    }
+  }
 }

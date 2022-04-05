@@ -19,7 +19,7 @@ export default function Interface({
 }: InterfaceProps) {
   return (
     <div className={styles.main}>
-      <Timer init={playerOneTime} />
+      <Timer className={`${styles.timer} ${styles.top}`} init={playerOneTime} />
       <History
         moves={[
           ['a1', 'b2'],
@@ -37,7 +37,10 @@ export default function Interface({
           createControlBtnObj(flagIcon, 'resign game'),
         ]}
       />
-      <Timer init={playerTwoTime} />
+      <Timer
+        className={`${styles.timer} ${styles.bottom}`}
+        init={playerTwoTime}
+      />
     </div>
   );
 }

@@ -4,9 +4,10 @@ import { TimeObjInterface } from '../../types/interfaces';
 
 interface TimerProps {
   init: TimeObjInterface;
+  className: string;
 }
 
-export default function Timer({ init }: TimerProps) {
+export default function Timer({ className, init }: TimerProps) {
   const [time, setTime] = useState(toMilliseconds(init));
 
   const startTime = useRef(Date.now());
@@ -17,5 +18,5 @@ export default function Timer({ init }: TimerProps) {
     });
   });
 
-  return <div>{formatTime(time)}</div>;
+  return <div className={className}>{formatTime(time)}</div>;
 }

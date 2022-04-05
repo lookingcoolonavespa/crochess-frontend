@@ -1,16 +1,40 @@
 @use './mixins';
 
+$timer-height: 50px;
+
 .main {
-  width: 200px;
-  height: 500px;
+  position: relative;
+  background-color: var(--foreground);
+  box-shadow: var(--box-shadow);
 }
 
 .main_controls {
   @include mixins.flexCenter(row);
+
+  :global(.icon-btn) {
+    padding: 0.5em 0.8em;
+    margin-right: 10px;
+    border-radius: 5px;
+  }
 }
 
-.button {
+.timer {
+  @include mixins.flexCenter(row);
+
+  position: absolute;
+  left: 0;
+  height: 50px;
+  width: 50%;
+  overflow: hidden;
+  font-family: 'Hubballi';
+  font-size: 40px;
+  background-color: var(--foreground);
+  box-shadow: var(--sm-box-shadow);
+  border-radius: 5px;
 }
-.button:hover {
-  background-color: var(--action-primary);
+.top {
+  top: -$timer-height;
+}
+.bottom {
+  bottom: -$timer-height;
 }

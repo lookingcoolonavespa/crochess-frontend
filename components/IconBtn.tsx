@@ -14,7 +14,7 @@ export default function IconBtn({
   btnText,
 }: IconBtnProps) {
   return (
-    <div className={className}>
+    <div className="icon-btn btn hover-highlight">
       {icon && <Image src={icon} alt={altText} />}
       {btnText && <p>{btnText}</p>}
     </div>
