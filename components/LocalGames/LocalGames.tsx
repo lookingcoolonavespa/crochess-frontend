@@ -1,4 +1,4 @@
-import TwoColumnViewTitle from '../TwoColumnViewWithTitle';
+import TwoSectionViewTitle from '../TwoSectionViewWithTitle';
 import ListOfGames from './ListOfGames';
 
 interface LocalGamesProps {
@@ -7,8 +7,8 @@ interface LocalGamesProps {
 
 export default function LocalGames({}: LocalGamesProps) {
   return (
-    <TwoColumnViewTitle title="Local games" className="align-start">
+    <TwoSectionViewTitle title="Local games" className="align-start">
       <ListOfGames />
-    </TwoColumnViewTitle>
+    </TwoSectionViewTitle>
   );
 }

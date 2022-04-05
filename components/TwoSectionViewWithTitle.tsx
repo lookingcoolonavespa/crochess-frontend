@@ -1,18 +1,18 @@
-import styles from '../styles/TwoColumnViewWithTitle.module.scss';
+import styles from '../styles/TwoSectionViewWithTitle.module.scss';
 
-interface TwoColumnViewWithTitleProps {
+interface TwoSectionViewWithTitleProps {
   title: string;
   children: React.ReactNode;
   className?: string;
 }
 
-export default function TwoColumnViewWithTitle({
+export default function TwoSectionViewWithTitle({
   title,
   className,
   children,
-}: TwoColumnViewWithTitleProps) {
+}: TwoSectionViewWithTitleProps) {
   return (
-    <section className={styles.main + ' two-column-view ' + (className || '')}>
+    <section className={styles.main + ' two-section-view ' + (className || '')}>
       <h3 className={styles.title}>
         <span className={styles['text-wrapper']}>{title}</span>
       </h3>

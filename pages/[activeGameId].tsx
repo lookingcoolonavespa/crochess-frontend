@@ -1,16 +1,30 @@
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Gameboard from '../components/Game/Gameboard';
+import Interface from '../components/Game/Interface';
 import { PiecePos, PieceType } from '../types/types';
 
 export default function ActiveGame() {
   return (
-    <Gameboard
-      color="white"
-      startingPos={[
-        ...createStartingPos('white'),
-        ...createStartingPos('black'),
-      ]}
-    />
+    <>
+      <Head>
+        <html color-mode="light" />
+      </Head>
+      <main className="two-section-view">
+        <Gameboard
+          color="white"
+          startingPos={[
+            ...createStartingPos('white'),
+            ...createStartingPos('black'),
+          ]}
+        />
+        <Interface
+          playerOneTime={{ seconds: 30 }}
+          playerTwoTime={{ minutes: 3 }}
+          history={[]}
+        />
+      </main>
+    </>
   );
 }
 

@@ -1,0 +1,24 @@
+.main {
+  background-color: var(--background);
+}
+
+.controls {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.list_item {
+  display: flex;
+  background-color: var(--foreground);
+}
+
+.move_no {
+  background-color: var(--background);
+  padding: 5px 15px;
+}
+
+.moves_wrapper {
+  padding: 5px 0;
+  display: flex;
+  column-gap: 10px;
+}

@@ -1,0 +1,16 @@
+@use './mixins';
+
+.main {
+  width: 200px;
+  height: 500px;
+}
+
+.main_controls {
+  @include mixins.flexCenter(row);
+}
+
+.button {
+}
+.button:hover {
+  background-color: var(--action-primary);
+}

@@ -1,5 +1,5 @@
 import styles from '../../styles/Gameboard.module.scss';
-import { PieceType, PiecePos } from '../../types/types';
+import { PiecePos } from '../../types/types';
 import Piece from './Piece';
 
 const cols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -15,12 +15,12 @@ interface GameboardProps {
 }
 
 export default function Gameboard({ color, startingPos }: GameboardProps) {
-  console.log(startingPos);
   return (
     <div className={styles.main}>
       {squares.map((s, i) => {
         const [col, row] = s.split('');
 
+        // board needs to be flipped for black
         const evenColumn = cols.indexOf(col) % 2 === 0;
         const startRow = color === 'white' ? row === '1' : row === '8';
         const endCol = color === 'white' ? col === 'h' : col === 'a';
@@ -40,11 +40,14 @@ export default function Gameboard({ color, startingPos }: GameboardProps) {
           </div>
         );
       })}
-      {startingPos.map((p, i) => {
-        return (
-          <Piece key={i} color={p.color} square={p.square} type={p.piece} />
-        );
-      })}
+      {
+        // pieces
+        startingPos.map((p, i) => {
+          return (
+            <Piece key={i} color={p.color} square={p.square} type={p.piece} />
+          );
+        })
+      }
     </div>
   );
 }

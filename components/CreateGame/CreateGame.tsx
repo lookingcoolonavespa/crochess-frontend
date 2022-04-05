@@ -1,12 +1,12 @@
-import TwoColumnViewTitle from '../TwoColumnViewWithTitle';
+import TwoSectionViewTitle from '../TwoSectionViewWithTitle';
 import GameGrid from './GameGrid';
 
 interface CreateGameProps {}
 
 export default function CreateGame({}: CreateGameProps) {
   return (
-    <TwoColumnViewTitle title="Create a game">
+    <TwoSectionViewTitle title="Create a game">
       <GameGrid />
-    </TwoColumnViewTitle>
+    </TwoSectionViewTitle>
   );
 }

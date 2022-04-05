@@ -37,7 +37,9 @@ h3,
 h4,
 h5,
 h6,
-p {
+p,
+ol,
+ul {
   margin: 0;
   padding: 0;
 }
@@ -83,14 +85,14 @@ footer {
   border: 1px solid var(--border-primary);
 }
 
-.two-column-view {
+.two-section-view {
   @include mixins.flexCenter(row);
 
   > * {
     flex: 1 1 auto;
   }
 }
-.two-column-view:not(:first-child) {
+.two-section-view:not(:first-child) {
   margin-top: 50px;
 }
 
