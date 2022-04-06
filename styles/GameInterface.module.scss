@@ -12,9 +12,8 @@ $timer-height: 50px;
   @include mixins.flexCenter(row);
 
   :global(.icon-btn) {
-    padding: 0.5em 0.8em;
-    margin-right: 10px;
-    border-radius: 5px;
+    flex: 1 1 auto;
+    padding: 1em 1.5em;
   }
 }
 
@@ -29,12 +28,13 @@ $timer-height: 50px;
   font-family: 'Hubballi';
   font-size: 40px;
   background-color: var(--foreground);
-  box-shadow: var(--sm-box-shadow);
   border-radius: 5px;
 }
 .top {
   top: -$timer-height;
+  box-shadow: var(--sm-box-shadow);
 }
 .bottom {
   bottom: -$timer-height;
+  box-shadow: var(--side-bottom-box-shadow);
 }

@@ -19,8 +19,8 @@ export default function ActiveGame() {
           ]}
         />
         <Interface
-          playerOneTime={{ seconds: 30 }}
-          playerTwoTime={{ minutes: 3 }}
+          playerOneTime={{ minutes: 30 }}
+          playerTwoTime={{ minutes: 30 }}
           history={[]}
         />
       </main>

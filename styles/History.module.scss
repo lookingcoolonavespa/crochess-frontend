@@ -4,9 +4,16 @@
 
 .controls-ctn {
   display: flex;
+  box-shadow: var(--bottom-box-shadow);
+  position: relative;
 
   > :global(.icon-btn) {
     flex: 1 1 auto;
+    padding: 0.6em;
+    img {
+      height: 20px !important;
+      width: 20px !important;
+    }
   }
 }
 
@@ -18,10 +25,17 @@
 .move_no {
   background-color: var(--background);
   padding: 5px 15px;
+  z-index: 2;
 }
 
 .moves_wrapper {
   padding: 5px 0;
   display: flex;
   column-gap: 10px;
+  flex: 1 1 auto;
+
+  > * {
+    flex: 1 1 auto;
+    padding: 0 10px;
+  }
 }

@@ -23,6 +23,9 @@
     0 5px 10px rgb(210, 210, 210);
   --sm-box-shadow: 3px 0 10px rgb(220, 220, 220), -3px 0 10px rgb(220, 220, 220),
     0 3px 10px rgb(210, 210, 210);
+  --side-bottom-box-shadow: 3px 3px 10px rgb(220, 220, 220),
+    -3px 3px 10px rgb(220, 220, 220);
+  --bottom-box-shadow: 0 10px 10px -10px rgb(169, 169, 169);
 }
 :root[color-mode='dark'] {
   --background: rgb(225, 225, 225);
