@@ -7,10 +7,11 @@ import { PiecePos, PieceType } from '../types/types';
 import { io } from 'socket.io-client';
 import urls from '../utils/urls';
 import axios from 'axios';
+import dayjs from 'dayjs';
 
 export default function ActiveGame() {
-  const [whiteTime, setWhiteTime] = useState(new Date());
-  const [blackTime, setBlackTime] = useState(new Date());
+  const [whiteTime, setWhiteTime] = useState(0);
+  const [blackTime, setBlackTime] = useState(0);
   const [moveHistory, setMoveHistory] = useState([]);
 
   const gameId = '624ddfd99ce65c46beddcb84';
@@ -23,18 +24,18 @@ export default function ActiveGame() {
           throw new Error('something went wrong fetching game');
 
         const game = await res.data;
-
-        setWhiteTime(game.white.timeLeft);
-        setBlackTime(game.black.timeLeft);
+        const time = dayjs.duration({ minutes: game.time }).asMilliseconds();
+        setWhiteTime(time);
+        setBlackTime(time);
       } catch (err) {
         console.log(err);
       }
     })();
-  });
+  }, []);
 
   useEffect(function connectToSocket() {
     const socket = io(`${urls.backend}/624ddfd99ce65c46beddcb84`);
-  });
+  }, []);
   return (
     <>
       <Head>
@@ -48,7 +49,13 @@ export default function ActiveGame() {
             ...createStartingPos('black'),
           ]}
         />
-        <Interface whiteTime={whiteTime} blackTime={blackTime} history={[]} />
+        <Interface
+          whiteTime={whiteTime}
+          setWhiteTime={setWhiteTime}
+          blackTime={blackTime}
+          setBlackTime={setBlackTime}
+          history={[]}
+        />
       </main>
     </>
   );

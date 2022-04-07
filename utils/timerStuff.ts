@@ -8,8 +8,8 @@ function toMilliseconds(timeObj: TimeObjInterface) {
   return dayjs.duration(timeObj).asMilliseconds();
 }
 
-function formatTime(milliseconds: number) {
-  const duration = dayjs.duration(milliseconds);
+function formatTime(ms: number) {
+  const duration = dayjs.duration(ms);
 
   const atLeastAnHour = duration.asHours() >= 1;
   const belowTwentySeconds = duration.asSeconds() <= 20;

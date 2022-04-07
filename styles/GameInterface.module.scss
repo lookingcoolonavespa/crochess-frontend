@@ -6,6 +6,7 @@ $timer-height: 50px;
   position: relative;
   background-color: var(--foreground);
   box-shadow: var(--box-shadow);
+  z-index: 3;
 }
 
 .main_controls {

@@ -7,19 +7,28 @@ import { createControlBtnObj } from '../../utils/misc';
 import flagIcon from '../../public/icons/flag-fill.svg';
 
 interface InterfaceProps {
-  whiteTime: Date;
-  blackTime: Date;
+  whiteTime: number;
+  setWhiteTime: React.Dispatch<React.SetStateAction<number>>;
+  blackTime: number;
+  setBlackTime: React.Dispatch<React.SetStateAction<number>>;
   history: [];
 }
 
 export default function Interface({
   whiteTime,
+  setWhiteTime,
   blackTime,
+  setBlackTime,
   history,
 }: InterfaceProps) {
   return (
     <div className={styles.main}>
-      <Timer className={`${styles.timer} ${styles.top}`} init={whiteTime} />
+      <Timer
+        className={`${styles.timer} ${styles.top}`}
+        time={whiteTime}
+        setTime={setBlackTime}
+        active={true}
+      />
       <History
         moves={[
           ['a1', 'b2'],
@@ -37,7 +46,12 @@ export default function Interface({
           createControlBtnObj(flagIcon, 'resign game'),
         ]}
       />
-      <Timer className={`${styles.timer} ${styles.bottom}`} init={blackTime} />
+      <Timer
+        className={`${styles.timer} ${styles.bottom}`}
+        time={blackTime}
+        setTime={setBlackTime}
+        active={true}
+      />
     </div>
   );
 }
