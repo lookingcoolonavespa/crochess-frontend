@@ -15,6 +15,9 @@ export default function Timer({
   setTime,
   active,
 }: TimerProps) {
+  const classNames = [className];
+  if (active) classNames.push('active');
+
   const turnStart = useRef(0);
   const [display, setDisplay] = useState(time);
 
@@ -27,6 +30,10 @@ export default function Timer({
   }, [active]);
 
   useEffect(() => {
+    /*
+      if active, start timer 
+      subtract elapsed time from playerTime to get clock 
+    */
     if (!active || !time) return;
     const interval: number = window.setInterval(() => {
       const elapsed = Date.now() - turnStart.current;
@@ -39,10 +46,5 @@ export default function Timer({
     return () => clearInterval(interval);
   }, [active, time]);
 
-  /*
-  if active, start timer 
-  subtract elapsed time from duration 
-  */
-
-  return <div className={className}>{formatTime(display)}</div>;
+  return <div className={classNames.join(' ')}>{formatTime(display)}</div>;
 }

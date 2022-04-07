@@ -30,6 +30,10 @@ $timer-height: 50px;
   font-size: 40px;
   background-color: var(--foreground);
   border-radius: 5px;
+
+  &:global(.active) {
+    background-color: hsl(86, 46%, 86%);
+  }
 }
 .top {
   top: -$timer-height;
