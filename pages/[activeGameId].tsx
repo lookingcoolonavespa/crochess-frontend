@@ -24,7 +24,8 @@ export default function ActiveGame() {
           throw new Error('something went wrong fetching game');
 
         const game = await res.data;
-        const time = dayjs.duration({ minutes: game.time }).asMilliseconds();
+        const time = dayjs.duration({ seconds: game.time }).asMilliseconds();
+
         setWhiteTime(time);
         setBlackTime(time);
       } catch (err) {

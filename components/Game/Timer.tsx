@@ -16,6 +16,7 @@ export default function Timer({
   active,
 }: TimerProps) {
   const turnStart = useRef(0);
+  const [display, setDisplay] = useState(time);
 
   // useEffect(() => {
   //   setInterval(() => {
@@ -24,16 +25,20 @@ export default function Timer({
   // });
 
   useEffect(() => {
-    if (!active) return;
-
     turnStart.current = Date.now();
+    console.log(turnStart.current);
+  }, [active]);
 
-    const timeout = setTimeout(() => {
+  useEffect(() => {
+    if (!active || !time) return;
+
+    // const interval = time > 20000 ? 100 : 1;
+    const interval = setInterval(() => {
       const elapsed = Date.now() - turnStart.current;
-      setTime(time - elapsed);
-    }, 100);
+      setDisplay(time - elapsed);
+    }, 10);
 
-    return () => clearTimeout(timeout);
+    return () => clearTimeout(interval);
   });
 
   /*
@@ -41,5 +46,5 @@ export default function Timer({
   subtract elapsed time from duration 
   */
 
-  return <div className={className}>{formatTime(time)}</div>;
+  return <div className={className}>{formatTime(display)}</div>;
 }

@@ -26,8 +26,8 @@ export default function Interface({
       <Timer
         className={`${styles.timer} ${styles.top}`}
         time={whiteTime}
-        setTime={setBlackTime}
-        active={true}
+        setTime={setWhiteTime}
+        active={false}
       />
       <History
         moves={[
