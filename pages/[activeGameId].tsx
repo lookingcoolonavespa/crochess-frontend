@@ -14,27 +14,32 @@ export default function ActiveGame() {
   const [blackTime, setBlackTime] = useState(0);
   const [moveHistory, setMoveHistory] = useState([]);
 
-  const gameId = '624ddfd99ce65c46beddcb84';
+  const router = useRouter();
+  const gameId = router.query.activeGameId;
+  // const gameId = '624ddfd99ce65c46beddcb84';
 
-  useEffect(function fetchGame() {
-    (async () => {
-      try {
-        const res = await axios.get(`${urls.backend}/games/${gameId}`);
-        if (!res || res.status !== 200 || res.statusText !== 'OK')
-          throw new Error('something went wrong fetching game');
+  useEffect(
+    function fetchGame() {
+      (async () => {
+        try {
+          if (!gameId) return;
+          console.log(`${urls.backend}/games/${gameId}`);
+          const res = await axios.get(`${urls.backend}/games/${gameId}`);
+          if (!res || res.status !== 200 || res.statusText !== 'OK')
+            throw new Error('something went wrong fetching game');
 
-        const game = await res.data;
-        const time = dayjs
-          .duration({ seconds: game.time - 10 })
-          .asMilliseconds();
+          const game = await res.data;
+          const time = dayjs.duration({ minutes: game.time }).asMilliseconds();
 
-        setWhiteTime(time);
-        setBlackTime(time);
-      } catch (err) {
-        console.log(err);
-      }
-    })();
-  }, []);
+          setWhiteTime(time);
+          setBlackTime(time);
+        } catch (err) {
+          console.log(err);
+        }
+      })();
+    },
+    [gameId]
+  );
 
   useEffect(function connectToSocket() {
     const socket = io(`${urls.backend}/624ddfd99ce65c46beddcb84`);
