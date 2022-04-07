@@ -64,14 +64,20 @@ export default function ActiveGame() {
           whiteDetails={{
             time: whiteTime,
             setTime: setWhiteTime,
+            active: turn === 'white',
           }}
           blackDetails={{
             time: blackTime,
             setTime: setBlackTime,
+            active: turn === 'black',
           }}
-          turn={turn}
           history={[]}
           view={gameboardView}
+          flipBoard={() =>
+            setGameboardView((prev) => {
+              return prev === 'white' ? 'black' : 'white';
+            })
+          }
         />
       </main>
     </>

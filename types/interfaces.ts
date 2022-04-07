@@ -20,4 +20,5 @@ export interface ControlBtnObj {
   src?: string;
   alt?: string;
   text?: string;
+  onClick?: () => void;
 }

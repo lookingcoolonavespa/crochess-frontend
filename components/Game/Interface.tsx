@@ -10,32 +10,32 @@ interface InterfaceProps {
   whiteDetails: colorDetails;
   blackDetails: colorDetails;
   history: [];
-  turn: 'white' | 'black';
   view: 'white' | 'black';
+  flipBoard: () => void;
 }
 
 interface colorDetails {
   time: number;
   setTime: React.Dispatch<React.SetStateAction<number>>;
+  active: boolean;
 }
 
 export default function Interface({
   whiteDetails,
   blackDetails,
   view,
-  turn,
+  flipBoard,
   history,
 }: InterfaceProps) {
   const topTimer = view === 'white' ? blackDetails : whiteDetails;
   const bottomTimer = view === 'white' ? whiteDetails : blackDetails;
-
   return (
     <div className={styles.main}>
       <Timer
         className={`${styles.timer} ${styles.top}`}
         time={topTimer.time}
         setTime={topTimer.setTime}
-        active={false}
+        active={topTimer.active}
       />
       <History
         moves={[
@@ -46,6 +46,7 @@ export default function Interface({
           ['a1', 'b2'],
           ['a1', 'b2'],
         ]}
+        flipBoard={flipBoard}
       />
       <Controls
         className={styles.main_controls}
@@ -58,7 +59,7 @@ export default function Interface({
         className={`${styles.timer} ${styles.bottom}`}
         time={bottomTimer.time}
         setTime={bottomTimer.setTime}
-        active={true}
+        active={bottomTimer.active}
       />
     </div>
   );

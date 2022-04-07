@@ -5,6 +5,7 @@ interface IconBtnProps {
   icon?: string;
   altText?: string;
   btnText?: string;
+  onClick?: () => void;
 }
 
 export default function IconBtn({
@@ -12,9 +13,11 @@ export default function IconBtn({
   icon,
   altText,
   btnText,
+  onClick,
 }: IconBtnProps) {
+  console.log(onClick);
   return (
-    <div className="icon-btn btn hover-highlight">
+    <div className="icon-btn btn hover-highlight" onClick={onClick}>
       {icon && <Image src={icon} alt={altText} />}
       {btnText && <p>{btnText}</p>}
     </div>

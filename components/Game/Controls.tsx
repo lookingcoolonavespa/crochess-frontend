@@ -16,6 +16,7 @@ export default function Controls({ className, list }: ControlsProps) {
           icon={c.src}
           altText={c.alt}
           btnText={c.text}
+          onClick={c.onClick}
         />
       ))}
     </div>
