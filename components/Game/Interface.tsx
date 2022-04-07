@@ -7,26 +7,34 @@ import { createControlBtnObj } from '../../utils/misc';
 import flagIcon from '../../public/icons/flag-fill.svg';
 
 interface InterfaceProps {
-  whiteTime: number;
-  setWhiteTime: React.Dispatch<React.SetStateAction<number>>;
-  blackTime: number;
-  setBlackTime: React.Dispatch<React.SetStateAction<number>>;
+  whiteDetails: colorDetails;
+  blackDetails: colorDetails;
   history: [];
+  turn: 'white' | 'black';
+  view: 'white' | 'black';
+}
+
+interface colorDetails {
+  time: number;
+  setTime: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function Interface({
-  whiteTime,
-  setWhiteTime,
-  blackTime,
-  setBlackTime,
+  whiteDetails,
+  blackDetails,
+  view,
+  turn,
   history,
 }: InterfaceProps) {
+  const topTimer = view === 'white' ? blackDetails : whiteDetails;
+  const bottomTimer = view === 'white' ? whiteDetails : blackDetails;
+
   return (
     <div className={styles.main}>
       <Timer
         className={`${styles.timer} ${styles.top}`}
-        time={whiteTime}
-        setTime={setWhiteTime}
+        time={topTimer.time}
+        setTime={topTimer.setTime}
         active={false}
       />
       <History
@@ -48,8 +56,8 @@ export default function Interface({
       />
       <Timer
         className={`${styles.timer} ${styles.bottom}`}
-        time={blackTime}
-        setTime={setBlackTime}
+        time={bottomTimer.time}
+        setTime={bottomTimer.setTime}
         active={true}
       />
     </div>

@@ -10,11 +10,11 @@ const squares: string[] = cols.reduce((acc: string[], curr) => {
 }, []);
 
 interface GameboardProps {
-  color: 'white' | 'black';
+  view: 'white' | 'black';
   startingPos: PiecePos[];
 }
 
-export default function Gameboard({ color, startingPos }: GameboardProps) {
+export default function Gameboard({ view, startingPos }: GameboardProps) {
   return (
     <div className={styles.main}>
       {squares.map((s, i) => {
@@ -22,8 +22,8 @@ export default function Gameboard({ color, startingPos }: GameboardProps) {
 
         // board needs to be flipped for black
         const evenColumn = cols.indexOf(col) % 2 === 0;
-        const startRow = color === 'white' ? row === '1' : row === '8';
-        const endCol = color === 'white' ? col === 'h' : col === 'a';
+        const startRow = view === 'white' ? row === '1' : row === '8';
+        const endCol = view === 'white' ? col === 'h' : col === 'a';
 
         return (
           <div

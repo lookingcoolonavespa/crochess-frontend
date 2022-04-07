@@ -12,6 +12,10 @@ import dayjs from 'dayjs';
 export default function ActiveGame() {
   const [whiteTime, setWhiteTime] = useState(0);
   const [blackTime, setBlackTime] = useState(0);
+  const [turn, setTurn] = useState<'white' | 'black'>('white');
+  const [gameboardView, setGameboardView] = useState<'white' | 'black'>(
+    'white'
+  );
   const [moveHistory, setMoveHistory] = useState([]);
 
   const router = useRouter();
@@ -23,7 +27,6 @@ export default function ActiveGame() {
       (async () => {
         try {
           if (!gameId) return;
-          console.log(`${urls.backend}/games/${gameId}`);
           const res = await axios.get(`${urls.backend}/games/${gameId}`);
           if (!res || res.status !== 200 || res.statusText !== 'OK')
             throw new Error('something went wrong fetching game');
@@ -51,18 +54,24 @@ export default function ActiveGame() {
       </Head>
       <main className="two-section-view">
         <Gameboard
-          color="white"
+          view={gameboardView}
           startingPos={[
             ...createStartingPos('white'),
             ...createStartingPos('black'),
           ]}
         />
         <Interface
-          whiteTime={whiteTime}
-          setWhiteTime={setWhiteTime}
-          blackTime={blackTime}
-          setBlackTime={setBlackTime}
+          whiteDetails={{
+            time: whiteTime,
+            setTime: setWhiteTime,
+          }}
+          blackDetails={{
+            time: blackTime,
+            setTime: setBlackTime,
+          }}
+          turn={turn}
           history={[]}
+          view={gameboardView}
         />
       </main>
     </>
