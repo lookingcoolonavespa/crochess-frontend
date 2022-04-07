@@ -18,28 +18,26 @@ export default function Timer({
   const turnStart = useRef(0);
   const [display, setDisplay] = useState(time);
 
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     setTime((prev) => prev - 1);
-  //   });
-  // });
+  useEffect(() => {
+    setDisplay(time);
+  }, [time]);
 
   useEffect(() => {
     turnStart.current = Date.now();
-    console.log(turnStart.current);
   }, [active]);
 
   useEffect(() => {
     if (!active || !time) return;
-
-    // const interval = time > 20000 ? 100 : 1;
-    const interval = setInterval(() => {
+    const interval: number = window.setInterval(() => {
       const elapsed = Date.now() - turnStart.current;
-      setDisplay(time - elapsed);
-    }, 10);
+      const timeLeft = time - elapsed;
+      if (timeLeft < 0) return clearInterval(interval);
+      setDisplay(timeLeft);
+      // if (!timeLeft) return clearInterval(interval);
+    }, 1);
 
-    return () => clearTimeout(interval);
-  });
+    return () => clearInterval(interval);
+  }, [active, time]);
 
   /*
   if active, start timer 
