@@ -15,7 +15,6 @@ export default function IconBtn({
   btnText,
   onClick,
 }: IconBtnProps) {
-  console.log(onClick);
   return (
     <div className="icon-btn btn hover-highlight" onClick={onClick}>
       {icon && <Image src={icon} alt={altText} />}

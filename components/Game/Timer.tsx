@@ -3,6 +3,8 @@ import { dayjs, toMilliseconds, formatTime } from '../../utils/timerStuff';
 import { TimeObjInterface } from '../../types/interfaces';
 
 interface TimerProps {
+  startTime: number;
+  turnStart: number | null;
   time: number;
   className: string;
   active: boolean;
@@ -11,6 +13,8 @@ interface TimerProps {
 
 export default function Timer({
   className,
+  startTime,
+  turnStart,
   time,
   setTime,
   active,
@@ -18,33 +22,22 @@ export default function Timer({
   const classNames = [className];
   if (active) classNames.push('active');
 
-  const turnStart = useRef(0);
-  const [display, setDisplay] = useState(time);
-
-  useEffect(() => {
-    setDisplay(time);
-  }, [time]);
-
-  useEffect(() => {
-    turnStart.current = Date.now();
-  }, [active]);
-
   useEffect(() => {
     /*
       if active, start timer 
       subtract elapsed time from playerTime to get clock 
     */
-    if (!active || !time) return;
+    if (!active || !time || !turnStart) return;
     const interval: number = window.setInterval(() => {
-      const elapsed = Date.now() - turnStart.current;
-      const timeLeft = time - elapsed;
+      const elapsed = Date.now() - turnStart;
+      const timeLeft = startTime - elapsed;
       if (timeLeft < 0) return clearInterval(interval);
-      setDisplay(timeLeft);
+      setTime(timeLeft);
       // if (!timeLeft) return clearInterval(interval);
     }, 1);
 
     return () => clearInterval(interval);
-  }, [active, time]);
+  }, [active, time, setTime, startTime, turnStart]);
 
-  return <div className={classNames.join(' ')}>{formatTime(display)}</div>;
+  return <div className={classNames.join(' ')}>{formatTime(time)}</div>;
 }

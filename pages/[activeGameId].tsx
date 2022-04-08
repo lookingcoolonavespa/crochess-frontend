@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Gameboard from '../components/Game/Gameboard';
 import Interface from '../components/Game/Interface';
 import { PiecePos, PieceType } from '../types/types';
@@ -10,6 +10,11 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 
 export default function ActiveGame() {
+  const startTimeRef = useRef({
+    white: 0,
+    black: 0,
+  });
+  const turnStartRef = useRef<number>(0);
   const [whiteTime, setWhiteTime] = useState(0);
   const [blackTime, setBlackTime] = useState(0);
   const [turn, setTurn] = useState<'white' | 'black'>('white');
@@ -33,6 +38,10 @@ export default function ActiveGame() {
 
           const game = await res.data;
           const time = dayjs.duration({ minutes: game.time }).asMilliseconds();
+          startTimeRef.current.white = time;
+          startTimeRef.current.black = time;
+
+          turnStartRef.current = Date.now();
 
           setWhiteTime(time);
           setBlackTime(time);
@@ -62,15 +71,18 @@ export default function ActiveGame() {
         />
         <Interface
           whiteDetails={{
+            startTime: startTimeRef.current.white,
             time: whiteTime,
             setTime: setWhiteTime,
             active: turn === 'white',
           }}
           blackDetails={{
+            startTime: startTimeRef.current.black,
             time: blackTime,
             setTime: setBlackTime,
             active: turn === 'black',
           }}
+          turnStart={turnStartRef.current}
           history={[]}
           view={gameboardView}
           flipBoard={() =>

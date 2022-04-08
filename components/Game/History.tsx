@@ -14,7 +14,6 @@ interface HistoryProps {
 }
 
 export default function History({ moves, flipBoard }: HistoryProps) {
-  console.log(flipBoard);
   return (
     <section className={styles.main}>
       <Controls
