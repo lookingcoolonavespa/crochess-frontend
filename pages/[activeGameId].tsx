@@ -9,6 +9,7 @@ import { io } from 'socket.io-client';
 import urls from '../utils/urls';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { formatTime } from '../utils/timerStuff';
 
 export default function ActiveGame() {
   const startTimeRef = useRef({
@@ -38,7 +39,6 @@ export default function ActiveGame() {
             throw new Error('something went wrong fetching game');
 
           const game = await res.data;
-          console.log(game);
           startTimeRef.current.white = game.white.timeLeft;
           startTimeRef.current.black = game.black.timeLeft;
 
@@ -60,10 +60,14 @@ export default function ActiveGame() {
 
     socket.on('update', (data) => {
       if (data['black.timeLeft']) {
+        startTimeRef.current.black = data['black.timeLeft'];
         setBlackTime(data['black.timeLeft']);
       } else {
+        startTimeRef.current.white = data['white.timeLeft'];
         setWhiteTime(data['white.timeLeft']);
       }
+      startTimeRef.current;
+      turnStartRef.current = data.turnStart;
       setTurn(data.turn);
     });
   }, []);
