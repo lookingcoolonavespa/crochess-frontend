@@ -12,9 +12,14 @@ const squares: string[] = cols.reduce((acc: string[], curr) => {
 interface GameboardProps {
   view: 'white' | 'black';
   startingPos: PiecePos[];
+  makeMove: () => void;
 }
 
-export default function Gameboard({ view, startingPos }: GameboardProps) {
+export default function Gameboard({
+  view,
+  startingPos,
+  makeMove,
+}: GameboardProps) {
   return (
     <div className={styles.main}>
       {squares.map((s, i) => {
@@ -34,6 +39,7 @@ export default function Gameboard({ view, startingPos }: GameboardProps) {
             style={{
               gridArea: s,
             }}
+            onClick={makeMove}
           >
             {startRow && <div className={`${styles.file} label`}>{col}</div>}
             {endCol && <div className={`${styles.rank} label`}>{row}</div>}

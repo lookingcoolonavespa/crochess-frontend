@@ -12,9 +12,6 @@ const Home: NextPage = () => {
   const [user, setUser] = useState(null);
   return (
     <>
-      <Head>
-        <html color-mode="light" />
-      </Head>
       <Layout>
         <UserContext.Provider value={{ user, setUser }}>
           <CreateGame />

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Gameboard from '../components/Game/Gameboard';
 import Interface from '../components/Game/Interface';
 import { PiecePos, PieceType } from '../types/types';
+import { ActiveGameUpdateInterface } from '../types/interfaces';
 import { io } from 'socket.io-client';
 import urls from '../utils/urls';
 import axios from 'axios';
@@ -24,7 +25,7 @@ export default function ActiveGame() {
   const [moveHistory, setMoveHistory] = useState([]);
 
   const router = useRouter();
-  const gameId = router.query.activeGameId;
+  const { activeGameId: gameId } = router.query;
   // const gameId = '624ddfd99ce65c46beddcb84';
 
   useEffect(
@@ -37,14 +38,15 @@ export default function ActiveGame() {
             throw new Error('something went wrong fetching game');
 
           const game = await res.data;
-          const time = dayjs.duration({ minutes: game.time }).asMilliseconds();
-          startTimeRef.current.white = time;
-          startTimeRef.current.black = time;
+          console.log(game);
+          startTimeRef.current.white = game.white.timeLeft;
+          startTimeRef.current.black = game.black.timeLeft;
 
           turnStartRef.current = Date.now();
 
-          setWhiteTime(time);
-          setBlackTime(time);
+          setWhiteTime(game.white.timeLeft);
+          setBlackTime(game.black.timeLeft);
+          setTurn(game.turn);
         } catch (err) {
           console.log(err);
         }
@@ -55,12 +57,26 @@ export default function ActiveGame() {
 
   useEffect(function connectToSocket() {
     const socket = io(`${urls.backend}/624ddfd99ce65c46beddcb84`);
+
+    socket.on('update', (data) => {
+      if (data['black.timeLeft']) {
+        setBlackTime(data['black.timeLeft']);
+      } else {
+        setWhiteTime(data['white.timeLeft']);
+      }
+      setTurn(data.turn);
+    });
   }, []);
+
+  function makeMove() {
+    try {
+      updateGame(gameId, { gameId });
+    } catch (err) {
+      console.log(err);
+    }
+  }
   return (
     <>
-      <Head>
-        <html color-mode="light" />
-      </Head>
       <main className="two-section-view">
         <Gameboard
           view={gameboardView}
@@ -68,6 +84,7 @@ export default function ActiveGame() {
             ...createStartingPos('white'),
             ...createStartingPos('black'),
           ]}
+          makeMove={makeMove}
         />
         <Interface
           whiteDetails={{
@@ -94,6 +111,13 @@ export default function ActiveGame() {
       </main>
     </>
   );
+}
+
+async function updateGame(
+  gameId: string | string[] | undefined,
+  updates: ActiveGameUpdateInterface
+) {
+  await axios.put(`${urls.backend}/games/${gameId}`, updates);
 }
 
 function createStartingPos(color: 'white' | 'black'): PiecePos[] {

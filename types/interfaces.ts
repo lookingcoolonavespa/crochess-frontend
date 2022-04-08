@@ -22,3 +22,21 @@ export interface ControlBtnObj {
   text?: string;
   onClick?: () => void;
 }
+
+interface Player {
+  player: string;
+  time: number;
+}
+export interface ActiveGameInterface {
+  white: Player;
+  black: Player;
+  // board: Board;
+  // scoreSheet: string[];
+  time: number;
+  increment: number;
+  turn: 'white' | 'black';
+  turnStart: number;
+}
+export interface ActiveGameUpdateInterface {
+  gameId: string | string[] | undefined;
+}
