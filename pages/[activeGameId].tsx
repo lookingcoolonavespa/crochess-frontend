@@ -12,10 +12,7 @@ import dayjs from 'dayjs';
 import { formatTime } from '../utils/timerStuff';
 
 export default function ActiveGame() {
-  const startTimeRef = useRef({
-    white: 0,
-    black: 0,
-  });
+  const startTimeRef = useRef(0);
   const turnStartRef = useRef<number>(0);
   const [whiteTime, setWhiteTime] = useState(0);
   const [blackTime, setBlackTime] = useState(0);
@@ -39,13 +36,28 @@ export default function ActiveGame() {
             throw new Error('something went wrong fetching game');
 
           const game = await res.data;
-          startTimeRef.current.white = game.white.timeLeft;
-          startTimeRef.current.black = game.black.timeLeft;
 
+          startTimeRef.current = game[game.turn].timeLeft;
           turnStartRef.current = Date.now();
 
-          setWhiteTime(game.white.timeLeft);
-          setBlackTime(game.black.timeLeft);
+          if (game.turnStart) {
+            // if fetch happens during a turn
+            const elapsedTime = Date.now() - game.turnStart;
+            switch (game.turn) {
+              case 'white':
+                setWhiteTime(game.white.timeLeft - elapsedTime);
+                setBlackTime(game.black.timeLeft);
+                break;
+              case 'black':
+                setBlackTime(game.black.timeLeft - elapsedTime);
+                setWhiteTime(game.white.timeLeft);
+                break;
+            }
+          } else {
+            setWhiteTime(game.white.timeLeft);
+            setBlackTime(game.black.timeLeft);
+          }
+
           setTurn(game.turn);
         } catch (err) {
           console.log(err);
@@ -59,14 +71,11 @@ export default function ActiveGame() {
     const socket = io(`${urls.backend}/624ddfd99ce65c46beddcb84`);
 
     socket.on('update', (data) => {
-      if (data['black.timeLeft']) {
-        startTimeRef.current.black = data['black.timeLeft'];
-        setBlackTime(data['black.timeLeft']);
-      } else {
-        startTimeRef.current.white = data['white.timeLeft'];
-        setWhiteTime(data['white.timeLeft']);
-      }
-      startTimeRef.current;
+      const turn = data.turn;
+
+      setWhiteTime(data.white.timeLeft);
+      setBlackTime(data.black.timeLeft);
+      startTimeRef.current = data[turn].timeLeft;
       turnStartRef.current = data.turnStart;
       setTurn(data.turn);
     });
@@ -92,13 +101,13 @@ export default function ActiveGame() {
         />
         <Interface
           whiteDetails={{
-            startTime: startTimeRef.current.white,
+            startTime: startTimeRef.current,
             time: whiteTime,
             setTime: setWhiteTime,
             active: turn === 'white',
           }}
           blackDetails={{
-            startTime: startTimeRef.current.black,
+            startTime: startTimeRef.current,
             time: blackTime,
             setTime: setBlackTime,
             active: turn === 'black',
