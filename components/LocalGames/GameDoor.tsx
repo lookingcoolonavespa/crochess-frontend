@@ -29,6 +29,8 @@ export default function GameDoor({ gameSeek }: GameDoorProps) {
         e.stopPropagation();
         const oppColor = gameSeek.color === 'white' ? 'black' : 'white';
 
+        sessionStorage.setItem('id', user); // used to identify user once they move into a game, useful for if they refresh or disconnect
+
         const [res] = await Promise.all([
           axios.post(`${urls.backend}/games`, {
             [gameSeek.color]: user,

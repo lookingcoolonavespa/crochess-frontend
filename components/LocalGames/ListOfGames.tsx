@@ -9,27 +9,7 @@ import { UserContext } from '../../utils/contexts/UserContext';
 interface ListOfGamesProps {}
 
 export default function ListOfGames({}: ListOfGamesProps) {
-  const { listOfGames } = useListOfGames(
-    [
-      {
-        color: 'white',
-        time: 3,
-        increment: 2,
-        gameType: 'blitz',
-        seeker: 'falafel',
-        _id: '5',
-      },
-      {
-        color: 'white',
-        time: 3,
-        increment: 2,
-        gameType: 'blitz',
-        seeker: 'chuck',
-        _id: '2',
-      },
-    ],
-    useContext(UserContext).setUser
-  );
+  const { listOfGames } = useListOfGames(useContext(UserContext).setUser);
 
   return (
     <div className={styles.main}>

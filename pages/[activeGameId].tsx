@@ -10,8 +10,11 @@ import urls from '../utils/urls';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { formatTime } from '../utils/timerStuff';
+import { Gameboard as Board } from 'crochess-api';
 
 export default function ActiveGame() {
+  const mounted = useRef(false);
+
   const startTimeRef = useRef(0);
   const turnStartRef = useRef<number>(0);
   const [whiteTime, setWhiteTime] = useState(0);
@@ -26,6 +29,14 @@ export default function ActiveGame() {
   const { activeGameId: gameId } = router.query;
   // const gameId = '624ddfd99ce65c46beddcb84';
 
+  useEffect(function setMounted() {
+    mounted.current = true;
+
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
   useEffect(
     function fetchGame() {
       (async () => {
@@ -39,9 +50,13 @@ export default function ActiveGame() {
 
           startTimeRef.current = game[game.turn].timeLeft;
           turnStartRef.current = Date.now();
+          const user = sessionStorage.getItem('id');
+          setGameboardView(() =>
+            game.white.player === user ? 'white' : 'black'
+          );
 
           if (game.turnStart) {
-            // if fetch happens during a turn
+            // if fetch happens in middle of game
             const elapsedTime = Date.now() - game.turnStart;
             switch (game.turn) {
               case 'white':
@@ -67,19 +82,24 @@ export default function ActiveGame() {
     [gameId]
   );
 
-  useEffect(function connectToSocket() {
-    const socket = io(`${urls.backend}/624ddfd99ce65c46beddcb84`);
+  useEffect(
+    function connectToSocket() {
+      const socket = io(`${urls.backend}/games`);
+      if (gameId) socket.emit('joinRoom', gameId);
+      socket.on('update', (data) => {
+        const turn = data.turn;
 
-    socket.on('update', (data) => {
-      const turn = data.turn;
-
-      setWhiteTime(data.white.timeLeft);
-      setBlackTime(data.black.timeLeft);
-      startTimeRef.current = data[turn].timeLeft;
-      turnStartRef.current = data.turnStart;
-      setTurn(data.turn);
-    });
-  }, []);
+        if (!mounted.current) return;
+        console.log(data.white.timeLeft);
+        setWhiteTime(data.white.timeLeft);
+        setBlackTime(data.black.timeLeft);
+        startTimeRef.current = data[turn].timeLeft;
+        turnStartRef.current = data.turnStart;
+        setTurn(data.turn);
+      });
+    },
+    [gameId]
+  );
 
   function makeMove() {
     try {
@@ -93,7 +113,7 @@ export default function ActiveGame() {
       <main className="two-section-view">
         <Gameboard
           view={gameboardView}
-          startingPos={[
+          pieceMap={[
             ...createStartingPos('white'),
             ...createStartingPos('black'),
           ]}

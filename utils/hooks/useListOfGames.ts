@@ -6,11 +6,10 @@ import { GameSeekInterface } from '../../types/interfaces';
 import axios from 'axios';
 
 export default function useListOfGames(
-  init: GameSeekInterface[],
   setUser: React.Dispatch<React.SetStateAction<string>>
 ) {
   const router = useRouter();
-  const [listOfGames, setListOfGames] = useState<GameSeekInterface[]>(init);
+  const [listOfGames, setListOfGames] = useState<GameSeekInterface[]>([]);
 
   const mounted = useRef(false);
   useEffect(() => {
@@ -30,7 +29,7 @@ export default function useListOfGames(
 
         const games = await res.data;
 
-        setListOfGames((prev) => [...prev, ...games]);
+        setListOfGames(games);
       } catch (err) {
         console.log(err);
       }
@@ -41,7 +40,9 @@ export default function useListOfGames(
     function connectToSocket() {
       const socket = io(`${urls.backend}/games`);
 
-      socket.on('connect', () => setUser(socket.id));
+      socket.on('connect', () => {
+        if (mounted.current) setUser(socket.id);
+      });
 
       socket.on('newGame', (game) => {
         setListOfGames((prev) => {
