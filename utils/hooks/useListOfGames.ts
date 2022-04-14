@@ -45,16 +45,17 @@ export default function useListOfGames(
       });
 
       socket.on('newGame', (game) => {
-        setListOfGames((prev) => {
-          const newList = [...prev, game].reduce((acc, curr) => {
-            // push current seeker to top of the list
-            if (curr.seeker === socket.id) acc.unshift(curr);
-            else acc.push(curr);
-            return acc;
-          }, []);
+        if (mounted.current)
+          setListOfGames((prev) => {
+            const newList = [...prev, game].reduce((acc, curr) => {
+              // push current seeker to top of the list
+              if (curr.seeker === socket.id) acc.unshift(curr);
+              else acc.push(curr);
+              return acc;
+            }, []);
 
-          return newList;
-        });
+            return newList;
+          });
       });
 
       socket.on('startGame', (gameId) => {

@@ -11,6 +11,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { formatTime } from '../utils/timerStuff';
 import { Gameboard as Board } from 'crochess-api';
+import { getKeyByValue } from '../utils/misc';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
@@ -23,6 +24,11 @@ export default function ActiveGame() {
   const [gameboardView, setGameboardView] = useState<'white' | 'black'>(
     'white'
   );
+
+  const [playerIds, setPlayerIds] = useState({
+    white: 'id',
+    black: 'id',
+  });
   const [moveHistory, setMoveHistory] = useState([]);
 
   const router = useRouter();
@@ -48,12 +54,20 @@ export default function ActiveGame() {
 
           const game = await res.data;
 
+          const playerIds = {
+            white: game.white.player as string,
+            black: game.black.player as string,
+          };
+          setPlayerIds(playerIds);
           startTimeRef.current = game[game.turn].timeLeft;
           turnStartRef.current = Date.now();
-          const user = sessionStorage.getItem('id');
-          setGameboardView(() =>
-            game.white.player === user ? 'white' : 'black'
-          );
+          setGameboardView(() => {
+            const user = sessionStorage.getItem('id');
+            // check if user is a player or spectator
+            if (user && Object.values(playerIds).includes(user))
+              return game.white.player === user ? 'white' : 'black';
+            else return 'white';
+          });
 
           if (game.turnStart) {
             // if fetch happens in middle of game
@@ -90,7 +104,7 @@ export default function ActiveGame() {
         const turn = data.turn;
 
         if (!mounted.current) return;
-        console.log(data.white.timeLeft);
+
         setWhiteTime(data.white.timeLeft);
         setBlackTime(data.black.timeLeft);
         startTimeRef.current = data[turn].timeLeft;
@@ -103,7 +117,13 @@ export default function ActiveGame() {
 
   function makeMove() {
     try {
-      updateGame(gameId, { gameId });
+      const user = sessionStorage.getItem('id');
+      const activePlayer =
+        user && Object.values(playerIds).includes(user) ? true : false;
+
+      const activeTurn =
+        activePlayer && getKeyByValue(playerIds, user) === turn;
+      if (activeTurn) updateGame(gameId, { gameId });
     } catch (err) {
       console.log(err);
     }
