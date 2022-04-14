@@ -1,5 +1,7 @@
+import { AllPieceMap } from 'crochess-api/dist/types/interfaces';
 import styles from '../../styles/Gameboard.module.scss';
 import { PiecePos } from '../../types/types';
+import { convertPieceMapToArray } from '../../utils/misc';
 import Piece from './Piece';
 
 const cols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -11,7 +13,7 @@ const squares: string[] = cols.reduce((acc: string[], curr) => {
 
 interface GameboardProps {
   view: 'white' | 'black';
-  pieceMap: PiecePos[];
+  pieceMap?: AllPieceMap;
   makeMove: () => void;
 }
 
@@ -20,6 +22,7 @@ export default function Gameboard({
   pieceMap,
   makeMove,
 }: GameboardProps) {
+  const piecePos = (pieceMap && convertPieceMapToArray(pieceMap)) || null;
   return (
     <div className={`${styles.main} ${styles[view]}`}>
       {squares.map((s, i) => {
@@ -48,11 +51,12 @@ export default function Gameboard({
       })}
       {
         // pieces
-        pieceMap.map((p, i) => {
-          return (
-            <Piece key={i} color={p.color} square={p.square} type={p.piece} />
-          );
-        })
+        piecePos &&
+          piecePos.map((p, i) => {
+            return (
+              <Piece key={i} color={p.color} square={p.square} type={p.piece} />
+            );
+          })
       }
     </div>
   );

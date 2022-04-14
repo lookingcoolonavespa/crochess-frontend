@@ -11,6 +11,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { formatTime } from '../utils/timerStuff';
 import { Gameboard as Board } from 'crochess-api';
+import { AllPieceMap } from 'crochess-api/dist/types/interfaces';
 import { getKeyByValue } from '../utils/misc';
 
 export default function ActiveGame() {
@@ -29,6 +30,7 @@ export default function ActiveGame() {
     white: 'id',
     black: 'id',
   });
+  const [pieceMap, setPieceMap] = useState<AllPieceMap>();
   const [moveHistory, setMoveHistory] = useState([]);
 
   const router = useRouter();
@@ -67,6 +69,10 @@ export default function ActiveGame() {
             if (user && Object.values(playerIds).includes(user))
               return game.white.player === user ? 'white' : 'black';
             else return 'white';
+          });
+          setPieceMap(() => {
+            console.log(game.board);
+            return Board(new Map(Object.entries(game.board))).get.pieceMap();
           });
 
           if (game.turnStart) {
@@ -133,10 +139,7 @@ export default function ActiveGame() {
       <main className="two-section-view">
         <Gameboard
           view={gameboardView}
-          pieceMap={[
-            ...createStartingPos('white'),
-            ...createStartingPos('black'),
-          ]}
+          pieceMap={pieceMap}
           makeMove={makeMove}
         />
         <Interface
