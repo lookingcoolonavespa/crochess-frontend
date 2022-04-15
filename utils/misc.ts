@@ -1,4 +1,5 @@
 import { AllPieceMap } from 'crochess-api/dist/types/interfaces';
+import { Board } from 'crochess-api/dist/types/types';
 import { PiecePos } from '../types/types';
 
 export function createControlBtnObj(
@@ -42,4 +43,14 @@ export function convertPieceMapToArray(pieceMap: AllPieceMap) {
   }
 
   return array;
+}
+
+export function convertMapToObj(map: Board) {
+  let obj: {
+    [key: string]: any;
+  } = {};
+  for (const [key, value] of map.entries()) {
+    obj[key] = value;
+  }
+  return obj;
 }

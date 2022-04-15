@@ -1,4 +1,7 @@
-import { AllPieceMap } from 'crochess-api/dist/types/interfaces';
+import { AllPieceMap, GameboardObj } from 'crochess-api/dist/types/interfaces';
+import { Moves, Square } from 'crochess-api/dist/types/types';
+
+import React, { useState } from 'react';
 import styles from '../../styles/Gameboard.module.scss';
 import { PiecePos } from '../../types/types';
 import { convertPieceMapToArray } from '../../utils/misc';
@@ -13,16 +16,20 @@ const squares: string[] = cols.reduce((acc: string[], curr) => {
 
 interface GameboardProps {
   view: 'white' | 'black';
-  pieceMap?: AllPieceMap;
-  makeMove: () => void;
+  board?: GameboardObj;
+  makeMove: (square: Square) => void;
+  setPieceToMove: React.Dispatch<React.SetStateAction<Square | null>>;
 }
 
-export default function Gameboard({
+export default React.memo(function Gameboard({
   view,
-  pieceMap,
+  board,
   makeMove,
+  setPieceToMove,
 }: GameboardProps) {
-  const piecePos = (pieceMap && convertPieceMapToArray(pieceMap)) || null;
+  const [highlightedSquares, setHighlightedSquares] = useState<Moves>([]);
+  const piecePos =
+    (board && convertPieceMapToArray(board.get.pieceMap())) || null;
   return (
     <div className={`${styles.main} ${styles[view]}`}>
       {squares.map((s, i) => {
@@ -33,16 +40,23 @@ export default function Gameboard({
         const startRow = view === 'white' ? row === '1' : row === '8';
         const endCol = col === 'h';
 
+        const classNames = [styles.boardSquare];
+        if (evenColumn) classNames.push(styles['col-even']);
+        else classNames.push(styles['col-odd']);
+        if (highlightedSquares.includes(s)) classNames.push(styles.active);
+
         return (
           <div
             key={i}
-            className={`${styles.boardSquare} ${
-              evenColumn ? `${styles['col-even']}` : `${styles['col-odd']}`
-            }`}
+            className={classNames.join(' ')}
             style={{
               gridArea: s,
             }}
-            onClick={makeMove}
+            onClick={() => {
+              setPieceToMove(null);
+              setHighlightedSquares([]);
+              makeMove(s);
+            }}
           >
             {startRow && <div className={`${styles.file} label`}>{col}</div>}
             {endCol && <div className={`${styles.rank} label`}>{row}</div>}
@@ -54,10 +68,21 @@ export default function Gameboard({
         piecePos &&
           piecePos.map((p, i) => {
             return (
-              <Piece key={i} color={p.color} square={p.square} type={p.piece} />
+              <Piece
+                key={i}
+                color={p.color}
+                square={p.square}
+                type={p.piece}
+                onClick={function displayLegalMoves() {
+                  setPieceToMove(p.square);
+                  setHighlightedSquares(
+                    board?.at(p.square).getLegalMoves() as Moves
+                  );
+                }}
+              />
             );
           })
       }
     </div>
   );
-}
+});

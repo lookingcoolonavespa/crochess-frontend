@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Gameboard from '../components/Game/Gameboard';
 import Interface from '../components/Game/Interface';
 import { PiecePos, PieceType } from '../types/types';
@@ -11,11 +11,17 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { formatTime } from '../utils/timerStuff';
 import { Gameboard as Board } from 'crochess-api';
-import { AllPieceMap } from 'crochess-api/dist/types/interfaces';
-import { getKeyByValue } from '../utils/misc';
+import { Board as BoardType, Square } from 'crochess-api/dist/types/types';
+import { AllPieceMap, GameboardObj } from 'crochess-api/dist/types/interfaces';
+import { getKeyByValue, convertMapToObj } from '../utils/misc';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
+
+  const [playerIds, setPlayerIds] = useState({
+    white: 'id',
+    black: 'id',
+  });
 
   const startTimeRef = useRef(0);
   const turnStartRef = useRef<number>(0);
@@ -26,12 +32,10 @@ export default function ActiveGame() {
     'white'
   );
 
-  const [playerIds, setPlayerIds] = useState({
-    white: 'id',
-    black: 'id',
-  });
-  const [pieceMap, setPieceMap] = useState<AllPieceMap>();
+  const [gameboard, setGameboard] = useState<GameboardObj>();
   const [moveHistory, setMoveHistory] = useState([]);
+
+  const [pieceToMove, setPieceToMove] = useState<Square | null>(null);
 
   const router = useRouter();
   const { activeGameId: gameId } = router.query;
@@ -47,6 +51,7 @@ export default function ActiveGame() {
 
   useEffect(
     function fetchGame() {
+      let runCount = 0;
       (async () => {
         try {
           if (!gameId) return;
@@ -70,10 +75,7 @@ export default function ActiveGame() {
               return game.white.player === user ? 'white' : 'black';
             else return 'white';
           });
-          setPieceMap(() => {
-            console.log(game.board);
-            return Board(new Map(Object.entries(game.board))).get.pieceMap();
-          });
+          setGameboard(Board(new Map(Object.entries(game.board)), game.checks));
 
           if (game.turnStart) {
             // if fetch happens in middle of game
@@ -104,12 +106,17 @@ export default function ActiveGame() {
 
   useEffect(
     function connectToSocket() {
+      let runCount = 0;
       const socket = io(`${urls.backend}/games`);
+
       if (gameId) socket.emit('joinRoom', gameId);
+
       socket.on('update', (data) => {
         const turn = data.turn;
 
         if (!mounted.current) return;
+
+        setGameboard(Board(new Map(Object.entries(data.board)), data.checks));
 
         setWhiteTime(data.white.timeLeft);
         setBlackTime(data.black.timeLeft);
@@ -121,26 +128,40 @@ export default function ActiveGame() {
     [gameId]
   );
 
-  function makeMove() {
-    try {
-      const user = sessionStorage.getItem('id');
-      const activePlayer =
-        user && Object.values(playerIds).includes(user) ? true : false;
+  const makeMove = useCallback(
+    (square: Square) => {
+      try {
+        if (!gameboard || !pieceToMove) return;
 
-      const activeTurn =
-        activePlayer && getKeyByValue(playerIds, user) === turn;
-      if (activeTurn) updateGame(gameId, { gameId });
-    } catch (err) {
-      console.log(err);
-    }
-  }
+        const user = sessionStorage.getItem('id');
+        const activePlayer =
+          user && Object.values(playerIds).includes(user) ? true : false;
+
+        const activeTurn =
+          activePlayer && getKeyByValue(playerIds, user) === turn;
+
+        const legalMoves = gameboard.at(pieceToMove).getLegalMoves();
+
+        if (activeTurn && legalMoves.includes(square)) {
+          gameboard.from(pieceToMove).to(square);
+        }
+        console.log(JSON.parse(JSON.stringify(gameboard.board)));
+        updateGame(gameId, { gameId, board: convertMapToObj(gameboard.board) });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [gameId, playerIds, turn, gameboard, pieceToMove]
+  );
+
   return (
     <>
       <main className="two-section-view">
         <Gameboard
           view={gameboardView}
-          pieceMap={pieceMap}
+          board={gameboard}
           makeMove={makeMove}
+          setPieceToMove={setPieceToMove}
         />
         <Interface
           whiteDetails={{
@@ -174,38 +195,4 @@ async function updateGame(
   updates: ActiveGameUpdateInterface
 ) {
   await axios.put(`${urls.backend}/games/${gameId}`, updates);
-}
-
-function createStartingPos(color: 'white' | 'black'): PiecePos[] {
-  const cols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-
-  const startRank = color === 'white' ? 1 : 8;
-  const pawnRank = color === 'white' ? 2 : 7;
-
-  const piecePosition: { [key: string]: PieceType } = {
-    a: 'rook',
-    b: 'knight',
-    c: 'bishop',
-    d: 'queen',
-    e: 'king',
-    f: 'bishop',
-    g: 'knight',
-    h: 'rook',
-  };
-
-  const pieces: PiecePos[] = cols.map((c) => {
-    const square = c + startRank;
-    const piece = piecePosition[c];
-
-    return { square, piece, color };
-  });
-
-  const pawns: PiecePos[] = cols.map((c) => {
-    const square = c + pawnRank;
-    const piece = 'pawn';
-
-    return { square, piece, color };
-  });
-
-  return [...pieces, ...pawns];
 }

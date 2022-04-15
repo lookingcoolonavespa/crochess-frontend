@@ -1,3 +1,5 @@
+import { SquareObj } from 'crochess-api/dist/types/interfaces';
+import { Board } from 'crochess-api/dist/types/types';
 import { GameType, ColorOptions } from './types';
 
 export interface GameSeekInterface {
@@ -39,4 +41,7 @@ export interface ActiveGameInterface {
 }
 export interface ActiveGameUpdateInterface {
   gameId: string | string[] | undefined;
+  board: {
+    [key: string]: SquareObj;
+  };
 }
