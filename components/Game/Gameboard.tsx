@@ -18,6 +18,7 @@ interface GameboardProps {
   view: 'white' | 'black';
   piecePos: PiecePos[];
   makeMove: (square: Square) => void;
+  pieceToMove: Square | null;
   setPieceToMove: React.Dispatch<React.SetStateAction<Square | null>>;
   getLegalMoves: (square: Square) => Moves;
 }
@@ -26,11 +27,11 @@ export default React.memo(function Gameboard({
   view,
   piecePos,
   makeMove,
+  pieceToMove,
   setPieceToMove,
   getLegalMoves,
 }: GameboardProps) {
   const [highlightedSquares, setHighlightedSquares] = useState<Moves>([]);
-  console.log(piecePos);
   return (
     <div className={`${styles.main} ${styles[view]}`}>
       {squares.map((s, i) => {
@@ -75,6 +76,8 @@ export default React.memo(function Gameboard({
                 square={p.square}
                 type={p.piece}
                 onClick={function displayLegalMoves() {
+                  if (p.square === pieceToMove)
+                    return setHighlightedSquares([]);
                   setPieceToMove(p.square);
                   setHighlightedSquares(getLegalMoves(p.square));
                 }}

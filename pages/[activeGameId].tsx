@@ -175,7 +175,6 @@ export default function ActiveGame() {
 
         if (activeTurn) {
           gameboard.from(pieceToMove).to(square);
-          console.log(gameboard.board);
           setBoardState((prev) => ({ ...prev, board: gameboard.board }));
         }
         await axios.put(`${urls.backend}/games/${gameId}`, {
@@ -217,8 +216,10 @@ export default function ActiveGame() {
           view={gameboardView}
           piecePos={piecePos}
           makeMove={makeMove}
+          pieceToMove={pieceToMove}
           setPieceToMove={setPieceToMove}
           getLegalMoves={getLegalMoves}
+          activePlayer={getKeyByValue(playerIds, user)}
         />
         <Interface
           whiteDetails={{
