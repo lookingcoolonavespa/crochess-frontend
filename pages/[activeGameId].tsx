@@ -84,7 +84,7 @@ export default function ActiveGame() {
           };
           setPlayerIds(playerIds);
           startTimeRef.current = game[game.turn].timeLeft;
-          turnStartRef.current = Date.now();
+          turnStartRef.current = game.turnStart || Date.now();
           setGameboardView(() => {
             const user = sessionStorage.getItem('id');
             // check if user is a player or spectator
