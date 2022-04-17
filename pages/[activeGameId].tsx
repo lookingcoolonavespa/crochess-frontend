@@ -1,19 +1,26 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Gameboard from '../components/Game/Gameboard';
 import Interface from '../components/Game/Interface';
 import { PiecePos, PieceType } from '../types/types';
-import { ActiveGameUpdateInterface } from '../types/interfaces';
 import { io } from 'socket.io-client';
 import urls from '../utils/urls';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { formatTime } from '../utils/timerStuff';
-import { Gameboard as Board } from 'crochess-api';
-import { Board as BoardType, Square } from 'crochess-api/dist/types/types';
-import { AllPieceMap, GameboardObj } from 'crochess-api/dist/types/interfaces';
-import { getKeyByValue, convertMapToObj } from '../utils/misc';
+import { Gameboard as Board, Castle } from 'crochess-api';
+import {
+  Board as BoardType,
+  Moves,
+  Square,
+} from 'crochess-api/dist/types/types';
+import {
+  AllPieceMap,
+  GameboardObj,
+  CastleObj,
+} from 'crochess-api/dist/types/interfaces';
+import { getKeyByValue, convertPieceMapToArray } from '../utils/misc';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
@@ -32,7 +39,18 @@ export default function ActiveGame() {
     'white'
   );
 
-  const [gameboard, setGameboard] = useState<GameboardObj>();
+  const [boardState, setBoardState] = useState<{
+    board: BoardType;
+    checks: Square[];
+    castleRights: CastleObj;
+  }>({
+    board: Board().board,
+    checks: [],
+    castleRights: {
+      white: { kingside: false, queenside: false },
+      black: { kingside: false, queenside: false },
+    },
+  });
   const [moveHistory, setMoveHistory] = useState([]);
 
   const [pieceToMove, setPieceToMove] = useState<Square | null>(null);
@@ -51,7 +69,6 @@ export default function ActiveGame() {
 
   useEffect(
     function fetchGame() {
-      let runCount = 0;
       (async () => {
         try {
           if (!gameId) return;
@@ -75,7 +92,11 @@ export default function ActiveGame() {
               return game.white.player === user ? 'white' : 'black';
             else return 'white';
           });
-          setGameboard(Board(new Map(Object.entries(game.board)), game.checks));
+          setBoardState({
+            board: new Map(Object.entries(game.board)),
+            checks: game.checks,
+            castleRights: game.castle,
+          });
 
           if (game.turnStart) {
             // if fetch happens in middle of game
@@ -116,7 +137,11 @@ export default function ActiveGame() {
 
         if (!mounted.current) return;
 
-        setGameboard(Board(new Map(Object.entries(data.board)), data.checks));
+        setBoardState({
+          board: new Map(Object.entries(data.board)),
+          checks: data.checks,
+          castleRights: data.castle,
+        });
 
         setWhiteTime(data.white.timeLeft);
         setBlackTime(data.black.timeLeft);
@@ -129,10 +154,16 @@ export default function ActiveGame() {
   );
 
   const makeMove = useCallback(
-    (square: Square) => {
-      try {
-        if (!gameboard || !pieceToMove) return;
+    async (square: Square) => {
+      if (!boardState || !pieceToMove) return;
 
+      const gameboard = Board(
+        boardState.board,
+        boardState.checks,
+        boardState.castleRights
+      );
+
+      try {
         const user = sessionStorage.getItem('id');
         const activePlayer =
           user && Object.values(playerIds).includes(user) ? true : false;
@@ -140,28 +171,54 @@ export default function ActiveGame() {
         const activeTurn =
           activePlayer && getKeyByValue(playerIds, user) === turn;
 
-        const legalMoves = gameboard.at(pieceToMove).getLegalMoves();
+        // const legalMoves = gameboard.at(pieceToMove).getLegalMoves();
 
-        if (activeTurn && legalMoves.includes(square)) {
+        if (activeTurn) {
           gameboard.from(pieceToMove).to(square);
+          console.log(gameboard.board);
+          setBoardState((prev) => ({ ...prev, board: gameboard.board }));
         }
-        console.log(JSON.parse(JSON.stringify(gameboard.board)));
-        updateGame(gameId, { gameId, board: convertMapToObj(gameboard.board) });
+        await axios.put(`${urls.backend}/games/${gameId}`, {
+          gameId,
+          from: pieceToMove,
+          to: square,
+        });
       } catch (err) {
         console.log(err);
+        gameboard.from(square).to(pieceToMove);
+        setBoardState((prev) => ({ ...prev, board: gameboard.board }));
       }
     },
-    [gameId, playerIds, turn, gameboard, pieceToMove]
+    [gameId, playerIds, turn, boardState, pieceToMove]
   );
+
+  const getLegalMoves = useCallback(
+    (square: Square): Moves =>
+      Board(boardState.board, boardState.checks, boardState.castleRights)
+        .at(square)
+        .getLegalMoves(),
+    [boardState]
+  );
+
+  const piecePos = useMemo(() => {
+    return convertPieceMapToArray(
+      Board(
+        boardState.board,
+        boardState.checks,
+        boardState.castleRights
+      ).get.pieceMap()
+    );
+  }, [boardState]);
 
   return (
     <>
       <main className="two-section-view">
         <Gameboard
           view={gameboardView}
-          board={gameboard}
+          piecePos={piecePos}
           makeMove={makeMove}
           setPieceToMove={setPieceToMove}
+          getLegalMoves={getLegalMoves}
         />
         <Interface
           whiteDetails={{
@@ -188,11 +245,4 @@ export default function ActiveGame() {
       </main>
     </>
   );
-}
-
-async function updateGame(
-  gameId: string | string[] | undefined,
-  updates: ActiveGameUpdateInterface
-) {
-  await axios.put(`${urls.backend}/games/${gameId}`, updates);
 }

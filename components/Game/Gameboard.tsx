@@ -16,20 +16,21 @@ const squares: string[] = cols.reduce((acc: string[], curr) => {
 
 interface GameboardProps {
   view: 'white' | 'black';
-  board?: GameboardObj;
+  piecePos: PiecePos[];
   makeMove: (square: Square) => void;
   setPieceToMove: React.Dispatch<React.SetStateAction<Square | null>>;
+  getLegalMoves: (square: Square) => Moves;
 }
 
 export default React.memo(function Gameboard({
   view,
-  board,
+  piecePos,
   makeMove,
   setPieceToMove,
+  getLegalMoves,
 }: GameboardProps) {
   const [highlightedSquares, setHighlightedSquares] = useState<Moves>([]);
-  const piecePos =
-    (board && convertPieceMapToArray(board.get.pieceMap())) || null;
+  console.log(piecePos);
   return (
     <div className={`${styles.main} ${styles[view]}`}>
       {squares.map((s, i) => {
@@ -75,9 +76,7 @@ export default React.memo(function Gameboard({
                 type={p.piece}
                 onClick={function displayLegalMoves() {
                   setPieceToMove(p.square);
-                  setHighlightedSquares(
-                    board?.at(p.square).getLegalMoves() as Moves
-                  );
+                  setHighlightedSquares(getLegalMoves(p.square));
                 }}
               />
             );
