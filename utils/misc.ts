@@ -1,6 +1,7 @@
 import { AllPieceMap } from 'crochess-api/dist/types/interfaces';
 import { Board } from 'crochess-api/dist/types/types';
 import { PiecePos } from '../types/types';
+import urls from './urls';
 
 export function createControlBtnObj(
   src?: string,
@@ -53,4 +54,8 @@ export function convertMapToObj(map: Board) {
     obj[key] = value;
   }
   return obj;
+}
+
+export function setIdToCookie(id: string) {
+  document.cookie = `id=${id}; max-age=${60 * 60 * 24}; SameSite=None`;
 }

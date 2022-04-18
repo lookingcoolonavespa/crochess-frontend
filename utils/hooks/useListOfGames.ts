@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 import urls from '../urls';
 import { GameSeekInterface } from '../../types/interfaces';
 import axios from 'axios';
+import { setIdToCookie } from '../misc';
 
 export default function useListOfGames(
   setUser: React.Dispatch<React.SetStateAction<string>>
@@ -58,8 +59,10 @@ export default function useListOfGames(
           });
       });
 
-      socket.on('startGame', (gameId) => {
-        router.push(`/${gameId}`);
+      socket.on('startGame', (data) => {
+        console.log(data.cookieId);
+        setIdToCookie(data.cookieId);
+        router.push(`/${data.gameId}`);
       });
 
       socket.on('deletedGame', (d) => {

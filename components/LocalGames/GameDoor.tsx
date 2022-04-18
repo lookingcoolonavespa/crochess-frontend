@@ -5,6 +5,7 @@ import styles from '../../styles/GameDoor.module.scss';
 import axios from 'axios';
 import urls from '../../utils/urls';
 import { GameSeekInterface } from '../../types/interfaces';
+import { setIdToCookie } from '../../utils/misc';
 
 interface GameDoorProps {
   gameSeek: GameSeekInterface;
@@ -46,8 +47,9 @@ export default function GameDoor({ gameSeek }: GameDoorProps) {
         if (res.status !== 200 || res.statusText !== 'OK')
           throw new Error('something went wrong fetching the game');
 
-        const gameId = await res.data;
-        router.push(`/${gameId}`);
+        const data = await res.data;
+        setIdToCookie(data.cookieId);
+        router.push(`/${data.gameId}`);
       }}
     >
       {[

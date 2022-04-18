@@ -60,6 +60,7 @@ export default function ActiveGame() {
   // const gameId = '624ddfd99ce65c46beddcb84';
 
   useEffect(function setMounted() {
+    console.log(document.cookie);
     mounted.current = true;
 
     return () => {
@@ -127,7 +128,6 @@ export default function ActiveGame() {
 
   useEffect(
     function connectToSocket() {
-      let runCount = 0;
       const socket = io(`${urls.backend}/games`);
 
       if (gameId) socket.emit('joinRoom', gameId);
@@ -177,11 +177,17 @@ export default function ActiveGame() {
           gameboard.from(pieceToMove).to(square);
           setBoardState((prev) => ({ ...prev, board: gameboard.board }));
         }
-        await axios.put(`${urls.backend}/games/${gameId}`, {
-          gameId,
-          from: pieceToMove,
-          to: square,
-        });
+        await axios.put(
+          `${urls.backend}/games/${gameId}`,
+          {
+            gameId,
+            from: pieceToMove,
+            to: square,
+          },
+          {
+            withCredentials: true,
+          }
+        );
       } catch (err) {
         console.log(err);
         gameboard.from(square).to(pieceToMove);
@@ -219,7 +225,7 @@ export default function ActiveGame() {
           pieceToMove={pieceToMove}
           setPieceToMove={setPieceToMove}
           getLegalMoves={getLegalMoves}
-          activePlayer={getKeyByValue(playerIds, user)}
+          // activePlayer={getKeyByValue(playerIds, user)}
         />
         <Interface
           whiteDetails={{
