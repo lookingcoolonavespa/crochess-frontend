@@ -56,6 +56,49 @@ export function convertMapToObj(map: Board) {
   return obj;
 }
 
-export function setIdToCookie(id: string) {
-  document.cookie = `id=${id}; max-age=${60 * 60 * 24}; SameSite=None`;
+export function setIdToCookie(
+  gameId: string,
+  color: 'white' | 'black',
+  id: string
+) {
+  document.cookie = `${gameId}(${color})=${id}; max-age=${60 * 60 * 24};`;
+}
+
+export function parseCookies(cookie: string): { [key: string]: string } {
+  const cookies = cookie.split('; ');
+  return cookies
+    .map((c) => c.split('='))
+    .reduce<{ [key: string]: string }>((acc, curr) => {
+      const [key, value] = curr;
+      acc[key] = value;
+      return acc;
+    }, {});
+}
+
+export function getActivePlayer(
+  gameId: string,
+  whiteId: string,
+  blackId: string
+) {
+  const cookieObj = parseCookies(document.cookie);
+
+  switch (true) {
+    case cookieObj[`${gameId}(white)`] === whiteId &&
+      cookieObj[`${gameId}(black)`] === blackId: {
+      const user = sessionStorage.getItem(gameId);
+      console.log(user);
+      if (user === whiteId) return 'white';
+      if (user === blackId) return 'black';
+      return null;
+      break;
+    }
+    case cookieObj[`${gameId}(white)`] === whiteId: {
+      return 'white';
+    }
+    case cookieObj[`${gameId}(black)`] === blackId: {
+      return 'black';
+    }
+    default:
+      return null;
+  }
 }

@@ -30,8 +30,6 @@ export default function GameDoor({ gameSeek }: GameDoorProps) {
         e.stopPropagation();
         const oppColor = gameSeek.color === 'white' ? 'black' : 'white';
 
-        sessionStorage.setItem('id', user); // used to identify user once they move into a game, useful for if they refresh or disconnect
-
         const [res] = await Promise.all([
           axios.post(`${urls.backend}/games`, {
             [gameSeek.color]: user,
@@ -48,7 +46,8 @@ export default function GameDoor({ gameSeek }: GameDoorProps) {
           throw new Error('something went wrong fetching the game');
 
         const data = await res.data;
-        setIdToCookie(data.cookieId);
+        sessionStorage.setItem(data.gameId, user); // used to identify user once they move into a game, useful for if they refresh or disconnect
+        setIdToCookie(data.gameId, data.color, data.cookieId);
         router.push(`/${data.gameId}`);
       }}
     >

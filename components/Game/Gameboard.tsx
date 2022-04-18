@@ -55,8 +55,8 @@ export default React.memo(function Gameboard({
               gridArea: s,
             }}
             onClick={() => {
-              setPieceToMove(null);
               setHighlightedSquares([]);
+              setPieceToMove(null);
               makeMove(s);
             }}
           >

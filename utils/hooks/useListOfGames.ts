@@ -60,8 +60,8 @@ export default function useListOfGames(
       });
 
       socket.on('startGame', (data) => {
-        console.log(data.cookieId);
-        setIdToCookie(data.cookieId);
+        sessionStorage.setItem(data.gameId, socket.id); // used to identify user once they move into a game, useful for if they refresh or disconnect
+        setIdToCookie(data.gameId, data.color, data.cookieId);
         router.push(`/${data.gameId}`);
       });
 

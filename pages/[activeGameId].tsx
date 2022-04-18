@@ -20,15 +20,15 @@ import {
   GameboardObj,
   CastleObj,
 } from 'crochess-api/dist/types/interfaces';
-import { getKeyByValue, convertPieceMapToArray } from '../utils/misc';
+import {
+  getKeyByValue,
+  convertPieceMapToArray,
+  parseCookies,
+  getActivePlayer,
+} from '../utils/misc';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
-
-  const [playerIds, setPlayerIds] = useState({
-    white: 'id',
-    black: 'id',
-  });
 
   const startTimeRef = useRef(0);
   const turnStartRef = useRef<number>(0);
@@ -39,6 +39,7 @@ export default function ActiveGame() {
     'white'
   );
 
+  const activePlayerRef = useRef<'white' | 'black' | null>(null);
   const [boardState, setBoardState] = useState<{
     board: BoardType;
     checks: Square[];
@@ -60,7 +61,6 @@ export default function ActiveGame() {
   // const gameId = '624ddfd99ce65c46beddcb84';
 
   useEffect(function setMounted() {
-    console.log(document.cookie);
     mounted.current = true;
 
     return () => {
@@ -79,20 +79,15 @@ export default function ActiveGame() {
 
           const game = await res.data;
 
-          const playerIds = {
-            white: game.white.player as string,
-            black: game.black.player as string,
-          };
-          setPlayerIds(playerIds);
           startTimeRef.current = game[game.turn].timeLeft;
           turnStartRef.current = game.turnStart || Date.now();
-          setGameboardView(() => {
-            const user = sessionStorage.getItem('id');
-            // check if user is a player or spectator
-            if (user && Object.values(playerIds).includes(user))
-              return game.white.player === user ? 'white' : 'black';
-            else return 'white';
-          });
+
+          activePlayerRef.current = getActivePlayer(
+            gameId as string,
+            game.white.player,
+            game.black.player
+          );
+          setGameboardView(() => activePlayerRef.current || 'white');
           setBoardState({
             board: new Map(Object.entries(game.board)),
             checks: game.checks,
@@ -163,20 +158,15 @@ export default function ActiveGame() {
         boardState.castleRights
       );
 
+      if (gameboard.at(pieceToMove).piece?.color !== activePlayerRef.current)
+        return;
+      if (!gameboard.at(pieceToMove).getLegalMoves().includes(square)) return;
+      if (activePlayerRef.current !== turn) return;
+
       try {
-        const user = sessionStorage.getItem('id');
-        const activePlayer =
-          user && Object.values(playerIds).includes(user) ? true : false;
+        gameboard.from(pieceToMove).to(square);
+        setBoardState((prev) => ({ ...prev, board: gameboard.board }));
 
-        const activeTurn =
-          activePlayer && getKeyByValue(playerIds, user) === turn;
-
-        // const legalMoves = gameboard.at(pieceToMove).getLegalMoves();
-
-        if (activeTurn) {
-          gameboard.from(pieceToMove).to(square);
-          setBoardState((prev) => ({ ...prev, board: gameboard.board }));
-        }
         await axios.put(
           `${urls.backend}/games/${gameId}`,
           {
@@ -194,7 +184,7 @@ export default function ActiveGame() {
         setBoardState((prev) => ({ ...prev, board: gameboard.board }));
       }
     },
-    [gameId, playerIds, turn, boardState, pieceToMove]
+    [gameId, turn, boardState, pieceToMove]
   );
 
   const getLegalMoves = useCallback(
@@ -225,7 +215,6 @@ export default function ActiveGame() {
           pieceToMove={pieceToMove}
           setPieceToMove={setPieceToMove}
           getLegalMoves={getLegalMoves}
-          // activePlayer={getKeyByValue(playerIds, user)}
         />
         <Interface
           whiteDetails={{

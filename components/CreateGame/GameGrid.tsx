@@ -37,7 +37,6 @@ const GameGrid = ({ className }: GameGridProps) => {
               )
                 return;
               setActiveSearch(i);
-              sessionStorage.setItem('id', user); // used to identify user once they move into a game, useful for if they refresh or disconnect
               createGame(tc.time, tc.increment, 'random', user, tc.type);
             }}
           />
