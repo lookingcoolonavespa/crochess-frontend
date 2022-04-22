@@ -215,6 +215,7 @@ export default function ActiveGame() {
           pieceToMove={pieceToMove}
           setPieceToMove={setPieceToMove}
           getLegalMoves={getLegalMoves}
+          activePlayer={activePlayerRef.current}
         />
         <Interface
           whiteDetails={{

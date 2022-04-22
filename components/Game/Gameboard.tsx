@@ -21,6 +21,7 @@ interface GameboardProps {
   pieceToMove: Square | null;
   setPieceToMove: React.Dispatch<React.SetStateAction<Square | null>>;
   getLegalMoves: (square: Square) => Moves;
+  activePlayer: 'white' | 'black' | null;
 }
 
 export default React.memo(function Gameboard({
@@ -30,8 +31,14 @@ export default React.memo(function Gameboard({
   pieceToMove,
   setPieceToMove,
   getLegalMoves,
+  activePlayer,
 }: GameboardProps) {
   const [highlightedSquares, setHighlightedSquares] = useState<Moves>([]);
+
+  function resetPieceToMove() {
+    setPieceToMove(null);
+    setHighlightedSquares([]);
+  }
   return (
     <div className={`${styles.main} ${styles[view]}`}>
       {squares.map((s, i) => {
@@ -55,8 +62,7 @@ export default React.memo(function Gameboard({
               gridArea: s,
             }}
             onClick={() => {
-              setHighlightedSquares([]);
-              setPieceToMove(null);
+              resetPieceToMove();
               makeMove(s);
             }}
           >
@@ -76,10 +82,19 @@ export default React.memo(function Gameboard({
                 square={p.square}
                 type={p.piece}
                 onClick={function displayLegalMoves() {
-                  if (p.square === pieceToMove)
-                    return setHighlightedSquares([]);
-                  setPieceToMove(p.square);
-                  setHighlightedSquares(getLegalMoves(p.square));
+                  if (activePlayer !== null && p.color !== activePlayer) {
+                    // if player is not spectator and piece doesnt belong to active player
+                    if (pieceToMove) {
+                      resetPieceToMove();
+                      makeMove(p.square);
+                    } else return;
+                  }
+                  if (p.square === pieceToMove) {
+                    resetPieceToMove();
+                  } else {
+                    setPieceToMove(p.square);
+                    setHighlightedSquares(getLegalMoves(p.square));
+                  }
                 }}
               />
             );
