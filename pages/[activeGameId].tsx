@@ -52,7 +52,7 @@ export default function ActiveGame() {
       black: { kingside: false, queenside: false },
     },
   });
-  const [moveHistory, setMoveHistory] = useState([]);
+  const [moveHistory, setMoveHistory] = useState<string[][]>([]);
 
   const [pieceToMove, setPieceToMove] = useState<Square | null>(null);
 
@@ -93,6 +93,7 @@ export default function ActiveGame() {
             checks: game.checks,
             castleRights: game.castle,
           });
+          setMoveHistory(game.history);
 
           if (game.turnStart) {
             // if fetch happens in middle of game
@@ -137,6 +138,7 @@ export default function ActiveGame() {
           checks: data.checks,
           castleRights: data.castle,
         });
+        setMoveHistory(data.history);
 
         setWhiteTime(data.white.timeLeft);
         setBlackTime(data.black.timeLeft);
@@ -231,7 +233,7 @@ export default function ActiveGame() {
             active: turn === 'black',
           }}
           turnStart={turnStartRef.current}
-          history={[]}
+          history={moveHistory}
           view={gameboardView}
           flipBoard={() =>
             setGameboardView((prev) => {

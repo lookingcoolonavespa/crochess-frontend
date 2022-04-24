@@ -9,7 +9,7 @@ import flagIcon from '../../public/icons/flag-fill.svg';
 interface InterfaceProps {
   whiteDetails: colorDetails;
   blackDetails: colorDetails;
-  history: [];
+  history: string[][];
   view: 'white' | 'black';
   flipBoard: () => void;
   turnStart: number;
@@ -40,17 +40,7 @@ export default function Interface({
         turnStart={turnStart}
         {...topTimer}
       />
-      <History
-        moves={[
-          ['a1', 'b2'],
-          ['a1', 'b2'],
-          ['a1', 'b2'],
-          ['a1', 'b2'],
-          ['a1', 'b2'],
-          ['a1', 'b2'],
-        ]}
-        flipBoard={flipBoard}
-      />
+      <History moves={history} flipBoard={flipBoard} />
       <Controls
         className={styles.main_controls}
         list={[
