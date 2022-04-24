@@ -87,6 +87,7 @@ export default React.memo(function Gameboard({
                     if (pieceToMove) {
                       resetPieceToMove();
                       makeMove(p.square);
+                      return;
                     } else return;
                   }
                   if (p.square === pieceToMove) {
