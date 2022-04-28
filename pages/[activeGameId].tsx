@@ -3,29 +3,17 @@ import { useRouter } from 'next/router';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Gameboard from '../components/Game/Gameboard';
 import Interface from '../components/Game/Interface';
-import { PiecePos, PieceType } from '../types/types';
 import { io } from 'socket.io-client';
 import urls from '../utils/urls';
 import axios from 'axios';
-import dayjs from 'dayjs';
-import { formatTime } from '../utils/timerStuff';
-import { Gameboard as Board, Castle } from 'crochess-api';
+import { Gameboard as Board } from 'crochess-api';
 import {
   Board as BoardType,
   Moves,
   Square,
 } from 'crochess-api/dist/types/types';
-import {
-  AllPieceMap,
-  GameboardObj,
-  CastleObj,
-} from 'crochess-api/dist/types/interfaces';
-import {
-  getKeyByValue,
-  convertPieceMapToArray,
-  parseCookies,
-  getActivePlayer,
-} from '../utils/misc';
+import { CastleObj } from 'crochess-api/dist/types/interfaces';
+import { convertPieceMapToArray, getActivePlayer } from '../utils/misc';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
@@ -53,6 +41,10 @@ export default function ActiveGame() {
     },
   });
   const [moveHistory, setMoveHistory] = useState<string[][]>([]);
+  const [gameOverDetails, setGameOverDetails] = useState<{
+    winner: 'black' | 'white' | null;
+    reason: string;
+  }>();
 
   const [pieceToMove, setPieceToMove] = useState<Square | null>(null);
 
@@ -79,8 +71,17 @@ export default function ActiveGame() {
 
           const game = await res.data;
 
-          startTimeRef.current = game[game.turn].timeLeft;
-          turnStartRef.current = game.turnStart || Date.now();
+          if (game.winner) {
+            setGameOverDetails({
+              winner: game.winner,
+              reason: game.causeOfDeath,
+            });
+          }
+
+          if (game.active) {
+            startTimeRef.current = game[game.turn].timeLeft;
+            turnStartRef.current = game.turnStart || Date.now();
+          }
 
           activePlayerRef.current = getActivePlayer(
             gameId as string,
@@ -133,6 +134,13 @@ export default function ActiveGame() {
 
         if (!mounted.current) return;
 
+        if (data.winner) {
+          setGameOverDetails({
+            winner: data.winner,
+            reason: data.causeOfDeath,
+          });
+        }
+
         setBoardState({
           board: new Map(Object.entries(data.board)),
           checks: data.checks,
@@ -142,8 +150,10 @@ export default function ActiveGame() {
 
         setWhiteTime(data.white.timeLeft);
         setBlackTime(data.black.timeLeft);
-        startTimeRef.current = data[turn].timeLeft;
-        turnStartRef.current = data.turnStart;
+        if (data.active) {
+          startTimeRef.current = data[turn].timeLeft;
+          turnStartRef.current = data.turnStart;
+        }
         setTurn(data.turn);
       });
     },
@@ -152,6 +162,7 @@ export default function ActiveGame() {
 
   const makeMove = useCallback(
     async (square: Square) => {
+      if (gameOverDetails) return;
       if (!boardState || !pieceToMove) return;
 
       const gameboard = Board(
@@ -186,7 +197,7 @@ export default function ActiveGame() {
         setBoardState((prev) => ({ ...prev, board: gameboard.board }));
       }
     },
-    [gameId, turn, boardState, pieceToMove]
+    [gameId, turn, boardState, pieceToMove, gameOverDetails]
   );
 
   const getLegalMoves = useCallback(
@@ -220,17 +231,18 @@ export default function ActiveGame() {
           activePlayer={activePlayerRef.current}
         />
         <Interface
+          gameOverDetails={gameOverDetails}
           whiteDetails={{
             startTime: startTimeRef.current,
             time: whiteTime,
             setTime: setWhiteTime,
-            active: turn === 'white',
+            active: !gameOverDetails && turn === 'white',
           }}
           blackDetails={{
             startTime: startTimeRef.current,
             time: blackTime,
             setTime: setBlackTime,
-            active: turn === 'black',
+            active: !gameOverDetails && turn === 'black',
           }}
           turnStart={turnStartRef.current}
           history={moveHistory}
@@ -245,3 +257,10 @@ export default function ActiveGame() {
     </>
   );
 }
+
+/* what is different if game is over 
+- timers arent active
+- theres a display box which displays game is over + reason
+- cant make a move 
+
+*/

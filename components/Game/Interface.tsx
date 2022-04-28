@@ -1,10 +1,10 @@
 import Controls from './Controls';
 import Timer from './Timer';
 import History from './History';
-import { TimeObjInterface } from '../../types/interfaces';
 import styles from '../../styles/GameInterface.module.scss';
 import { createControlBtnObj } from '../../utils/misc';
 import flagIcon from '../../public/icons/flag-fill.svg';
+import GameOverDisplay from './GameOverDisplay';
 
 interface InterfaceProps {
   whiteDetails: colorDetails;
@@ -13,6 +13,10 @@ interface InterfaceProps {
   view: 'white' | 'black';
   flipBoard: () => void;
   turnStart: number;
+  gameOverDetails?: {
+    winner: 'black' | 'white' | null;
+    reason: string;
+  };
 }
 
 interface colorDetails {
@@ -29,6 +33,7 @@ export default function Interface({
   flipBoard,
   turnStart,
   history,
+  gameOverDetails,
 }: InterfaceProps) {
   const topTimer = view === 'white' ? blackDetails : whiteDetails;
   const bottomTimer = view === 'white' ? whiteDetails : blackDetails;
@@ -41,6 +46,12 @@ export default function Interface({
         {...topTimer}
       />
       <History moves={history} flipBoard={flipBoard} />
+      {gameOverDetails && (
+        <GameOverDisplay
+          winner={gameOverDetails.winner}
+          reason={gameOverDetails.reason}
+        />
+      )}
       <Controls
         className={styles.main_controls}
         list={[
