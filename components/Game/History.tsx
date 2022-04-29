@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Controls from './Controls';
 import { createControlBtnObj } from '../../utils/misc';
 import rewindIcon from '../../public/icons/rewind-fill.svg';
@@ -7,13 +8,25 @@ import forwardIcon from '../../public/icons/skip-forward-fill.svg';
 import flipIcon from '../../public/icons/flip-2.svg';
 
 import styles from '../../styles/History.module.scss';
+import HistoryDisplay from './HistoryDisplay';
+import GameOverDisplay from './GameOverDisplay';
 
 interface HistoryProps {
   moves: string[][];
+  gameOverDetails?: {
+    winner: 'black' | 'white' | null;
+    reason: string;
+  };
   flipBoard: () => void;
 }
 
-export default function History({ moves, flipBoard }: HistoryProps) {
+export default function History({
+  moves,
+  flipBoard,
+  gameOverDetails,
+}: HistoryProps) {
+  const [gameOverDisplay, setGameOverDisplay] = useState(true);
+
   return (
     <section className={styles.main}>
       <Controls
@@ -26,21 +39,15 @@ export default function History({ moves, flipBoard }: HistoryProps) {
           createControlBtnObj(speedIcon, 'go to end/current move'),
         ]}
       />
-      <ol className={styles.moves_ctn}>
-        {moves &&
-          moves.map((pair, i) => {
-            const [whiteMove, blackMove] = pair;
-            return (
-              <li key={i} className={styles.list_item}>
-                <p className={styles.move_no}>{i + 1}</p>
-                <div className={styles.moves_wrapper}>
-                  <p>{whiteMove}</p>
-                  {blackMove && <p>{blackMove}</p>}
-                </div>
-              </li>
-            );
-          })}
-      </ol>
+      <HistoryDisplay moves={moves} styles={styles} />
+      {gameOverDetails && gameOverDisplay && (
+        <GameOverDisplay
+          winner={gameOverDetails.winner}
+          reason={gameOverDetails.reason}
+          styles={styles}
+          close={() => setGameOverDisplay(false)}
+        />
+      )}
     </section>
   );
 }

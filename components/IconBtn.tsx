@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 interface IconBtnProps {
-  className: string;
+  className?: string;
   icon?: string;
   altText?: string;
   btnText?: string;
@@ -15,8 +15,11 @@ export default function IconBtn({
   btnText,
   onClick,
 }: IconBtnProps) {
+  const rootClasses = ['icon-btn', 'btn', 'hover-highlight'];
+  if (className) rootClasses.push(className);
+
   return (
-    <div className="icon-btn btn hover-highlight" onClick={onClick}>
+    <div className={rootClasses.join(' ')} onClick={onClick}>
       {icon && <Image src={icon} alt={altText} />}
       {btnText && <p>{btnText}</p>}
     </div>

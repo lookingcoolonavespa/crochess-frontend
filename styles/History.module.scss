@@ -1,5 +1,8 @@
+@use './mixins';
+
 .main {
   background-color: var(--background);
+  position: relative;
 }
 
 .controls-ctn {
@@ -19,13 +22,19 @@
 
 .list_item {
   display: flex;
+}
+
+.moves_ctn {
   background-color: var(--foreground);
+  height: 150px;
+  overflow: auto;
 }
 
 .move_no {
   background-color: var(--background);
   padding: 5px 15px;
   z-index: 2;
+  width: 40px;
 }
 
 .moves_wrapper {
@@ -37,5 +46,25 @@
   > * {
     flex: 1 1 auto;
     padding: 0 10px;
+  }
+}
+
+.game_over_display {
+  position: absolute;
+  background-color: var(--foreground);
+  z-index: 5;
+  bottom: 0;
+  height: 120px;
+  width: 100%;
+  @include mixins.flexCenter(column);
+
+  :global(.close-btn) {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+
+  p:first-of-type {
+    margin-bottom: 10px;
   }
 }

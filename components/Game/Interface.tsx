@@ -45,13 +45,11 @@ export default function Interface({
         turnStart={turnStart}
         {...topTimer}
       />
-      <History moves={history} flipBoard={flipBoard} />
-      {gameOverDetails && (
-        <GameOverDisplay
-          winner={gameOverDetails.winner}
-          reason={gameOverDetails.reason}
-        />
-      )}
+      <History
+        moves={history}
+        flipBoard={flipBoard}
+        gameOverDetails={gameOverDetails}
+      />
       <Controls
         className={styles.main_controls}
         list={[
