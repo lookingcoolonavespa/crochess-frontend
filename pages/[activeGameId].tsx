@@ -12,7 +12,7 @@ import {
   Moves,
   Square,
 } from 'crochess-api/dist/types/types';
-import { CastleObj } from 'crochess-api/dist/types/interfaces';
+import { AllPieceMap, CastleObj } from 'crochess-api/dist/types/interfaces';
 import { convertPieceMapToArray, getActivePlayer } from '../utils/misc';
 
 export default function ActiveGame() {
@@ -40,6 +40,8 @@ export default function ActiveGame() {
       black: { kingside: false, queenside: false },
     },
   });
+  const [currentPieceMapIdx, setCurrentPieceMapIdx] = useState(0);
+  const pieceMaps = useRef<AllPieceMap[]>([]);
   const [moveHistory, setMoveHistory] = useState<string[][]>([]);
   const [gameOverDetails, setGameOverDetails] = useState<{
     winner: 'black' | 'white' | null;
@@ -94,6 +96,7 @@ export default function ActiveGame() {
             checks: game.checks,
             castleRights: game.castle,
           });
+
           setMoveHistory(game.history);
 
           if (game.turnStart) {
@@ -109,6 +112,16 @@ export default function ActiveGame() {
                 setWhiteTime(game.white.timeLeft);
                 break;
             }
+
+            const res2 = await axios.get(
+              `${urls.backend}/pieceMaps/${game.pieceMaps}`
+            );
+            if (!res2 || res2.status !== 200 || res2.statusText !== 'OK')
+              throw new Error('something went wrong fetching piece maps');
+
+            const oldPieceMaps = await res2.data;
+            pieceMaps.current = oldPieceMaps.list;
+            setCurrentPieceMapIdx(pieceMaps.current.length - 1);
           } else {
             setWhiteTime(game.white.timeLeft);
             setBlackTime(game.black.timeLeft);
@@ -145,6 +158,19 @@ export default function ActiveGame() {
           board: new Map(Object.entries(data.board)),
           checks: data.checks,
           castleRights: data.castle,
+        });
+
+        pieceMaps.current.push(
+          Board(
+            new Map(Object.entries(data.board)),
+            data.checks,
+            data.castle
+          ).get.pieceMap()
+        );
+        setCurrentPieceMapIdx((prev) => {
+          if (prev === pieceMaps.current.length - 2)
+            return pieceMaps.current.length - 1;
+          else return prev;
         });
         setMoveHistory(data.history);
 
@@ -209,14 +235,38 @@ export default function ActiveGame() {
   );
 
   const piecePos = useMemo(() => {
-    return convertPieceMapToArray(
-      Board(
+    let pieceMap;
+    if (pieceMaps.current.length)
+      pieceMap = pieceMaps.current[currentPieceMapIdx];
+    else
+      pieceMap = Board(
         boardState.board,
         boardState.checks,
         boardState.castleRights
-      ).get.pieceMap()
-    );
-  }, [boardState]);
+      ).get.pieceMap();
+    return convertPieceMapToArray(pieceMap);
+  }, [boardState, currentPieceMapIdx]);
+
+  function goBackToStart() {
+    if (!pieceMaps.current.length) return;
+    setCurrentPieceMapIdx(0);
+  }
+  function goBackOneMove() {
+    if (!pieceMaps.current.length) return;
+    setCurrentPieceMapIdx((prev) => {
+      return prev - 1;
+    });
+  }
+  function goForwardOneMove() {
+    if (!pieceMaps.current.length) return;
+    setCurrentPieceMapIdx((prev) => {
+      return prev - 1;
+    });
+  }
+  function goToCurrentMove() {
+    if (!pieceMaps.current.length) return;
+    setCurrentPieceMapIdx(pieceMaps.current.length);
+  }
 
   return (
     <>

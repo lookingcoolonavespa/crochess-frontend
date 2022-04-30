@@ -33,10 +33,30 @@ export default function History({
         className={styles['controls-ctn']}
         list={[
           createControlBtnObj(flipIcon, 'flip board', undefined, flipBoard),
-          createControlBtnObj(rewindIcon, 'go to start of game'),
-          createControlBtnObj(backIcon, 'last move'),
-          createControlBtnObj(forwardIcon, 'next move'),
-          createControlBtnObj(speedIcon, 'go to end/current move'),
+          createControlBtnObj(
+            rewindIcon,
+            'go to start of game',
+            undefined
+            // goBackToStart
+          ),
+          createControlBtnObj(
+            backIcon,
+            'last move',
+            undefined
+            // goBackOneMove
+          ),
+          createControlBtnObj(
+            forwardIcon,
+            'next move',
+            undefined
+            // goForwardOneMove
+          ),
+          createControlBtnObj(
+            speedIcon,
+            'go to end/current move',
+            undefined
+            // goToCurrentMove
+          ),
         ]}
       />
       <HistoryDisplay moves={moves} styles={styles} />

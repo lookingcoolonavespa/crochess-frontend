@@ -1,5 +1,6 @@
+import { Gameboard } from 'crochess-api';
 import { AllPieceMap } from 'crochess-api/dist/types/interfaces';
-import { Board } from 'crochess-api/dist/types/types';
+import { Board, HistoryType } from 'crochess-api/dist/types/types';
 import { PiecePos } from '../types/types';
 import urls from './urls';
 
@@ -86,7 +87,6 @@ export function getActivePlayer(
     case cookieObj[`${gameId}(white)`] === whiteId &&
       cookieObj[`${gameId}(black)`] === blackId: {
       const user = sessionStorage.getItem(gameId);
-      console.log(user);
       if (user === whiteId) return 'white';
       if (user === blackId) return 'black';
       return null;
@@ -101,4 +101,12 @@ export function getActivePlayer(
     default:
       return null;
   }
+}
+
+export function getAllBoardStates(history: HistoryType) {
+  const gameboard = Gameboard();
+
+  return history.map((m, i) => {
+    const newHistory = history.slice(0, i + 1);
+  });
 }
