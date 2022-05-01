@@ -13,6 +13,12 @@ import GameOverDisplay from './GameOverDisplay';
 
 interface HistoryProps {
   moves: string[][];
+  historyControls: {
+    goBackToStart: () => void;
+    goBackOneMove: () => void;
+    goForwardOneMove: () => void;
+    goToCurrentMove: () => void;
+  };
   gameOverDetails?: {
     winner: 'black' | 'white' | null;
     reason: string;
@@ -22,6 +28,7 @@ interface HistoryProps {
 
 export default function History({
   moves,
+  historyControls,
   flipBoard,
   gameOverDetails,
 }: HistoryProps) {
@@ -36,26 +43,26 @@ export default function History({
           createControlBtnObj(
             rewindIcon,
             'go to start of game',
-            undefined
-            // goBackToStart
+            undefined,
+            historyControls.goBackToStart
           ),
           createControlBtnObj(
             backIcon,
             'last move',
-            undefined
-            // goBackOneMove
+            undefined,
+            historyControls.goBackOneMove
           ),
           createControlBtnObj(
             forwardIcon,
             'next move',
-            undefined
-            // goForwardOneMove
+            undefined,
+            historyControls.goForwardOneMove
           ),
           createControlBtnObj(
             speedIcon,
             'go to end/current move',
-            undefined
-            // goToCurrentMove
+            undefined,
+            historyControls.goToCurrentMove
           ),
         ]}
       />

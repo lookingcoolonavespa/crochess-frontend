@@ -190,6 +190,7 @@ export default function ActiveGame() {
     async (square: Square) => {
       if (gameOverDetails) return;
       if (!boardState || !pieceToMove) return;
+      if (currentPieceMapIdx !== pieceMaps.current.length - 1) return;
 
       const gameboard = Board(
         boardState.board,
@@ -223,7 +224,7 @@ export default function ActiveGame() {
         setBoardState((prev) => ({ ...prev, board: gameboard.board }));
       }
     },
-    [gameId, turn, boardState, pieceToMove, gameOverDetails]
+    [gameId, turn, boardState, pieceToMove, gameOverDetails, currentPieceMapIdx]
   );
 
   const getLegalMoves = useCallback(
@@ -236,14 +237,16 @@ export default function ActiveGame() {
 
   const piecePos = useMemo(() => {
     let pieceMap;
-    if (pieceMaps.current.length)
-      pieceMap = pieceMaps.current[currentPieceMapIdx];
-    else
+    if (
+      currentPieceMapIdx === pieceMaps.current.length - 1 ||
+      !pieceMaps.current.length
+    )
       pieceMap = Board(
         boardState.board,
         boardState.checks,
         boardState.castleRights
       ).get.pieceMap();
+    else pieceMap = pieceMaps.current[currentPieceMapIdx];
     return convertPieceMapToArray(pieceMap);
   }, [boardState, currentPieceMapIdx]);
 
@@ -254,18 +257,20 @@ export default function ActiveGame() {
   function goBackOneMove() {
     if (!pieceMaps.current.length) return;
     setCurrentPieceMapIdx((prev) => {
+      if (prev === 0) return prev;
       return prev - 1;
     });
   }
   function goForwardOneMove() {
     if (!pieceMaps.current.length) return;
     setCurrentPieceMapIdx((prev) => {
-      return prev - 1;
+      if (prev === pieceMaps.current.length - 1) return prev;
+      return prev + 1;
     });
   }
   function goToCurrentMove() {
     if (!pieceMaps.current.length) return;
-    setCurrentPieceMapIdx(pieceMaps.current.length);
+    setCurrentPieceMapIdx(pieceMaps.current.length - 1);
   }
 
   return (
@@ -296,6 +301,12 @@ export default function ActiveGame() {
           }}
           turnStart={turnStartRef.current}
           history={moveHistory}
+          historyControls={{
+            goBackToStart,
+            goBackOneMove,
+            goForwardOneMove,
+            goToCurrentMove,
+          }}
           view={gameboardView}
           flipBoard={() =>
             setGameboardView((prev) => {

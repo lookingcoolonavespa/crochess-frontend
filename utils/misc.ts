@@ -27,6 +27,7 @@ export function convertPieceMapToArray(pieceMap: AllPieceMap) {
 
   let color: keyof typeof pieceMap;
   for (color in pieceMap) {
+    if (color !== 'black' && color !== 'white') continue;
     const map = pieceMap[color];
 
     let piece: keyof typeof map;

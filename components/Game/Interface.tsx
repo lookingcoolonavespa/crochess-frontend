@@ -10,6 +10,12 @@ interface InterfaceProps {
   whiteDetails: colorDetails;
   blackDetails: colorDetails;
   history: string[][];
+  historyControls: {
+    goBackToStart: () => void;
+    goBackOneMove: () => void;
+    goForwardOneMove: () => void;
+    goToCurrentMove: () => void;
+  };
   view: 'white' | 'black';
   flipBoard: () => void;
   turnStart: number;
@@ -33,6 +39,7 @@ export default function Interface({
   flipBoard,
   turnStart,
   history,
+  historyControls,
   gameOverDetails,
 }: InterfaceProps) {
   const topTimer = view === 'white' ? blackDetails : whiteDetails;
@@ -49,6 +56,7 @@ export default function Interface({
         moves={history}
         flipBoard={flipBoard}
         gameOverDetails={gameOverDetails}
+        historyControls={historyControls}
       />
       <Controls
         className={styles.main_controls}
