@@ -113,14 +113,14 @@ export default function ActiveGame() {
                 break;
             }
 
-            const res2 = await axios.get(
-              `${urls.backend}/pieceMaps/${game.pieceMaps}`
-            );
-            if (!res2 || res2.status !== 200 || res2.statusText !== 'OK')
-              throw new Error('something went wrong fetching piece maps');
-
-            const oldPieceMaps = await res2.data;
-            pieceMaps.current = oldPieceMaps.list;
+            const oldPieceMaps = Board(
+              new Map(Object.entries(game.board)),
+              game.checks,
+              game.castle
+            )
+              .get.boardStatesFromHistory(game.history)
+              .map((b) => b.pieceMap);
+            pieceMaps.current = oldPieceMaps;
             setCurrentPieceMapIdx(pieceMaps.current.length - 1);
           } else {
             setWhiteTime(game.white.timeLeft);
@@ -188,12 +188,13 @@ export default function ActiveGame() {
 
   const makeMove = useCallback(
     async (square: Square) => {
+      const start = Date.now();
       if (gameOverDetails) return;
       if (!boardState || !pieceToMove) return;
       if (currentPieceMapIdx !== pieceMaps.current.length - 1) return;
 
       const gameboard = Board(
-        boardState.board,
+        new Map(boardState.board),
         boardState.checks,
         boardState.castleRights
       );
@@ -203,11 +204,14 @@ export default function ActiveGame() {
       if (!gameboard.at(pieceToMove).getLegalMoves().includes(square)) return;
       if (activePlayerRef.current !== turn) return;
 
+      const validationElapsed = Date.now() - start;
       try {
         gameboard.from(pieceToMove).to(square);
-        setBoardState((prev) => ({ ...prev, board: gameboard.board }));
+        pieceMaps.current.push(gameboard.get.pieceMap());
+        setCurrentPieceMapIdx(pieceMaps.current.length - 1);
 
-        await axios.put(
+        const reqStart = Date.now();
+        const res = await axios.put(
           `${urls.backend}/games/${gameId}`,
           {
             gameId,
@@ -218,10 +222,22 @@ export default function ActiveGame() {
             withCredentials: true,
           }
         );
+        const reqElapsed = Date.now() - reqStart;
+        if (!res || res.status !== 200 || res.statusText !== 'OK')
+          throw new Error('something went wrong fetching game');
+
+        const elapsed = await res.data;
+        console.log(elapsed);
+        console.log({
+          validationElapsed,
+          reqElapsed,
+          total: Date.now() - start,
+        });
       } catch (err) {
         console.log(err);
         gameboard.from(square).to(pieceToMove);
-        setBoardState((prev) => ({ ...prev, board: gameboard.board }));
+        pieceMaps.current.pop();
+        setCurrentPieceMapIdx(pieceMaps.current.length - 1);
       }
     },
     [gameId, turn, boardState, pieceToMove, gameOverDetails, currentPieceMapIdx]
@@ -237,10 +253,7 @@ export default function ActiveGame() {
 
   const piecePos = useMemo(() => {
     let pieceMap;
-    if (
-      currentPieceMapIdx === pieceMaps.current.length - 1 ||
-      !pieceMaps.current.length
-    )
+    if (!pieceMaps.current.length)
       pieceMap = Board(
         boardState.board,
         boardState.checks,
