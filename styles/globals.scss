@@ -57,6 +57,12 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   color: var(--text-primary);
+  height: 100%;
+}
+
+#__next,
+#active-game {
+  height: 100%;
 }
 
 h1,
@@ -73,19 +79,10 @@ a {
   text-decoration: none;
 }
 
-nav {
-  height: 50px;
-  padding: 1em 2em;
-}
-
 ul {
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-footer {
-  padding: 50px;
 }
 
 .outline {

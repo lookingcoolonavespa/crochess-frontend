@@ -14,12 +14,17 @@ import {
 } from 'crochess-api/dist/types/types';
 import { AllPieceMap, CastleObj } from 'crochess-api/dist/types/interfaces';
 import { convertPieceMapToArray, getActivePlayer } from '../utils/misc';
+import { toMilliseconds } from '../utils/timerStuff';
+import styles from '../styles/ActiveGame.module.scss';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
 
-  const startTimeRef = useRef(0);
-  const turnStartRef = useRef<number>(0);
+  const timeDetails = useRef({
+    startTime: 0,
+    turnStart: 0,
+    maxTime: 0,
+  });
   const [whiteTime, setWhiteTime] = useState(0);
   const [blackTime, setBlackTime] = useState(0);
   const [turn, setTurn] = useState<'white' | 'black'>('white');
@@ -81,8 +86,11 @@ export default function ActiveGame() {
           }
 
           if (game.active) {
-            startTimeRef.current = game[game.turn].timeLeft;
-            turnStartRef.current = game.turnStart || Date.now();
+            timeDetails.current = {
+              startTime: game[game.turn].timeLeft,
+              turnStart: game.turnStart || Date.now(),
+              maxTime: toMilliseconds({ minutes: game.time }),
+            };
           }
 
           activePlayerRef.current = getActivePlayer(
@@ -102,13 +110,16 @@ export default function ActiveGame() {
           if (game.turnStart) {
             // if fetch happens in middle of game
             const elapsedTime = Date.now() - game.turnStart;
+            let timeLeft = game[game.turn].timeLeft - elapsedTime;
+            if (timeLeft < 0) timeLeft = 0;
+
             switch (game.turn) {
               case 'white':
-                setWhiteTime(game.white.timeLeft - elapsedTime);
+                setWhiteTime(timeLeft);
                 setBlackTime(game.black.timeLeft);
                 break;
               case 'black':
-                setBlackTime(game.black.timeLeft - elapsedTime);
+                setBlackTime(timeLeft);
                 setWhiteTime(game.white.timeLeft);
                 break;
             }
@@ -177,8 +188,11 @@ export default function ActiveGame() {
         setWhiteTime(data.white.timeLeft);
         setBlackTime(data.black.timeLeft);
         if (data.active) {
-          startTimeRef.current = data[turn].timeLeft;
-          turnStartRef.current = data.turnStart;
+          timeDetails.current = {
+            ...timeDetails.current,
+            startTime: data[turn].timeLeft,
+            turnStart: data.turnStart,
+          };
         }
         setTurn(data.turn);
       });
@@ -288,45 +302,49 @@ export default function ActiveGame() {
 
   return (
     <>
-      <main className="two-section-view">
-        <Gameboard
-          view={gameboardView}
-          piecePos={piecePos}
-          makeMove={makeMove}
-          pieceToMove={pieceToMove}
-          setPieceToMove={setPieceToMove}
-          getLegalMoves={getLegalMoves}
-          activePlayer={activePlayerRef.current}
-        />
-        <Interface
-          gameOverDetails={gameOverDetails}
-          whiteDetails={{
-            startTime: startTimeRef.current,
-            time: whiteTime,
-            setTime: setWhiteTime,
-            active: !gameOverDetails && turn === 'white',
-          }}
-          blackDetails={{
-            startTime: startTimeRef.current,
-            time: blackTime,
-            setTime: setBlackTime,
-            active: !gameOverDetails && turn === 'black',
-          }}
-          turnStart={turnStartRef.current}
-          history={moveHistory}
-          historyControls={{
-            goBackToStart,
-            goBackOneMove,
-            goForwardOneMove,
-            goToCurrentMove,
-          }}
-          view={gameboardView}
-          flipBoard={() =>
-            setGameboardView((prev) => {
-              return prev === 'white' ? 'black' : 'white';
-            })
-          }
-        />
+      <main className={styles.main}>
+        <div className={styles['game-contents']}>
+          <Gameboard
+            view={gameboardView}
+            piecePos={piecePos}
+            makeMove={makeMove}
+            pieceToMove={pieceToMove}
+            setPieceToMove={setPieceToMove}
+            getLegalMoves={getLegalMoves}
+            activePlayer={activePlayerRef.current}
+          />
+          <Interface
+            gameOverDetails={gameOverDetails}
+            whiteDetails={{
+              maxTime: timeDetails.current.maxTime,
+              startTime: timeDetails.current.startTime,
+              time: whiteTime,
+              setTime: setWhiteTime,
+              active: !gameOverDetails && turn === 'white',
+            }}
+            blackDetails={{
+              maxTime: timeDetails.current.maxTime,
+              startTime: timeDetails.current.startTime,
+              time: blackTime,
+              setTime: setBlackTime,
+              active: !gameOverDetails && turn === 'black',
+            }}
+            turnStart={timeDetails.current.turnStart}
+            history={moveHistory}
+            historyControls={{
+              goBackToStart,
+              goBackOneMove,
+              goForwardOneMove,
+              goToCurrentMove,
+            }}
+            view={gameboardView}
+            flipBoard={() =>
+              setGameboardView((prev) => {
+                return prev === 'white' ? 'black' : 'white';
+              })
+            }
+          />
+        </div>
       </main>
     </>
   );

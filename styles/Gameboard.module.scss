@@ -1,11 +1,12 @@
 $light-square: #f0d9b5;
 $dark-square: #b58863;
-$square-size: 75px;
+$square-size: 90px;
 
 .main {
   display: grid;
   grid-template-columns: repeat(8, $square-size);
   grid-template-rows: repeat(8, $square-size);
+  justify-content: center;
 
   width: fit-content;
 

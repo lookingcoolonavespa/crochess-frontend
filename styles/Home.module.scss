@@ -1,0 +1,62 @@
+@use './mixins';
+
+.main {
+  @include mixins.flexCenter(row);
+  height: 100%;
+}
+
+.tabbed-content {
+  @include mixins.flexCenter(column);
+
+  position: relative;
+  align-items: stretch;
+  max-width: 700px;
+  width: 80%;
+  box-shadow: var(--box-shadow);
+  background-color: var(--foreground);
+}
+
+.tabs {
+  position: absolute;
+  bottom: 100%;
+
+  ul {
+    @include mixins.flexCenter(row);
+    justify-content: start;
+
+    li {
+      position: relative;
+      height: 100%;
+      padding: 10px;
+      z-index: 1;
+      border-top-left-radius: 5px;
+      cursor: pointer;
+      background-color: var(--foreground);
+    }
+
+    li:after {
+      content: '';
+      position: absolute;
+      background-color: var(--foreground);
+      top: 0;
+      left: 10px;
+      transform: skew(10deg);
+      transform-origin: 100% 100%;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      border-top-right-radius: 5px;
+    }
+
+    li.inactive {
+      background-color: #eeeeee;
+    }
+    li.inactive:after {
+      background-color: #eeeeee;
+    }
+  }
+}
+
+.content {
+  padding: 10px;
+}

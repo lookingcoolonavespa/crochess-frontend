@@ -4,7 +4,7 @@ import History from './History';
 import styles from '../../styles/GameInterface.module.scss';
 import { createControlBtnObj } from '../../utils/misc';
 import flagIcon from '../../public/icons/flag-fill.svg';
-import GameOverDisplay from './GameOverDisplay';
+import TimerBar from './TimerBar';
 
 interface InterfaceProps {
   whiteDetails: colorDetails;
@@ -26,6 +26,7 @@ interface InterfaceProps {
 }
 
 interface colorDetails {
+  maxTime: number;
   startTime: number;
   time: number;
   setTime: React.Dispatch<React.SetStateAction<number>>;
@@ -52,6 +53,7 @@ export default function Interface({
         turnStart={turnStart}
         {...topTimer}
       />
+      <TimerBar maxTime={topTimer.maxTime} time={topTimer.time} />
       <History
         moves={history}
         flipBoard={flipBoard}
@@ -65,6 +67,7 @@ export default function Interface({
           createControlBtnObj(flagIcon, 'resign game'),
         ]}
       />
+      <TimerBar maxTime={bottomTimer.maxTime} time={bottomTimer.time} />
       <Timer
         className={`${styles.timer} ${styles.bottom}`}
         turnStart={turnStart}

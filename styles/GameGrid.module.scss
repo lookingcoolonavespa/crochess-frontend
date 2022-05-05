@@ -7,8 +7,6 @@ $grid_gap: 10px;
   column-gap: $grid_gap;
   row-gap: $grid_gap;
   grid-template-columns: repeat(3, 1fr);
-  box-shadow: var(--box-shadow);
-  padding: 10px;
   border-radius: 3px;
 }
 

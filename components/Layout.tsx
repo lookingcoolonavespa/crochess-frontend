@@ -1,15 +1,16 @@
 import NavBar from './NavBar';
 import React from 'react';
 
-interface Layout {
+interface LayoutProps {
   children: React.ReactNode;
+  className: string;
 }
 
-const Layout = ({ children }: Layout) => {
+const Layout = ({ className, children }: LayoutProps) => {
   return (
     <>
       <NavBar />
-      <main>{children}</main>
+      <main className={className}>{children}</main>
     </>
   );
 };

@@ -5,17 +5,54 @@ import Head from 'next/head';
 import Image from 'next/image';
 
 import Layout from '../components/Layout';
-import LocalGames from '../components/LocalGames/LocalGames';
-import CreateGame from '../components/CreateGame/CreateGame';
+import GameGrid from '../components/CreateGame/GameGrid';
+import ListOfGames from '../components/LocalGames/ListOfGames';
+
+import styles from '../styles/Home.module.scss';
 
 const Home: NextPage = () => {
   const [user, setUser] = useState(null);
+  const [activeTab, setActiveTab] = useState('Create a game');
+
+  function moveToTab(e: React.MouseEvent<HTMLElement>) {
+    if (!e.currentTarget.dataset.tab) return;
+    setActiveTab(e.currentTarget.dataset.tab);
+  }
+
   return (
     <>
-      <Layout>
+      <Layout className={styles.main}>
         <UserContext.Provider value={{ user, setUser }}>
-          <CreateGame />
-          <LocalGames />
+          <div className={styles['tabbed-content']}>
+            <nav className={styles.tabs}>
+              <ul>
+                <li
+                  className={
+                    activeTab !== 'Create a game' ? styles.inactive : ''
+                  }
+                  onClick={moveToTab}
+                  data-tab="Create a game"
+                >
+                  Create a game
+                </li>
+                <li
+                  className={activeTab !== 'Game list' ? styles.inactive : ''}
+                  onClick={moveToTab}
+                  data-tab="Game list"
+                >
+                  Game list
+                </li>
+              </ul>
+            </nav>
+            <div className={styles.content}>
+              {
+                {
+                  'Create a game': <GameGrid />,
+                  'Game list': <ListOfGames />,
+                }[activeTab]
+              }
+            </div>
+          </div>
         </UserContext.Provider>
       </Layout>
       <footer></footer>

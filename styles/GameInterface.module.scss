@@ -3,7 +3,11 @@
 $timer-height: 50px;
 
 .main {
-  position: relative;
+  position: absolute;
+  left: 100%;
+  margin-left: 50px;
+  width: 100%;
+  max-width: 400px;
   background-color: var(--foreground);
   box-shadow: var(--box-shadow);
   z-index: 3;
@@ -13,8 +17,9 @@ $timer-height: 50px;
   @include mixins.flexCenter(row);
 
   :global(.icon-btn) {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     padding: 1em 1.5em;
+    align-self: stretch;
   }
 }
 
@@ -32,14 +37,12 @@ $timer-height: 50px;
   border-radius: 5px;
 
   &:global(.active) {
-    background-color: hsl(86, 46%, 86%);
+    background-color: hsl(86, 70%, 88%);
   }
 }
 .top {
   top: -$timer-height;
-  box-shadow: var(--sm-box-shadow);
 }
 .bottom {
   bottom: -$timer-height;
-  box-shadow: var(--side-bottom-box-shadow);
 }
