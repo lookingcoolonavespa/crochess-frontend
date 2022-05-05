@@ -7,15 +7,20 @@ import timeControls from '../../utils/timeControls';
 import { UserContext } from '../../utils/contexts/UserContext';
 
 interface GameGridProps {
+  active: boolean;
   className?: string;
 }
 
-const GameGrid = ({ className }: GameGridProps) => {
+const GameGrid = ({ active, className }: GameGridProps) => {
   const [activeSearch, setActiveSearch] = useState<null | number>(null);
   const { user } = useContext(UserContext);
 
+  const rootClasses = [styles.main, 'foreground'];
+  if (className) rootClasses.push(className);
+  if (!active) rootClasses.push('inactive');
+
   return (
-    <div className={styles.main + ' foreground ' + (className || '')}>
+    <div className={rootClasses.join(' ')}>
       {timeControls.map((tc, i) => {
         let className;
         if (typeof activeSearch === 'number') {

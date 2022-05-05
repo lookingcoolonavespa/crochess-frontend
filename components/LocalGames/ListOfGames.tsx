@@ -6,13 +6,18 @@ import useListOfGames from '../../utils/hooks/useListOfGames';
 import styles from '../../styles/ListOfGames.module.scss';
 import { UserContext } from '../../utils/contexts/UserContext';
 
-interface ListOfGamesProps {}
+interface ListOfGamesProps {
+  active: boolean;
+}
 
-export default function ListOfGames({}: ListOfGamesProps) {
+export default function ListOfGames({ active }: ListOfGamesProps) {
   const { listOfGames } = useListOfGames(useContext(UserContext).setUser);
 
+  const rootClasses = [styles.main];
+  if (!active) rootClasses.push('inactive');
+
   return (
-    <div className={styles.main}>
+    <div className={rootClasses.join(' ')}>
       <header className="section-header">
         <ul className="space-evenly">
           {['Color', 'Time Control', 'Game Type'].map((t, i) => (
@@ -23,9 +28,62 @@ export default function ListOfGames({}: ListOfGamesProps) {
         </ul>
       </header>
       <section className={styles['game_door-ctn']}>
-        {listOfGames.map((gs) => (
-          <GameDoor key={gs._id} gameSeek={gs} />
-        ))}
+        <div className="scroller">
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}{' '}
+          {listOfGames.map((gs) => (
+            <GameDoor key={gs._id} gameSeek={gs} />
+          ))}
+        </div>
       </section>
     </div>
   );

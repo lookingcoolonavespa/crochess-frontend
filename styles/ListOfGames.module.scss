@@ -1,23 +1,18 @@
+@use './mixins';
+
 .main {
+  @include mixins.flexCenter(column);
+
+  align-items: stretch;
+  height: 100%;
   :global(.section-header) {
     padding-bottom: 10px;
+    margin-top: 10px;
+    border-bottom: 1px solid var(--text-primary);
   }
+}
 
-  :global(.game_door) {
-    padding: 7px 0;
-  }
-
-  :global(.game_door) {
-    border-bottom: 1px solid var(--border-primary);
-  }
-  :global(.game_door:first-of-type) {
-    border-top: 1px solid var(--text-primary);
-  }
-  :global(.game_door:last-of-type) {
-    border-radius: 0 0 3px 3px;
-  }
-
-  .game_door-ctn {
-    box-shadow: var(--sm-box-shadow);
-  }
+.game_door-ctn {
+  position: relative;
+  flex: 1 1 auto;
 }

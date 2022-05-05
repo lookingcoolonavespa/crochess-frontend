@@ -16,7 +16,7 @@ export default function GameDoor({ gameSeek }: GameDoorProps) {
   const router = useRouter();
 
   const rootClasses = [
-    'game_door',
+    styles.main,
     'foreground',
     'hover-highlight',
     'space-evenly',

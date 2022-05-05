@@ -29,6 +29,7 @@ export default function useListOfGames(
           throw new Error('something went wrong fetching games');
 
         const games = await res.data;
+        console.log(games);
 
         setListOfGames(games);
       } catch (err) {

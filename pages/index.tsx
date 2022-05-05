@@ -33,24 +33,20 @@ const Home: NextPage = () => {
                   onClick={moveToTab}
                   data-tab="Create a game"
                 >
-                  Create a game
+                  <span>Create a game</span>
                 </li>
                 <li
                   className={activeTab !== 'Game list' ? styles.inactive : ''}
                   onClick={moveToTab}
                   data-tab="Game list"
                 >
-                  Game list
+                  <span>Game list</span>
                 </li>
               </ul>
             </nav>
             <div className={styles.content}>
-              {
-                {
-                  'Create a game': <GameGrid />,
-                  'Game list': <ListOfGames />,
-                }[activeTab]
-              }
+              <GameGrid active={activeTab === 'Create a game'} />
+              <ListOfGames active={activeTab === 'Game list'} />
             </div>
           </div>
         </UserContext.Provider>
