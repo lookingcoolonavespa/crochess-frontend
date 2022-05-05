@@ -32,57 +32,6 @@ export default function ListOfGames({ active }: ListOfGamesProps) {
           {listOfGames.map((gs) => (
             <GameDoor key={gs._id} gameSeek={gs} />
           ))}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}{' '}
-          {listOfGames.map((gs) => (
-            <GameDoor key={gs._id} gameSeek={gs} />
-          ))}
         </div>
       </section>
     </div>
