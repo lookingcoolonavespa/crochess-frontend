@@ -1,15 +1,26 @@
 import IconBtn from './IconBtn';
 import Form from './Form';
 
+import closeSVG from '../public/icons/close-line.svg';
+import React, { FormEvent, Dispatch, SetStateAction } from 'react';
+
 interface PopupProps {
-  className: string;
+  className?: string;
   title: string;
-  subheader: string;
-  fields: {};
-  children: React.ReactNode;
-  footerContent: React.ReactNode;
+  subheader?: string;
+  fields?: { label: string; name: string; type: string }[];
+  children?: React.ReactNode;
+  footerContent?: React.ReactNode;
   close: () => void;
   isMobile: boolean;
+  inputValues: { [key: string]: string | number };
+  actionBtnText?: string;
+  noCancelBtn: boolean;
+  cancelBtnText?: string;
+  handleChange: (e: FormEvent<HTMLInputElement>) => void;
+  submitAction: (() => Promise<void>) | (() => void);
+  cleanUp?: () => void;
+  setError: Dispatch<SetStateAction<string>>;
 }
 
 export default function Popup({
@@ -35,13 +46,13 @@ export default function Popup({
             <span>{subheader}</span>
           </div>
         )}
-        <IconBtn svg={closeSVG} onClick={close} className="close-btn" />
+        <IconBtn icon={closeSVG} onClick={close} className="close-btn" />
       </header>
       {fields && <Form fields={fields} close={close} {...props} />}
       {children && (
         <>
           <div className="content">{children}</div>
-          <footer>{footerContent}</footer>
+          {footerContent && <footer>{footerContent}</footer>}
         </>
       )}
     </div>

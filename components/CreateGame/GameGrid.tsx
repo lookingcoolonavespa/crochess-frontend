@@ -1,17 +1,18 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, Dispatch, SetStateAction } from 'react';
+import { createGame } from '../../utils/game';
 
 import TimeControlButton from './TimeControlButton';
 import styles from '../../styles/GameGrid.module.scss';
-import { GameType } from '../../types/types';
 import timeControls from '../../utils/timeControls';
 import { UserContext } from '../../utils/contexts/UserContext';
 
 interface GameGridProps {
   active: boolean;
   className?: string;
+  createCustomGame: () => void;
 }
 
-const GameGrid = ({ active, className }: GameGridProps) => {
+const GameGrid = ({ active, className, createCustomGame }: GameGridProps) => {
   const [activeSearch, setActiveSearch] = useState<null | number>(null);
   const { user } = useContext(UserContext);
 
@@ -39,8 +40,10 @@ const GameGrid = ({ active, className }: GameGridProps) => {
                 typeof tc.time !== 'number' ||
                 typeof tc.increment !== 'number' ||
                 tc.type === 'custom'
-              )
+              ) {
+                createCustomGame();
                 return;
+              }
               setActiveSearch(i);
               createGame(tc.time, tc.increment, 'random', user, tc.type);
             }}
@@ -52,19 +55,3 @@ const GameGrid = ({ active, className }: GameGridProps) => {
 };
 
 export default GameGrid;
-
-function createGame(
-  time: number,
-  increment: number,
-  color: 'white' | 'black' | 'random',
-  seeker: string,
-  gameType: GameType
-) {
-  fetch('http://localhost:8000/gameSeeks', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ time, increment, color, gameType, seeker }),
-  });
-}

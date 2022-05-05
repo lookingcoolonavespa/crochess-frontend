@@ -1,55 +1,50 @@
-import { useEffect, useRef, useState } from 'react';
+import {
+  HTMLInputTypeAttribute,
+  useRef,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import useInputError from '../utils/hooks/useInputError';
 
+import FlatBtn from './FlatBtn';
+import InputField from './InputField';
+
 interface FormProps {
-  fields: { label: string; name: string; type: string }[];
-  inputValues: {};
-  actionBtnText: string;
+  fields: { label: string; name: string; type: HTMLInputTypeAttribute }[];
+  inputValues: { [key: string]: string | number };
+  actionBtnText?: string;
   noCancelBtn: boolean;
-  cancelBtnText: string;
-  textBtns: {};
-  handleChange: () => void;
-  submitAction: () => void;
-  cleanUp: () => void;
+  cancelBtnText?: string;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  submitAction: (() => Promise<void>) | (() => void);
+  cleanUp?: () => void;
   close: () => void;
-  setError: () => void;
+  setError: Dispatch<SetStateAction<string>>;
 }
 
-const Form = ({
+export default function Form({
   fields,
   inputValues,
   actionBtnText,
   noCancelBtn,
   cancelBtnText,
-  textBtns,
   handleChange,
   submitAction,
   cleanUp,
   close,
   setError,
-}: FormProps) => {
-  const formRef = useRef();
+}: FormProps) {
+  const formRef = useRef<HTMLFormElement>(null);
   const fieldNames = fields.map((f) => f.name);
   const { inputError, validateInput, submitForm } = useInputError(fieldNames);
-  const [loading, setLoading] = useState(false);
-
-  const isMounted = useRef(false);
-  useEffect(() => {
-    isMounted.current = true;
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
 
   return (
     <form
       ref={formRef}
       autoComplete="nope"
       onSubmit={async (e) => {
-        setLoading(true);
         cleanUp = cleanUp || close;
         await submitForm(e, submitAction, cleanUp, setError);
-        if (isMounted.current) setLoading(false);
       }}
     >
       <div className="content">
@@ -61,15 +56,8 @@ const Form = ({
               key={idx}
               type={f.type}
               autoFocus={idx === 0}
-              onBlur={
-                f.name === 'confirm_password'
-                  ? (e) =>
-                      validateInput(
-                        e.target,
-                        false,
-                        formRef.current.elements.namedItem('new_password').value
-                      )
-                  : (e) => validateInput(e.target)
+              onBlur={(e: React.FormEvent<HTMLInputElement>) =>
+                validateInput(e.currentTarget)
               }
               error={inputError[f.name]}
               label={f.label}
@@ -81,7 +69,7 @@ const Form = ({
         })}
       </div>
       <footer>
-        <div className={loading ? 'btn-ctn no-pointer-events' : 'btn-ctn'}>
+        <div className="btn-ctn">
           {!noCancelBtn && (
             <FlatBtn
               text={cancelBtnText || 'Cancel'}
@@ -93,21 +81,9 @@ const Form = ({
             type="submit"
             text={actionBtnText || 'Done'}
             className="filled small"
-            loading={loading}
           />
         </div>
-        {textBtns && (
-          <div className="text-btn-ctn">
-            {textBtns.map((b) => {
-              return (
-                <span key={uniqid()} className="link" onClick={b.onClick}>
-                  {b.text}
-                </span>
-              );
-            })}
-          </div>
-        )}
       </footer>
     </form>
   );
-};
+}

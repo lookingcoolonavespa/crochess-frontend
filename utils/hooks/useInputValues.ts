@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 export default function useInputValues() {
-  const [inputValues, setInputValues] = useState({});
+  const [inputValues, setInputValues] = useState<{
+    [key: string]: string | number;
+  }>({});
 
-  function handleChange(e) {
+  function handleChange(e: React.FormEvent<HTMLInputElement>) {
     setInputValues((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [e.currentTarget.name]: e.currentTarget.value,
     }));
   }
 

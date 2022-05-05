@@ -9,9 +9,17 @@ import GameGrid from '../components/CreateGame/GameGrid';
 import ListOfGames from '../components/LocalGames/ListOfGames';
 
 import styles from '../styles/Home.module.scss';
+import Popup from '../components/Popup';
+import useInputValues from '../utils/hooks/useInputValues';
+import { createGame } from '../utils/game';
+import { GameType } from '../types/types';
 
 const Home: NextPage = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState('');
+  const [popup, setPopup] = useState(false);
+  const [error, setError] = useState('');
+  const { inputValues: popupInputValues, handleChange: handleChange } =
+    useInputValues();
   const [activeTab, setActiveTab] = useState('Create a game');
 
   function moveToTab(e: React.MouseEvent<HTMLElement>) {
@@ -45,13 +53,41 @@ const Home: NextPage = () => {
               </ul>
             </nav>
             <div className={styles.content}>
-              <GameGrid active={activeTab === 'Create a game'} />
+              <GameGrid
+                active={activeTab === 'Create a game'}
+                createCustomGame={() => setPopup(true)}
+              />
               <ListOfGames active={activeTab === 'Game list'} />
             </div>
           </div>
+          {popup && (
+            <Popup
+              title="Create a game"
+              fields={[
+                { label: 'Time', name: 'time', type: 'number' },
+                { label: 'Increment', name: 'increment', type: 'number' },
+                { label: 'Choose your color', name: 'color', type: 'text' },
+              ]}
+              close={() => setPopup(false)}
+              inputValues={popupInputValues}
+              handleChange={handleChange}
+              isMobile={false}
+              actionBtnText="Create game"
+              noCancelBtn={false}
+              submitAction={() =>
+                createGame(
+                  popupInputValues.time as number,
+                  popupInputValues.increment as number,
+                  popupInputValues.color as 'black' | 'white',
+                  user,
+                  popupInputValues.gameType as GameType
+                )
+              }
+              setError={setError}
+            />
+          )}
         </UserContext.Provider>
       </Layout>
-      <footer></footer>
     </>
   );
 };
