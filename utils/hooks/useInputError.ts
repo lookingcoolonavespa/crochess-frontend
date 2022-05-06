@@ -10,8 +10,8 @@ export default function useInputError(inputNames: string[]) {
       }, {}) // turn inputNames into object keys
   );
 
-  async function validateInput(el: HTMLInputElement, isSubmit = false) {
-    const validationStatus = await dynamicValidation(el, isSubmit); // have to await bc it might return a promise (depends on input name)
+  function validateInput(el: HTMLInputElement) {
+    const validationStatus = dynamicValidation(el);
 
     const value = validationStatus.error ? validationStatus.error : '';
     setInputError((prev) => ({
@@ -42,7 +42,7 @@ export default function useInputError(inputNames: string[]) {
         if (!(currEl instanceof HTMLInputElement)) {
           return;
         }
-        const isValid = await validateInput(currEl, true);
+        const isValid = validateInput(currEl);
         if (!isValid) errors = true;
       }
       if (errors) return;

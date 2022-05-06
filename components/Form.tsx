@@ -1,26 +1,13 @@
-import {
-  HTMLInputTypeAttribute,
-  useRef,
-  Dispatch,
-  SetStateAction,
-} from 'react';
+import { useRef } from 'react';
+import { FormProps } from '../types/interfaces';
 import useInputError from '../utils/hooks/useInputError';
 
 import FlatBtn from './FlatBtn';
 import InputField from './InputField';
+import Select from './Select';
 
-interface FormProps {
-  fields: { label: string; name: string; type: HTMLInputTypeAttribute }[];
-  inputValues: { [key: string]: string | number };
-  actionBtnText?: string;
-  noCancelBtn: boolean;
-  cancelBtnText?: string;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  submitAction: (() => Promise<void>) | (() => void);
-  cleanUp?: () => void;
-  close: () => void;
-  setError: Dispatch<SetStateAction<string>>;
-}
+import styles from '../styles/Form.module.scss';
+import RadioList from './RadioList';
 
 export default function Form({
   fields,
@@ -46,41 +33,49 @@ export default function Form({
         cleanUp = cleanUp || close;
         await submitForm(e, submitAction, cleanUp, setError);
       }}
+      className={styles.main}
     >
       <div className="content">
         <input type="password" hidden />
         {/* need this to turn off autocomplete */}
         {fields.map((f, idx) => {
-          return (
-            <InputField
-              key={idx}
-              type={f.type}
-              autoFocus={idx === 0}
-              onBlur={(e: React.FormEvent<HTMLInputElement>) =>
-                validateInput(e.currentTarget)
-              }
-              error={inputError[f.name]}
-              label={f.label}
-              name={f.name}
-              onChange={handleChange}
-              value={inputValues[f.name] || ''}
-            />
-          );
+          switch (f.type) {
+            case 'dropdown':
+              return <Select {...f} />;
+            case 'radioList':
+              return <RadioList {...f} />;
+            default:
+              return (
+                <InputField
+                  key={idx}
+                  autoFocus={idx === 0}
+                  onBlur={(e: React.FormEvent<HTMLInputElement>) =>
+                    validateInput(e.currentTarget)
+                  }
+                  error={inputError[f.name]}
+                  onChange={handleChange}
+                  value={inputValues[f.name] || ''}
+                  {...f}
+                />
+              );
+          }
         })}
       </div>
       <footer>
-        <div className="btn-ctn">
+        <div className={styles['btn-ctn']}>
           {!noCancelBtn && (
             <FlatBtn
               text={cancelBtnText || 'Cancel'}
-              isUnderline={true}
+              underline={true}
               onClick={close}
+              size="small"
             />
           )}
           <FlatBtn
             type="submit"
             text={actionBtnText || 'Done'}
-            className="filled small"
+            filled={true}
+            size="small"
           />
         </div>
       </footer>

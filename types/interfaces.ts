@@ -1,6 +1,7 @@
 import { SquareObj } from 'crochess-api/dist/types/interfaces';
 import { Board, Square } from 'crochess-api/dist/types/types';
 import { GameType, ColorOptions } from './types';
+import { Dispatch, SetStateAction, HTMLInputTypeAttribute } from 'react';
 
 export interface GameSeekInterface {
   color: ColorOptions;
@@ -38,4 +39,36 @@ export interface ActiveGameInterface {
   increment: number;
   turn: 'white' | 'black';
   turnStart: number;
+}
+
+export interface FormProps {
+  fields: FieldsInterface[];
+  inputValues: { [key: string]: string | number };
+  actionBtnText?: string;
+  noCancelBtn: boolean;
+  cancelBtnText?: string;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  submitAction: (() => Promise<void>) | (() => void);
+  cleanUp?: () => void;
+  close: () => void;
+  setError: Dispatch<SetStateAction<string>>;
+}
+
+export interface SelectOptionsInterface {
+  value: string;
+  display: string;
+  selected?: boolean;
+}
+
+export interface FieldsInterface {
+  label: string;
+  name: string;
+  type: HTMLInputTypeAttribute | 'dropdown' | 'radioList';
+  options?: { value: string; display: string }[];
+  unitsDisplay?: {
+    label?: string;
+    name?: string;
+    type?: 'text' | 'dropdown';
+    options?: SelectOptionsInterface[];
+  };
 }

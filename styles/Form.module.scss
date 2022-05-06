@@ -1,0 +1,13 @@
+@use './mixins';
+
+.main {
+  :global(.form-group) {
+    margin-bottom: 20px;
+  }
+}
+
+.btn-ctn {
+  @include mixins.flexCenter(row);
+
+  column-gap: 20px;
+}

@@ -13,6 +13,7 @@ import Popup from '../components/Popup';
 import useInputValues from '../utils/hooks/useInputValues';
 import { createGame } from '../utils/game';
 import { GameType } from '../types/types';
+import Modal from '../components/Modal';
 
 const Home: NextPage = () => {
   const [user, setUser] = useState('');
@@ -61,30 +62,64 @@ const Home: NextPage = () => {
             </div>
           </div>
           {popup && (
-            <Popup
-              title="Create a game"
-              fields={[
-                { label: 'Time', name: 'time', type: 'number' },
-                { label: 'Increment', name: 'increment', type: 'number' },
-                { label: 'Choose your color', name: 'color', type: 'text' },
-              ]}
-              close={() => setPopup(false)}
-              inputValues={popupInputValues}
-              handleChange={handleChange}
-              isMobile={false}
-              actionBtnText="Create game"
-              noCancelBtn={false}
-              submitAction={() =>
-                createGame(
-                  popupInputValues.time as number,
-                  popupInputValues.increment as number,
-                  popupInputValues.color as 'black' | 'white',
-                  user,
-                  popupInputValues.gameType as GameType
-                )
-              }
-              setError={setError}
-            />
+            <Modal close={() => setPopup(false)}>
+              <Popup
+                title="Create a game"
+                fields={[
+                  {
+                    label: 'Time',
+                    name: 'time',
+                    type: 'number',
+                    unitsDisplay: {
+                      label: '',
+                      name: 'time_unit',
+                      type: 'dropdown',
+                      options: [
+                        { value: 'seconds', display: 'seconds' },
+                        {
+                          value: 'minutes',
+                          display: 'minutes',
+                          selected: true,
+                        },
+                        { value: 'hours', display: 'hours' },
+                      ],
+                    },
+                  },
+                  {
+                    label: 'Increment',
+                    name: 'increment',
+                    type: 'number',
+                    unitsDisplay: { label: 'seconds' },
+                  },
+                  {
+                    label: 'Choose your color',
+                    name: 'color',
+                    type: 'radioList',
+                    options: [
+                      { value: 'random', display: 'random' },
+                      { value: 'white', display: 'white' },
+                      { value: 'black', display: 'black' },
+                    ],
+                  },
+                ]}
+                close={() => setPopup(false)}
+                inputValues={popupInputValues}
+                handleChange={handleChange}
+                isMobile={false}
+                actionBtnText="Create game"
+                noCancelBtn={false}
+                submitAction={() =>
+                  createGame(
+                    popupInputValues.time as number,
+                    popupInputValues.increment as number,
+                    popupInputValues.color as 'black' | 'white',
+                    user,
+                    popupInputValues.gameType as GameType
+                  )
+                }
+                setError={setError}
+              />
+            </Modal>
           )}
         </UserContext.Provider>
       </Layout>

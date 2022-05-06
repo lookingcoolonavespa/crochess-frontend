@@ -2,25 +2,17 @@ import IconBtn from './IconBtn';
 import Form from './Form';
 
 import closeSVG from '../public/icons/close-line.svg';
-import React, { FormEvent, Dispatch, SetStateAction } from 'react';
+import styles from '../styles/Popup.module.scss';
+import { FormProps } from '../types/interfaces';
 
-interface PopupProps {
+interface PopupProps extends FormProps {
   className?: string;
   title: string;
   subheader?: string;
-  fields?: { label: string; name: string; type: string }[];
   children?: React.ReactNode;
   footerContent?: React.ReactNode;
   close: () => void;
   isMobile: boolean;
-  inputValues: { [key: string]: string | number };
-  actionBtnText?: string;
-  noCancelBtn: boolean;
-  cancelBtnText?: string;
-  handleChange: (e: FormEvent<HTMLInputElement>) => void;
-  submitAction: (() => Promise<void>) | (() => void);
-  cleanUp?: () => void;
-  setError: Dispatch<SetStateAction<string>>;
 }
 
 export default function Popup({
@@ -34,11 +26,11 @@ export default function Popup({
   isMobile,
   ...props
 }: PopupProps) {
+  const baseClass = [styles.main];
+  if (className) baseClass.push(className);
+
   return (
-    <div
-      className={className ? className + ' popup' : 'popup'}
-      onClick={(e) => e.stopPropagation()}
-    >
+    <div className={baseClass.join(' ')} onClick={(e) => e.stopPropagation()}>
       <header>
         <h3>{title}</h3>
         {subheader && (

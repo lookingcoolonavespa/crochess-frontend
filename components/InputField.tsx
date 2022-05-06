@@ -1,12 +1,14 @@
 import React, { HTMLInputTypeAttribute } from 'react';
+import { FieldsInterface } from '../types/interfaces';
+import Select from './Select';
 
-interface InputFieldProps {
-  label: string;
+import styles from '../styles/InputField.module.scss';
+
+interface InputFieldProps extends FieldsInterface {
   error: string;
   type: HTMLInputTypeAttribute;
   autoFocus: boolean;
   onBlur: (e: React.FormEvent<HTMLInputElement>) => void;
-  name: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value: string | number;
 }
@@ -14,20 +16,28 @@ interface InputFieldProps {
 export default function InputField({
   label,
   error,
+  unitsDisplay,
   ...inputProps
 }: InputFieldProps) {
-  const rootClasses = ['input-wrapper'];
+  const rootClasses = [styles.main, 'form-group'];
   if (error) rootClasses.push('error');
 
   return (
     <div className={rootClasses.join(' ')}>
       {label && (
-        <label>
-          <span className="caps-title">{label}</span>
-          {error && <span className="error-msg"> - {error}</span>}
+        <label className="label">
+          <span>{label}</span>
         </label>
       )}
-      <input {...inputProps} />
+      <div className={styles['input-wrapper']}>
+        <input {...inputProps} />
+        {error && <span className="error-msg"> - {error}</span>}
+      </div>
+      {unitsDisplay && (
+        <div className="select-wrapper">
+          <Select {...unitsDisplay} />
+        </div>
+      )}
     </div>
   );
 }
