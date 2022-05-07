@@ -40,3 +40,28 @@
     }
   }
 }
+
+@mixin circle($size, $direction: false) {
+  content: '';
+  position: absolute;
+  @if $direction {
+    width: $size/2;
+  } @else {
+    width: $size;
+  }
+  height: $size;
+  @if $direction == 'left' {
+    border-radius: $size 0 0 $size;
+  } @else if $direction == 'right' {
+    border-radius: 0 $size $size 0;
+  } @else {
+    border-radius: 50%;
+  }
+  border: 3px solid var(--background);
+  @if $direction == 'left' {
+    border-right: 0;
+  } @else if $direction == 'right' {
+    border-left: 0;
+  }
+  box-sizing: border-box;
+}

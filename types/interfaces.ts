@@ -56,7 +56,7 @@ export interface FormProps {
 
 export interface SelectOptionsInterface {
   value: string;
-  display: string;
+  display?: string;
   selected?: boolean;
 }
 

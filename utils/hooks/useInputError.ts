@@ -42,8 +42,8 @@ export default function useInputError(inputNames: string[]) {
         if (!(currEl instanceof HTMLInputElement)) {
           return;
         }
-        const isValid = validateInput(currEl);
-        if (!isValid) errors = true;
+        const valid = validateInput(currEl);
+        if (!valid) errors = true;
       }
       if (errors) return;
 

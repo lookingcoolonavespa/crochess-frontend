@@ -24,20 +24,22 @@ export default function InputField({
 
   return (
     <div className={rootClasses.join(' ')}>
-      {label && (
-        <label className="label">
-          <span>{label}</span>
-        </label>
-      )}
-      <div className={styles['input-wrapper']}>
-        <input {...inputProps} />
-        {error && <span className="error-msg"> - {error}</span>}
-      </div>
-      {unitsDisplay && (
-        <div className="select-wrapper">
-          <Select {...unitsDisplay} />
+      <div className={styles.content}>
+        {label && (
+          <label className="label">
+            <span>{label}</span>
+          </label>
+        )}
+        <div className={styles['input-wrapper']}>
+          <input {...inputProps} />
         </div>
-      )}
+        {unitsDisplay && (
+          <div className="select-wrapper">
+            <Select {...unitsDisplay} />
+          </div>
+        )}
+      </div>
+      {error && <span className={styles.error_msg}>{error}</span>}
     </div>
   );
 }

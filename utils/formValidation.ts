@@ -5,7 +5,7 @@ export function dynamicValidation(el: HTMLInputElement) {
       if (typeof val !== 'number') {
         return { error: 'not a number' };
       }
-      if (!val) return { error: 'must be greater than 0' };
+      if (!val || val > 60) return { error: 'must be between 1 and 60' };
     }
 
     case 'increment': {
@@ -13,6 +13,7 @@ export function dynamicValidation(el: HTMLInputElement) {
       if (typeof val !== 'number') {
         return { error: 'not a number' };
       }
+      if (val > 60) return { error: 'must be between 0 and 60' };
     }
 
     case 'color': {

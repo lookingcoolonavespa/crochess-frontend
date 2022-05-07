@@ -96,9 +96,9 @@ const Home: NextPage = () => {
                     name: 'color',
                     type: 'radioList',
                     options: [
-                      { value: 'random', display: 'random' },
-                      { value: 'white', display: 'white' },
-                      { value: 'black', display: 'black' },
+                      { value: 'random' },
+                      { value: 'white' },
+                      { value: 'black' },
                     ],
                   },
                 ]}
