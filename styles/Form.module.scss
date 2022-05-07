@@ -70,6 +70,11 @@ $colorBoxSize: 40px;
   }
 }
 
+.with_units {
+  display: flex;
+  column-gap: 10px;
+}
+
 .btn-ctn {
   @include mixins.flexCenter(row);
 

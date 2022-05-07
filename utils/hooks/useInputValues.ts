@@ -1,14 +1,26 @@
 import React, { useState } from 'react';
 
-export default function useInputValues() {
+export default function useInputValues(init?: {
+  [key: string]: string | number;
+}) {
   const [inputValues, setInputValues] = useState<{
     [key: string]: string | number;
-  }>({});
+  }>(init || {});
 
-  function handleChange(e: React.FormEvent<HTMLInputElement>) {
+  function handleInputChange(e: React.FormEvent<HTMLInputElement>) {
+    const { name, value } = e.currentTarget;
     setInputValues((prev) => ({
       ...prev,
-      [e.currentTarget.name]: e.currentTarget.value,
+      [name]: value,
+    }));
+  }
+
+  function handleSelectChange(e: React.FormEvent<HTMLSelectElement>) {
+    const { name } = e.currentTarget;
+    const { value } = e.target as HTMLOptionElement;
+    setInputValues((prev) => ({
+      ...prev,
+      [name]: value,
     }));
   }
 
@@ -19,7 +31,8 @@ export default function useInputValues() {
   return {
     inputValues,
     setInputValues,
-    handleChange,
+    handleInputChange,
+    handleSelectChange,
     resetInputValues,
   };
 }

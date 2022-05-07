@@ -19,8 +19,15 @@ const Home: NextPage = () => {
   const [user, setUser] = useState('');
   const [popup, setPopup] = useState(false);
   const [error, setError] = useState('');
-  const { inputValues: popupInputValues, handleChange: handleChange } =
-    useInputValues();
+  const {
+    inputValues: popupInputValues,
+    handleInputChange,
+    handleSelectChange,
+  } = useInputValues({
+    increment: 0,
+    time_unit: 'minutes',
+    color: 'random',
+  });
   const [activeTab, setActiveTab] = useState('Create a game');
 
   function moveToTab(e: React.MouseEvent<HTMLElement>) {
@@ -79,7 +86,6 @@ const Home: NextPage = () => {
                         {
                           value: 'minutes',
                           display: 'minutes',
-                          selected: true,
                         },
                         { value: 'hours', display: 'hours' },
                       ],
@@ -96,15 +102,16 @@ const Home: NextPage = () => {
                     name: 'color',
                     type: 'radioList',
                     options: [
+                      { value: 'black' },
                       { value: 'random' },
                       { value: 'white' },
-                      { value: 'black' },
                     ],
                   },
                 ]}
                 close={() => setPopup(false)}
                 inputValues={popupInputValues}
-                handleChange={handleChange}
+                handleInputChange={handleInputChange}
+                handleSelectChange={handleSelectChange}
                 isMobile={false}
                 actionBtnText="Create game"
                 noCancelBtn={false}

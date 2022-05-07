@@ -33,11 +33,6 @@ export default function InputField({
         <div className={styles['input-wrapper']}>
           <input {...inputProps} />
         </div>
-        {unitsDisplay && (
-          <div className="select-wrapper">
-            <Select {...unitsDisplay} />
-          </div>
-        )}
       </div>
       {error && <span className={styles.error_msg}>{error}</span>}
     </div>

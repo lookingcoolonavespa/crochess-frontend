@@ -1,6 +1,17 @@
 import { FieldsInterface } from '../types/interfaces';
 
-export default function RadioList({ label, name, options }: FieldsInterface) {
+interface RadioListProps extends FieldsInterface {
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: string;
+}
+
+export default function RadioList({
+  label,
+  name,
+  onChange,
+  value,
+  options,
+}: RadioListProps) {
   return (
     <div id={name} className="form-group">
       <p className="label">{label}</p>
@@ -12,7 +23,9 @@ export default function RadioList({ label, name, options }: FieldsInterface) {
                 type="radio"
                 id={`${name}${i}`}
                 name={name}
-                value={o.value}
+                onChange={onChange}
+                checked={value === o.value}
+                {...o}
               />
               {o.display && <label htmlFor={`${name}${i}`}>{o.display}</label>}
             </div>

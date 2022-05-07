@@ -15,7 +15,8 @@ export default function Form({
   actionBtnText,
   noCancelBtn,
   cancelBtnText,
-  handleChange,
+  handleInputChange,
+  handleSelectChange,
   submitAction,
   cleanUp,
   close,
@@ -39,11 +40,53 @@ export default function Form({
         <input type="password" hidden />
         {/* need this to turn off autocomplete */}
         {fields.map((f, idx) => {
-          switch (f.type) {
-            case 'dropdown':
-              return <Select {...f} />;
-            case 'radioList':
-              return <RadioList {...f} />;
+          switch (true) {
+            case f.type === 'dropdown':
+              return (
+                <Select
+                  key={idx}
+                  onChange={handleSelectChange}
+                  value={(inputValues[f.name] as string) || ''}
+                  {...f}
+                />
+              );
+            case f.type === 'radioList': {
+              return (
+                <RadioList
+                  key={idx}
+                  onChange={handleInputChange}
+                  value={(inputValues[f.name] as string) || ''}
+                  {...f}
+                />
+              );
+            }
+            case f.unitsDisplay !== undefined: {
+              return (
+                <div key={idx} className={styles.with_units}>
+                  <InputField
+                    autoFocus={idx === 0}
+                    onBlur={(e: React.FormEvent<HTMLInputElement>) =>
+                      validateInput(e.currentTarget)
+                    }
+                    error={inputError[f.name]}
+                    onChange={(e) => {
+                      validateInput(e.currentTarget as HTMLInputElement);
+                      handleInputChange(e);
+                    }}
+                    value={inputValues[f.name] ?? ''}
+                    {...f}
+                  />
+                  <Select
+                    onChange={handleSelectChange}
+                    value={
+                      (inputValues[f.unitsDisplay?.name as string] as string) ||
+                      ''
+                    }
+                    {...f.unitsDisplay}
+                  />
+                </div>
+              );
+            }
             default:
               return (
                 <InputField
@@ -53,7 +96,10 @@ export default function Form({
                     validateInput(e.currentTarget)
                   }
                   error={inputError[f.name]}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    validateInput(e.currentTarget as HTMLInputElement);
+                    handleInputChange(e);
+                  }}
                   value={inputValues[f.name] || ''}
                   {...f}
                 />

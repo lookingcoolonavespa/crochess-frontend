@@ -4,16 +4,25 @@ interface SelectProps {
   options?: SelectOptionsInterface[];
   name?: string;
   label?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-export default function Select({ options, name, label }: SelectProps) {
+export default function Select({
+  options,
+  name,
+  label,
+  value,
+  onChange,
+}: SelectProps) {
   return (
     <div className="select-wrapper">
+      {console.log(value)}
       {label && <label>{label}</label>}
       {options && (
-        <select name={name}>
+        <select name={name} value={value} onChange={onChange}>
           {options.map((o) => (
-            <option key={o.value} value={o.value} selected={o.selected}>
+            <option key={o.value} value={o.value}>
               {o.display}
             </option>
           ))}
