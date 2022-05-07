@@ -40,13 +40,14 @@ export default function useInputError(inputNames: string[]) {
         // iterate through each input field and validate
         const currEl = elements.namedItem(fname);
         if (!(currEl instanceof HTMLInputElement)) {
-          return;
+          continue;
         }
         const valid = validateInput(currEl);
         if (!valid) errors = true;
       }
-      if (errors) return;
+      console.log(errors);
 
+      if (errors) return;
       await submitAction();
       cleanUp();
     } catch (error: unknown) {

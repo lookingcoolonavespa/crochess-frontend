@@ -25,7 +25,7 @@ export default function useInputValues(init?: {
   }
 
   function resetInputValues() {
-    setInputValues({});
+    setInputValues(init || {});
   }
 
   return {

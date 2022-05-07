@@ -2,6 +2,7 @@ import { Gameboard } from 'crochess-api';
 import { AllPieceMap } from 'crochess-api/dist/types/interfaces';
 import { Board, HistoryType } from 'crochess-api/dist/types/types';
 import { PiecePos } from '../types/types';
+import { toMilliseconds } from './timerStuff';
 import urls from './urls';
 
 export function createControlBtnObj(
@@ -110,4 +111,20 @@ export function getAllBoardStates(history: HistoryType) {
   return history.map((m, i) => {
     const newHistory = history.slice(0, i + 1);
   });
+}
+
+export function getGameType(ms: number) {
+  switch (true) {
+    case toMilliseconds({ minutes: 2 }) >= ms:
+      return 'bullet';
+
+    case toMilliseconds({ minutes: 5 }) >= ms:
+      return 'blitz';
+
+    case toMilliseconds({ minutes: 30 }) >= ms:
+      return 'rapid';
+
+    default:
+      return 'classical';
+  }
 }

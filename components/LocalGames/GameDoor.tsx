@@ -6,6 +6,7 @@ import axios from 'axios';
 import urls from '../../utils/urls';
 import { GameSeekInterface } from '../../types/interfaces';
 import { setIdToCookie } from '../../utils/misc';
+import { fromMillisecondsToMinutes } from '../../utils/timerStuff';
 
 interface GameDoorProps {
   gameSeek: GameSeekInterface;
@@ -53,7 +54,7 @@ export default function GameDoor({ gameSeek }: GameDoorProps) {
     >
       {[
         gameSeek.color,
-        `${gameSeek.time}+${gameSeek.increment}`,
+        `${fromMillisecondsToMinutes(gameSeek.time)}+${gameSeek.increment}`,
         gameSeek.gameType,
       ].map((t, i) => (
         <p key={i} className="text-center">

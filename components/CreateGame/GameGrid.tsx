@@ -5,6 +5,7 @@ import TimeControlButton from './TimeControlButton';
 import styles from '../../styles/GameGrid.module.scss';
 import timeControls from '../../utils/timeControls';
 import { UserContext } from '../../utils/contexts/UserContext';
+import { toMilliseconds } from '../../utils/timerStuff';
 
 interface GameGridProps {
   active: boolean;
@@ -45,7 +46,8 @@ const GameGrid = ({ active, className, createCustomGame }: GameGridProps) => {
                 return;
               }
               setActiveSearch(i);
-              createGame(tc.time, tc.increment, 'random', user, tc.type);
+              const time = toMilliseconds({ minutes: tc.time });
+              createGame(time, tc.increment, 'random', user, tc.type);
             }}
           />
         );

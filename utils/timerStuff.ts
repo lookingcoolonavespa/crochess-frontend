@@ -4,11 +4,15 @@ import { TimeObjInterface } from '../types/interfaces';
 
 dayjs.extend(duration);
 
-function toMilliseconds(timeObj: TimeObjInterface) {
+export function toMilliseconds(timeObj: TimeObjInterface) {
   return dayjs.duration(timeObj).asMilliseconds();
 }
 
-function formatTime(ms: number) {
+export function fromMillisecondsToMinutes(ms: number) {
+  return dayjs.duration(ms).asMinutes();
+}
+
+export function formatTime(ms: number) {
   const duration = dayjs.duration(ms);
 
   const atLeastAnHour = duration.asHours() >= 1;
@@ -46,4 +50,4 @@ function formatTime(ms: number) {
 //   }
 // };
 
-export { dayjs, toMilliseconds, formatTime };
+export { dayjs };

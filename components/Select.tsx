@@ -17,7 +17,6 @@ export default function Select({
 }: SelectProps) {
   return (
     <div className="select-wrapper">
-      {console.log(value)}
       {label && <label>{label}</label>}
       {options && (
         <select name={name} value={value} onChange={onChange}>

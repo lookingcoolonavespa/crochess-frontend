@@ -14,6 +14,8 @@ import useInputValues from '../utils/hooks/useInputValues';
 import { createGame } from '../utils/game';
 import { GameType } from '../types/types';
 import Modal from '../components/Modal';
+import { toMilliseconds } from '../utils/timerStuff';
+import { getGameType } from '../utils/misc';
 
 const Home: NextPage = () => {
   const [user, setUser] = useState('');
@@ -23,6 +25,7 @@ const Home: NextPage = () => {
     inputValues: popupInputValues,
     handleInputChange,
     handleSelectChange,
+    resetInputValues,
   } = useInputValues({
     increment: 0,
     time_unit: 'minutes',
@@ -69,7 +72,12 @@ const Home: NextPage = () => {
             </div>
           </div>
           {popup && (
-            <Modal close={() => setPopup(false)}>
+            <Modal
+              close={() => {
+                resetInputValues();
+                setPopup(false);
+              }}
+            >
               <Popup
                 title="Create a game"
                 fields={[
@@ -108,22 +116,29 @@ const Home: NextPage = () => {
                     ],
                   },
                 ]}
-                close={() => setPopup(false)}
+                close={() => {
+                  resetInputValues();
+                  setPopup(false);
+                }}
                 inputValues={popupInputValues}
                 handleInputChange={handleInputChange}
                 handleSelectChange={handleSelectChange}
                 isMobile={false}
                 actionBtnText="Create game"
                 noCancelBtn={false}
-                submitAction={() =>
+                submitAction={() => {
+                  const gameTime = toMilliseconds({
+                    [popupInputValues.time_unit]:
+                      popupInputValues.time as number,
+                  });
                   createGame(
-                    popupInputValues.time as number,
+                    gameTime,
                     popupInputValues.increment as number,
                     popupInputValues.color as 'black' | 'white',
                     user,
-                    popupInputValues.gameType as GameType
-                  )
-                }
+                    getGameType(gameTime)
+                  );
+                }}
                 setError={setError}
               />
             </Modal>

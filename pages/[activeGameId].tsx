@@ -89,7 +89,7 @@ export default function ActiveGame() {
             timeDetails.current = {
               startTime: game[game.turn].timeLeft,
               turnStart: game.turnStart || Date.now(),
-              maxTime: toMilliseconds({ minutes: game.time }),
+              maxTime: game.time,
             };
           }
 
