@@ -28,8 +28,13 @@ export default function Promotion({ onPromote, square, view }: PromotionProps) {
     <div className={styles.main} style={positioning}>
       {promotePieces.map((p, i) => {
         return (
-          <div className={styles['piece-wrapper']} key={i}>
-            <Piece color={color} type={p} onClick={onPromote} />
+          <div
+            className={styles['piece-wrapper'] + ' hover-highlight'}
+            key={i}
+            onClick={onPromote}
+            data-piece={p}
+          >
+            <Piece color={color} type={p} />
           </div>
         );
       })}

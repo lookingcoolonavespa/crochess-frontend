@@ -5,7 +5,7 @@ interface PieceProps {
   type: PieceType;
   color: 'white' | 'black';
   square?: string;
-  onClick: (() => void) | ((e: React.MouseEvent<HTMLDivElement>) => void);
+  onClick?: () => void;
 }
 
 export default function Piece({ type, color, square, onClick }: PieceProps) {

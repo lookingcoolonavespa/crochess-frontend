@@ -208,78 +208,65 @@ export default function ActiveGame() {
   );
 
   const makeMove = useCallback(
-    async (square: Square) => {
-      const start = Date.now();
-      if (gameOverDetails) return;
-      if (!boardState || !pieceToMove) return;
-      if (currentPieceMapIdx !== pieceMaps.current.length - 1) return;
+    async (
+      square: Square,
+      promote: 'queen' | 'rook' | 'knight' | 'bishop' | '' = ''
+    ) => {
+      console.log(square, promote);
+      // const start = Date.now();
+      // if (gameOverDetails) return;
+      // if (!boardState || !pieceToMove) return;
+      // if (currentPieceMapIdx !== pieceMaps.current.length - 1) return;
+      // const gameboard = Board(
+      //   new Map(boardState.board),
+      //   boardState.checks,
+      //   boardState.castleRights
+      // );
+      // if (gameboard.at(pieceToMove).piece?.color !== activePlayerRef.current)
+      //   return;
+      // if (!gameboard.validate.move(pieceToMove, square)) return;
+      // if (activePlayerRef.current !== turn) return;
+      // const validationElapsed = Date.now() - start;
+      // try {
+      //   gameboard.from(pieceToMove).to(square);
+      //   pieceMaps.current.push(gameboard.get.pieceMap());
+      //   setCurrentPieceMapIdx(pieceMaps.current.length - 1);
 
-      const gameboard = Board(
-        new Map(boardState.board),
-        boardState.checks,
-        boardState.castleRights
-      );
+      //   if (gameboard.validate.promotion(pieceToMove, square)) {
+      //     if (!promote) return setPromotePopupSquare(square);
+      //   }
 
-      if (gameboard.at(pieceToMove).piece?.color !== activePlayerRef.current)
-        return;
-      if (!gameboard.validate.move(pieceToMove, square)) return;
-      if (activePlayerRef.current !== turn) return;
-
-      const validationElapsed = Date.now() - start;
-      try {
-        gameboard.from(pieceToMove).to(square);
-        pieceMaps.current.push(gameboard.get.pieceMap());
-        setCurrentPieceMapIdx(pieceMaps.current.length - 1);
-
-        let promote = '';
-        if (gameboard.validate.promotion(pieceToMove, square)) {
-          if (!promotion) return setPromotePopupSquare(square);
-          else {
-            promote = promotion;
-            setPromotion(null);
-          }
-        }
-
-        const reqStart = Date.now();
-        const res = await axios.put(
-          `${urls.backend}/games/${gameId}`,
-          {
-            gameId,
-            promote,
-            from: pieceToMove,
-            to: square,
-          },
-          {
-            withCredentials: true,
-          }
-        );
-        const reqElapsed = Date.now() - reqStart;
-        if (!res || res.status !== 200 || res.statusText !== 'OK')
-          throw new Error('something went wrong fetching game');
-
-        const elapsed = await res.data;
-        console.log(elapsed);
-        console.log({
-          validationElapsed,
-          reqElapsed,
-          total: Date.now() - start,
-        });
-      } catch (err) {
-        console.log(err);
-        gameboard.from(square).to(pieceToMove);
-        pieceMaps.current.pop();
-        setCurrentPieceMapIdx(pieceMaps.current.length - 1);
-      }
+      //   const reqStart = Date.now();
+      //   const res = await axios.put(
+      //     `${urls.backend}/games/${gameId}`,
+      //     {
+      //       gameId,
+      //       promote,
+      //       from: pieceToMove,
+      //       to: square,
+      //     },
+      //     {
+      //       withCredentials: true,
+      //     }
+      //   );
+      //   const reqElapsed = Date.now() - reqStart;
+      //   if (!res || res.status !== 200 || res.statusText !== 'OK')
+      //     throw new Error('something went wrong fetching game');
+      //   const elapsed = await res.data;
+      //   console.log(elapsed);
+      //   console.log({
+      //     validationElapsed,
+      //     reqElapsed,
+      //     total: Date.now() - start,
+      //   });
+      // } catch (err) {
+      //   console.log(err);
+      //   gameboard.from(square).to(pieceToMove);
+      //   pieceMaps.current.pop();
+      //   setCurrentPieceMapIdx(pieceMaps.current.length - 1);
+      // }
     },
-    [
-      gameId,
-      turn,
-      boardState,
-      pieceToMove,
-      gameOverDetails,
-      currentPieceMapIdx,
-      promotion,
-    ]
+    [gameId, turn, boardState, pieceToMove, gameOverDetails, currentPieceMapIdx]
   );
 
   const getLegalMoves = useCallback(
@@ -338,13 +325,16 @@ export default function ActiveGame() {
           activePlayer={activePlayerRef.current}
           promotePopupSquare={promotePopupSquare}
           onPromote={(e) => {
-            setPromotion(
+            e.stopPropagation();
+            makeMove(
+              promotePopupSquare as Square,
               e.currentTarget.dataset.piece as
                 | 'queen'
-                | 'bishop'
                 | 'rook'
                 | 'knight'
+                | 'bishop'
             );
+            setPromotePopupSquare(null);
           }}
         ></Gameboard>
         <Interface
