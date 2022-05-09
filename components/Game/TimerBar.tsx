@@ -4,7 +4,6 @@ interface TimerBarProps {
 }
 
 export default function TimerBar({ time, maxTime }: TimerBarProps) {
-  console.log(time / maxTime);
   return (
     <div
       style={{

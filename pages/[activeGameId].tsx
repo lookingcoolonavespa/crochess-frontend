@@ -16,6 +16,7 @@ import { AllPieceMap, CastleObj } from 'crochess-api/dist/types/interfaces';
 import { convertPieceMapToArray, getActivePlayer } from '../utils/misc';
 import { toMilliseconds } from '../utils/timerStuff';
 import styles from '../styles/ActiveGame.module.scss';
+import Promotion from '../components/Game/Promotion';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
@@ -54,6 +55,12 @@ export default function ActiveGame() {
   }>();
 
   const [pieceToMove, setPieceToMove] = useState<Square | null>(null);
+  const [promotion, setPromotion] = useState<
+    'queen' | 'bishop' | 'rook' | 'knight' | null
+  >(null);
+  const [promotePopupSquare, setPromotePopupSquare] = useState<Square | null>(
+    'a1'
+  );
 
   const router = useRouter();
   const { activeGameId: gameId } = router.query;
@@ -215,7 +222,7 @@ export default function ActiveGame() {
 
       if (gameboard.at(pieceToMove).piece?.color !== activePlayerRef.current)
         return;
-      if (!gameboard.at(pieceToMove).getLegalMoves().includes(square)) return;
+      if (!gameboard.validate.move(pieceToMove, square)) return;
       if (activePlayerRef.current !== turn) return;
 
       const validationElapsed = Date.now() - start;
@@ -224,11 +231,21 @@ export default function ActiveGame() {
         pieceMaps.current.push(gameboard.get.pieceMap());
         setCurrentPieceMapIdx(pieceMaps.current.length - 1);
 
+        let promote = '';
+        if (gameboard.validate.promotion(pieceToMove, square)) {
+          if (!promotion) return setPromotePopupSquare(square);
+          else {
+            promote = promotion;
+            setPromotion(null);
+          }
+        }
+
         const reqStart = Date.now();
         const res = await axios.put(
           `${urls.backend}/games/${gameId}`,
           {
             gameId,
+            promote,
             from: pieceToMove,
             to: square,
           },
@@ -254,7 +271,15 @@ export default function ActiveGame() {
         setCurrentPieceMapIdx(pieceMaps.current.length - 1);
       }
     },
-    [gameId, turn, boardState, pieceToMove, gameOverDetails, currentPieceMapIdx]
+    [
+      gameId,
+      turn,
+      boardState,
+      pieceToMove,
+      gameOverDetails,
+      currentPieceMapIdx,
+      promotion,
+    ]
   );
 
   const getLegalMoves = useCallback(
@@ -301,52 +326,60 @@ export default function ActiveGame() {
   }
 
   return (
-    <>
-      <main className={styles.main}>
-        <div className={styles['game-contents']}>
-          <Gameboard
-            view={gameboardView}
-            piecePos={piecePos}
-            makeMove={makeMove}
-            pieceToMove={pieceToMove}
-            setPieceToMove={setPieceToMove}
-            getLegalMoves={getLegalMoves}
-            activePlayer={activePlayerRef.current}
-          />
-          <Interface
-            gameOverDetails={gameOverDetails}
-            whiteDetails={{
-              maxTime: timeDetails.current.maxTime,
-              startTime: timeDetails.current.startTime,
-              time: whiteTime,
-              setTime: setWhiteTime,
-              active: !gameOverDetails && turn === 'white',
-            }}
-            blackDetails={{
-              maxTime: timeDetails.current.maxTime,
-              startTime: timeDetails.current.startTime,
-              time: blackTime,
-              setTime: setBlackTime,
-              active: !gameOverDetails && turn === 'black',
-            }}
-            turnStart={timeDetails.current.turnStart}
-            history={moveHistory}
-            historyControls={{
-              goBackToStart,
-              goBackOneMove,
-              goForwardOneMove,
-              goToCurrentMove,
-            }}
-            view={gameboardView}
-            flipBoard={() =>
-              setGameboardView((prev) => {
-                return prev === 'white' ? 'black' : 'white';
-              })
-            }
-          />
-        </div>
-      </main>
-    </>
+    <main className={styles.main}>
+      <div className={styles['game-contents']}>
+        <Gameboard
+          view={gameboardView}
+          piecePos={piecePos}
+          makeMove={makeMove}
+          pieceToMove={pieceToMove}
+          setPieceToMove={setPieceToMove}
+          getLegalMoves={getLegalMoves}
+          activePlayer={activePlayerRef.current}
+          promotePopupSquare={promotePopupSquare}
+          onPromote={(e) => {
+            setPromotion(
+              e.currentTarget.dataset.piece as
+                | 'queen'
+                | 'bishop'
+                | 'rook'
+                | 'knight'
+            );
+          }}
+        ></Gameboard>
+        <Interface
+          gameOverDetails={gameOverDetails}
+          whiteDetails={{
+            maxTime: timeDetails.current.maxTime,
+            startTime: timeDetails.current.startTime,
+            time: whiteTime,
+            setTime: setWhiteTime,
+            active: !gameOverDetails && turn === 'white',
+          }}
+          blackDetails={{
+            maxTime: timeDetails.current.maxTime,
+            startTime: timeDetails.current.startTime,
+            time: blackTime,
+            setTime: setBlackTime,
+            active: !gameOverDetails && turn === 'black',
+          }}
+          turnStart={timeDetails.current.turnStart}
+          history={moveHistory}
+          historyControls={{
+            goBackToStart,
+            goBackOneMove,
+            goForwardOneMove,
+            goToCurrentMove,
+          }}
+          view={gameboardView}
+          flipBoard={() =>
+            setGameboardView((prev) => {
+              return prev === 'white' ? 'black' : 'white';
+            })
+          }
+        />
+      </div>
+    </main>
   );
 }
 

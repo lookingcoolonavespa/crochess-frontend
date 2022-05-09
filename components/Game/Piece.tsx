@@ -4,8 +4,8 @@ import styles from '../../styles/Piece.module.scss';
 interface PieceProps {
   type: PieceType;
   color: 'white' | 'black';
-  square: string;
-  onClick: () => void;
+  square?: string;
+  onClick: (() => void) | ((e: React.MouseEvent<HTMLDivElement>) => void);
 }
 
 export default function Piece({ type, color, square, onClick }: PieceProps) {

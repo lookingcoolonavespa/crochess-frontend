@@ -20,7 +20,6 @@ export default function Form({
   submitAction,
   cleanUp,
   close,
-  setError,
 }: FormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const fieldNames = fields.map((f) => f.name);
@@ -32,7 +31,7 @@ export default function Form({
       autoComplete="nope"
       onSubmit={async (e) => {
         cleanUp = cleanUp || close;
-        await submitForm(e, submitAction, cleanUp, setError);
+        await submitForm(e, submitAction, cleanUp);
       }}
       className={styles.main}
     >

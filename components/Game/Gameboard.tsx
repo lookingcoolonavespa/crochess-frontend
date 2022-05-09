@@ -1,11 +1,12 @@
 import { AllPieceMap, GameboardObj } from 'crochess-api/dist/types/interfaces';
 import { Moves, Square } from 'crochess-api/dist/types/types';
 
-import React, { useState } from 'react';
+import React, { useState, MouseEvent } from 'react';
 import styles from '../../styles/Gameboard.module.scss';
 import { PiecePos } from '../../types/types';
 import { convertPieceMapToArray } from '../../utils/misc';
 import Piece from './Piece';
+import Promotion from './Promotion';
 
 const cols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const rows = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -22,6 +23,8 @@ interface GameboardProps {
   setPieceToMove: React.Dispatch<React.SetStateAction<Square | null>>;
   getLegalMoves: (square: Square) => Moves;
   activePlayer: 'white' | 'black' | null;
+  promotePopupSquare: Square | null;
+  onPromote: (e: MouseEvent<HTMLDivElement>) => void;
 }
 
 export default React.memo(function Gameboard({
@@ -32,6 +35,8 @@ export default React.memo(function Gameboard({
   setPieceToMove,
   getLegalMoves,
   activePlayer,
+  promotePopupSquare,
+  onPromote,
 }: GameboardProps) {
   const [highlightedSquares, setHighlightedSquares] = useState<Moves>([]);
 
@@ -68,6 +73,13 @@ export default React.memo(function Gameboard({
           >
             {startRow && <div className={`${styles.file} label`}>{col}</div>}
             {endCol && <div className={`${styles.rank} label`}>{row}</div>}
+            {promotePopupSquare === s && (
+              <Promotion
+                onPromote={onPromote}
+                square={promotePopupSquare}
+                view={view}
+              />
+            )}
           </div>
         );
       })}

@@ -25,8 +25,7 @@ export default function useInputError(inputNames: string[]) {
   async function submitForm(
     e: React.FormEvent<HTMLFormElement>,
     submitAction: (() => Promise<void>) | (() => void),
-    cleanUp: () => void,
-    setError: (msg: string) => void
+    cleanUp: () => void
   ) {
     e.preventDefault();
 
@@ -34,26 +33,20 @@ export default function useInputError(inputNames: string[]) {
       currentTarget: { elements }, // destructure e to get elements
     } = e;
 
-    try {
-      let errors = false;
-      for (const fname of inputNames) {
-        // iterate through each input field and validate
-        const currEl = elements.namedItem(fname);
-        if (!(currEl instanceof HTMLInputElement)) {
-          continue;
-        }
-        const valid = validateInput(currEl);
-        if (!valid) errors = true;
+    let errors = false;
+    for (const fname of inputNames) {
+      // iterate through each input field and validate
+      const currEl = elements.namedItem(fname);
+      if (!(currEl instanceof HTMLInputElement)) {
+        continue;
       }
-      console.log(errors);
-
-      if (errors) return;
-      await submitAction();
-      cleanUp();
-    } catch (error: unknown) {
-      if (typeof error === 'string') setError && setError(error);
-      else if (error instanceof Error) setError && setError(error.message);
+      const valid = validateInput(currEl);
+      if (!valid) errors = true;
     }
+
+    if (errors) return;
+    await submitAction();
+    cleanUp();
   }
 
   return { inputError, validateInput, submitForm };
