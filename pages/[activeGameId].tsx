@@ -55,11 +55,8 @@ export default function ActiveGame() {
   }>();
 
   const [pieceToMove, setPieceToMove] = useState<Square | null>(null);
-  const [promotion, setPromotion] = useState<
-    'queen' | 'bishop' | 'rook' | 'knight' | null
-  >(null);
   const [promotePopupSquare, setPromotePopupSquare] = useState<Square | null>(
-    'a1'
+    null
   );
 
   const router = useRouter();
@@ -212,59 +209,70 @@ export default function ActiveGame() {
       square: Square,
       promote: 'queen' | 'rook' | 'knight' | 'bishop' | '' = ''
     ) => {
-      console.log(square, promote);
-      // const start = Date.now();
-      // if (gameOverDetails) return;
-      // if (!boardState || !pieceToMove) return;
-      // if (currentPieceMapIdx !== pieceMaps.current.length - 1) return;
-      // const gameboard = Board(
-      //   new Map(boardState.board),
-      //   boardState.checks,
-      //   boardState.castleRights
-      // );
-      // if (gameboard.at(pieceToMove).piece?.color !== activePlayerRef.current)
-      //   return;
-      // if (!gameboard.validate.move(pieceToMove, square)) return;
-      // if (activePlayerRef.current !== turn) return;
-      // const validationElapsed = Date.now() - start;
-      // try {
-      //   gameboard.from(pieceToMove).to(square);
-      //   pieceMaps.current.push(gameboard.get.pieceMap());
-      //   setCurrentPieceMapIdx(pieceMaps.current.length - 1);
+      const start = Date.now();
 
-      //   if (gameboard.validate.promotion(pieceToMove, square)) {
-      //     if (!promote) return setPromotePopupSquare(square);
-      //   }
+      console.log(square, promote, pieceToMove);
 
-      //   const reqStart = Date.now();
-      //   const res = await axios.put(
-      //     `${urls.backend}/games/${gameId}`,
-      //     {
-      //       gameId,
-      //       promote,
-      //       from: pieceToMove,
-      //       to: square,
-      //     },
-      //     {
-      //       withCredentials: true,
-      //     }
-      //   );
-      //   const reqElapsed = Date.now() - reqStart;
-      //   if (!res || res.status !== 200 || res.statusText !== 'OK')
-      //     throw new Error('something went wrong fetching game');
-      //   const elapsed = await res.data;
-      //   console.log(elapsed);
-      //   console.log({
-      //     validationElapsed,
-      //     reqElapsed,
-      //     total: Date.now() - start,
-      //   });
-      // } catch (err) {
-      //   console.log(err);
-      //   gameboard.from(square).to(pieceToMove);
-      //   pieceMaps.current.pop();
-      //   setCurrentPieceMapIdx(pieceMaps.current.length - 1);
-      // }
+      if (gameOverDetails) return;
+      if (!boardState || !pieceToMove) return;
+      if (currentPieceMapIdx !== pieceMaps.current.length - 1) return;
+
+      const gameboard = Board(
+        new Map(boardState.board),
+        boardState.checks,
+        boardState.castleRights
+      );
+      if (gameboard.at(pieceToMove).piece?.color !== activePlayerRef.current)
+        return;
+      if (!gameboard.validate.move(pieceToMove, square)) return;
+      if (activePlayerRef.current !== turn) return;
+
+      const validationElapsed = Date.now() - start;
+      try {
+        const promotion = gameboard.validate.promotion(pieceToMove, square);
+
+        gameboard.from(pieceToMove).to(square);
+        pieceMaps.current.push(gameboard.get.pieceMap());
+        setCurrentPieceMapIdx(pieceMaps.current.length - 1);
+
+        if (promotion) {
+          console.log(promote);
+          if (!promote) {
+            setPieceToMove(pieceToMove);
+            return setPromotePopupSquare(square);
+          }
+        }
+
+        const reqStart = Date.now();
+        const res = await axios.put(
+          `${urls.backend}/games/${gameId}`,
+          {
+            gameId,
+            promote,
+            from: pieceToMove,
+            to: square,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+        const reqElapsed = Date.now() - reqStart;
+
+        if (!res || res.status !== 200 || res.statusText !== 'OK')
+          throw new Error('something went wrong fetching game');
+        const elapsed = await res.data;
+        console.log(elapsed);
+        console.log({
+          validationElapsed,
+          reqElapsed,
+          total: Date.now() - start,
+        });
+      } catch (err) {
+        console.log(err);
+        gameboard.from(square).to(pieceToMove);
+        pieceMaps.current.pop();
+        setCurrentPieceMapIdx(pieceMaps.current.length - 1);
+      }
     },
     [gameId, turn, boardState, pieceToMove, gameOverDetails, currentPieceMapIdx]
   );

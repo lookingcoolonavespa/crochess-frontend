@@ -93,22 +93,26 @@ export default React.memo(function Gameboard({
                 color={p.color}
                 square={p.square}
                 type={p.piece}
-                onClick={function displayLegalMoves() {
-                  if (activePlayer !== null && p.color !== activePlayer) {
-                    // if player is not spectator and piece doesnt belong to active player
-                    if (pieceToMove) {
-                      resetPieceToMove();
-                      makeMove(p.square);
-                      return;
-                    } else return;
-                  }
-                  if (p.square === pieceToMove) {
-                    resetPieceToMove();
-                  } else {
-                    setPieceToMove(p.square);
-                    setHighlightedSquares(getLegalMoves(p.square));
-                  }
-                }}
+                onClick={
+                  !promotePopupSquare
+                    ? function displayLegalMoves() {
+                        if (activePlayer !== null && p.color !== activePlayer) {
+                          // if player is not spectator and piece doesnt belong to active player
+                          if (pieceToMove) {
+                            resetPieceToMove();
+                            makeMove(p.square);
+                            return;
+                          } else return;
+                        }
+                        if (p.square === pieceToMove) {
+                          resetPieceToMove();
+                        } else {
+                          setPieceToMove(p.square);
+                          setHighlightedSquares(getLegalMoves(p.square));
+                        }
+                      }
+                    : undefined
+                }
               />
             );
           })
