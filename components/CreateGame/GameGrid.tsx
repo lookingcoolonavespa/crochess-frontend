@@ -1,4 +1,4 @@
-import { useState, useContext, Dispatch, SetStateAction } from 'react';
+import { useState, useContext } from 'react';
 import { createGame } from '../../utils/game';
 
 import TimeControlButton from './TimeControlButton';

@@ -1,5 +1,5 @@
-import { SquareObj } from 'crochess-api/dist/types/interfaces';
-import { Board, Square } from 'crochess-api/dist/types/types';
+import { CastleObj, AllPieceMap } from 'crochess-api/dist/types/interfaces';
+import { Board, Square, HistoryType } from 'crochess-api/dist/types/types';
 import { GameType, ColorOptions } from './types';
 import { Dispatch, SetStateAction, HTMLInputTypeAttribute } from 'react';
 
@@ -28,7 +28,7 @@ export interface ControlBtnObj {
 
 interface Player {
   player: string;
-  time: number;
+  timeLeft: number;
 }
 export interface ActiveGameInterface {
   white: Player;
@@ -72,4 +72,93 @@ export interface FieldsInterface {
     type?: 'text' | 'dropdown';
     options?: SelectOptionsInterface[];
   };
+}
+
+export interface GameInterface {
+  white: Player;
+  black: Player;
+  board: Board;
+  checks: Square[];
+  castle: CastleObj;
+  history: HistoryType;
+  time: number;
+  increment: number;
+  turn: 'white' | 'black';
+  turnStart?: number;
+  active: boolean;
+  winner: 'white' | 'black' | null;
+  causeOfDeath: string;
+  claimDraw: {
+    white: boolean;
+    black: boolean;
+  };
+}
+
+export interface FetchGameStateUpdaters {
+  setGameOverDetails: React.Dispatch<
+    React.SetStateAction<
+      | {
+          winner: 'white' | 'black' | null;
+          reason: string;
+        }
+      | undefined
+    >
+  >;
+
+  setGameboardView: React.Dispatch<React.SetStateAction<'white' | 'black'>>;
+  setBoardState: React.Dispatch<
+    React.SetStateAction<{
+      board: Board;
+      checks: Square[];
+      castleRights: CastleObj;
+    }>
+  >;
+  setMoveHistory: React.Dispatch<React.SetStateAction<string[][]>>;
+  setWhiteTime: React.Dispatch<React.SetStateAction<number>>;
+  setBlackTime: React.Dispatch<React.SetStateAction<number>>;
+  setCurrentPieceMapIdx: React.Dispatch<React.SetStateAction<number>>;
+  setTurn: React.Dispatch<React.SetStateAction<'white' | 'black'>>;
+}
+
+export interface FetchGameGameDetails {
+  timeDetailsRef: React.MutableRefObject<{
+    startTime: number;
+    turnStart: number;
+    maxTime: number;
+  }>;
+  activePlayerRef: React.MutableRefObject<'white' | 'black' | null>;
+  pieceMapsRef: React.MutableRefObject<AllPieceMap[]>;
+}
+
+export interface UpdateGameGameDetails {
+  timeDetailsRef: React.MutableRefObject<{
+    startTime: number;
+    turnStart: number;
+    maxTime: number;
+  }>;
+  pieceMapsRef: React.MutableRefObject<AllPieceMap[]>;
+}
+
+export interface UpdateGameStateUpdaters {
+  setGameOverDetails: React.Dispatch<
+    React.SetStateAction<
+      | {
+          winner: 'white' | 'black' | null;
+          reason: string;
+        }
+      | undefined
+    >
+  >;
+  setBoardState: React.Dispatch<
+    React.SetStateAction<{
+      board: Board;
+      checks: Square[];
+      castleRights: CastleObj;
+    }>
+  >;
+  setMoveHistory: React.Dispatch<React.SetStateAction<string[][]>>;
+  setWhiteTime: React.Dispatch<React.SetStateAction<number>>;
+  setBlackTime: React.Dispatch<React.SetStateAction<number>>;
+  setCurrentPieceMapIdx: React.Dispatch<React.SetStateAction<number>>;
+  setTurn: React.Dispatch<React.SetStateAction<'white' | 'black'>>;
 }

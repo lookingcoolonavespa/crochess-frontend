@@ -14,14 +14,14 @@ import {
 } from 'crochess-api/dist/types/types';
 import { AllPieceMap, CastleObj } from 'crochess-api/dist/types/interfaces';
 import { convertPieceMapToArray, getActivePlayer } from '../utils/misc';
-import { toMilliseconds } from '../utils/timerStuff';
 import styles from '../styles/ActiveGame.module.scss';
-import Promotion from '../components/Game/Promotion';
+import fetchGame from '../utils/fetchGame';
+import updateGameDetails from '../utils/updateGameDetails';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
 
-  const timeDetails = useRef({
+  const timeDetailsRef = useRef({
     startTime: 0,
     turnStart: 0,
     maxTime: 0,
@@ -47,7 +47,7 @@ export default function ActiveGame() {
     },
   });
   const [currentPieceMapIdx, setCurrentPieceMapIdx] = useState(0);
-  const pieceMaps = useRef<AllPieceMap[]>([]);
+  const pieceMapsRef = useRef<AllPieceMap[]>([]);
   const [moveHistory, setMoveHistory] = useState<string[][]>([]);
   const [gameOverDetails, setGameOverDetails] = useState<{
     winner: 'black' | 'white' | null;
@@ -61,7 +61,6 @@ export default function ActiveGame() {
 
   const router = useRouter();
   const { activeGameId: gameId } = router.query;
-  // const gameId = '624ddfd99ce65c46beddcb84';
 
   useEffect(function setMounted() {
     mounted.current = true;
@@ -72,80 +71,27 @@ export default function ActiveGame() {
   }, []);
 
   useEffect(
-    function fetchGame() {
+    function () {
+      if (!gameId) return;
       (async () => {
-        try {
-          if (!gameId) return;
-          const res = await axios.get(`${urls.backend}/games/${gameId}`);
-          if (!res || res.status !== 200 || res.statusText !== 'OK')
-            throw new Error('something went wrong fetching game');
-
-          const game = await res.data;
-
-          if (game.winner) {
-            setGameOverDetails({
-              winner: game.winner,
-              reason: game.causeOfDeath,
-            });
+        await fetchGame(
+          gameId as string,
+          {
+            timeDetailsRef,
+            activePlayerRef,
+            pieceMapsRef,
+          },
+          {
+            setGameOverDetails,
+            setGameboardView,
+            setBoardState,
+            setMoveHistory,
+            setWhiteTime,
+            setBlackTime,
+            setCurrentPieceMapIdx,
+            setTurn,
           }
-
-          if (game.active) {
-            timeDetails.current = {
-              startTime: game[game.turn].timeLeft,
-              turnStart: game.turnStart || Date.now(),
-              maxTime: game.time,
-            };
-          }
-
-          activePlayerRef.current = getActivePlayer(
-            gameId as string,
-            game.white.player,
-            game.black.player
-          );
-          setGameboardView(() => activePlayerRef.current || 'white');
-          setBoardState({
-            board: new Map(Object.entries(game.board)),
-            checks: game.checks,
-            castleRights: game.castle,
-          });
-
-          setMoveHistory(game.history);
-
-          if (game.turnStart) {
-            // if fetch happens in middle of game
-            const elapsedTime = Date.now() - game.turnStart;
-            let timeLeft = game[game.turn].timeLeft - elapsedTime;
-            if (timeLeft < 0) timeLeft = 0;
-
-            switch (game.turn) {
-              case 'white':
-                setWhiteTime(timeLeft);
-                setBlackTime(game.black.timeLeft);
-                break;
-              case 'black':
-                setBlackTime(timeLeft);
-                setWhiteTime(game.white.timeLeft);
-                break;
-            }
-
-            const oldPieceMaps = Board(
-              new Map(Object.entries(game.board)),
-              game.checks,
-              game.castle
-            )
-              .get.boardStatesFromHistory(game.history)
-              .map((b) => b.pieceMap);
-            pieceMaps.current = oldPieceMaps;
-            setCurrentPieceMapIdx(pieceMaps.current.length - 1);
-          } else {
-            setWhiteTime(game.white.timeLeft);
-            setBlackTime(game.black.timeLeft);
-          }
-
-          setTurn(game.turn);
-        } catch (err) {
-          console.log(err);
-        }
+        );
       })();
     },
     [gameId]
@@ -158,123 +104,114 @@ export default function ActiveGame() {
       if (gameId) socket.emit('joinRoom', gameId);
 
       socket.on('update', (data) => {
-        const turn = data.turn;
-
-        if (!mounted.current) return;
-
-        if (data.winner) {
-          setGameOverDetails({
-            winner: data.winner,
-            reason: data.causeOfDeath,
-          });
-        }
-
-        setBoardState({
-          board: new Map(Object.entries(data.board)),
-          checks: data.checks,
-          castleRights: data.castle,
-        });
-
-        pieceMaps.current.push(
-          Board(
-            new Map(Object.entries(data.board)),
-            data.checks,
-            data.castle
-          ).get.pieceMap()
+        updateGameDetails.onUpdate(
+          data,
+          {
+            timeDetailsRef,
+            pieceMapsRef,
+          },
+          {
+            setGameOverDetails,
+            setBoardState,
+            setMoveHistory,
+            setWhiteTime,
+            setBlackTime,
+            setCurrentPieceMapIdx,
+            setTurn,
+          }
         );
-        setCurrentPieceMapIdx((prev) => {
-          if (prev === pieceMaps.current.length - 2)
-            return pieceMaps.current.length - 1;
-          else return prev;
-        });
-        setMoveHistory(data.history);
-
-        setWhiteTime(data.white.timeLeft);
-        setBlackTime(data.black.timeLeft);
-        if (data.active) {
-          timeDetails.current = {
-            ...timeDetails.current,
-            startTime: data[turn].timeLeft,
-            turnStart: data.turnStart,
-          };
-        }
-        setTurn(data.turn);
       });
     },
     [gameId]
   );
 
+  const gameboard = useMemo(
+    () => Board(boardState.board, boardState.checks, boardState.castleRights),
+    [boardState]
+  );
+
+  const validateMove = useCallback(
+    (square: Square) => {
+      if (gameOverDetails) return false;
+      if (!boardState || !pieceToMove) return false;
+      if (currentPieceMapIdx !== pieceMapsRef.current.length - 1) return false;
+
+      if (gameboard.at(pieceToMove).piece?.color !== activePlayerRef.current)
+        return false;
+      if (!gameboard.validate.move(pieceToMove, square)) return false;
+      if (activePlayerRef.current !== turn) return false;
+
+      return true;
+    },
+    [
+      gameboard,
+      boardState,
+      currentPieceMapIdx,
+      gameOverDetails,
+      pieceToMove,
+      turn,
+    ]
+  );
+
+  const checkPromotion = useCallback(
+    (square: Square) => {
+      return gameboard.validate.promotion(pieceToMove as string, square);
+    },
+    [gameboard.validate, pieceToMove]
+  );
+
   const makeMove = useCallback(
     async (
-      square: Square,
+      to: Square,
       promote: 'queen' | 'rook' | 'knight' | 'bishop' | '' = ''
     ) => {
-      const start = Date.now();
+      /* start of main function */
+      const valid = validateMove(to);
+      if (!valid) return;
+      if (promote && !checkPromotion(to)) return;
 
-      console.log(square, promote, pieceToMove);
+      updatePieceMaps();
 
-      if (gameOverDetails) return;
-      if (!boardState || !pieceToMove) return;
-      if (currentPieceMapIdx !== pieceMaps.current.length - 1) return;
-
-      const gameboard = Board(
-        new Map(boardState.board),
-        boardState.checks,
-        boardState.castleRights
-      );
-      if (gameboard.at(pieceToMove).piece?.color !== activePlayerRef.current)
-        return;
-      if (!gameboard.validate.move(pieceToMove, square)) return;
-      if (activePlayerRef.current !== turn) return;
-
-      const validationElapsed = Date.now() - start;
       try {
-        const promotion = gameboard.validate.promotion(pieceToMove, square);
+        await sendMove(to, promote);
+      } catch (err) {
+        console.log(err);
+      }
+      /* end of main function */
 
-        gameboard.from(pieceToMove).to(square);
-        pieceMaps.current.push(gameboard.get.pieceMap());
-        setCurrentPieceMapIdx(pieceMaps.current.length - 1);
-
-        if (promotion) {
-          console.log(promote);
-          if (!promote) {
-            setPieceToMove(pieceToMove);
-            return setPromotePopupSquare(square);
-          }
-        }
-
-        const reqStart = Date.now();
+      // helper functions
+      async function sendMove(
+        to: Square,
+        promote: 'queen' | 'rook' | 'knight' | 'bishop' | '' = ''
+      ) {
         const res = await axios.put(
           `${urls.backend}/games/${gameId}`,
           {
             gameId,
+            to,
             promote,
             from: pieceToMove,
-            to: square,
           },
           {
             withCredentials: true,
           }
         );
-        const reqElapsed = Date.now() - reqStart;
 
         if (!res || res.status !== 200 || res.statusText !== 'OK')
           throw new Error('something went wrong fetching game');
         const elapsed = await res.data;
         console.log(elapsed);
-        console.log({
-          validationElapsed,
-          reqElapsed,
-          total: Date.now() - start,
-        });
-      } catch (err) {
-        console.log(err);
-        gameboard.from(square).to(pieceToMove);
-        pieceMaps.current.pop();
-        setCurrentPieceMapIdx(pieceMaps.current.length - 1);
+      }
+
+      function updatePieceMaps() {
+        const gameboard = Board(new Map(boardState.board));
+        gameboard.from(pieceToMove as string).to(to);
+        if (promote) gameboard.at(pieceToMove as string).promote(promote);
+        pieceMapsRef.current.push(gameboard.get.pieceMap());
+        setCurrentPieceMapIdx(pieceMapsRef.current.length - 1);
       }
     },
-    [gameId, turn, boardState, pieceToMove, gameOverDetails, currentPieceMapIdx]
+    [gameId, boardState, validateMove, checkPromotion, pieceToMove]
   );
 
   const getLegalMoves = useCallback(
@@ -287,38 +224,42 @@ export default function ActiveGame() {
 
   const piecePos = useMemo(() => {
     let pieceMap;
-    if (!pieceMaps.current.length)
+    if (!pieceMapsRef.current.length)
       pieceMap = Board(
         boardState.board,
         boardState.checks,
         boardState.castleRights
       ).get.pieceMap();
-    else pieceMap = pieceMaps.current[currentPieceMapIdx];
+    else pieceMap = pieceMapsRef.current[currentPieceMapIdx];
     return convertPieceMapToArray(pieceMap);
   }, [boardState, currentPieceMapIdx]);
 
-  function goBackToStart() {
-    if (!pieceMaps.current.length) return;
-    setCurrentPieceMapIdx(0);
-  }
-  function goBackOneMove() {
-    if (!pieceMaps.current.length) return;
-    setCurrentPieceMapIdx((prev) => {
-      if (prev === 0) return prev;
-      return prev - 1;
-    });
-  }
-  function goForwardOneMove() {
-    if (!pieceMaps.current.length) return;
-    setCurrentPieceMapIdx((prev) => {
-      if (prev === pieceMaps.current.length - 1) return prev;
-      return prev + 1;
-    });
-  }
-  function goToCurrentMove() {
-    if (!pieceMaps.current.length) return;
-    setCurrentPieceMapIdx(pieceMaps.current.length - 1);
-  }
+  const historyControls = useMemo(() => {
+    return {
+      goBackToStart: () => {
+        if (!pieceMapsRef.current.length) return;
+        setCurrentPieceMapIdx(0);
+      },
+      goBackOneMove: () => {
+        if (!pieceMapsRef.current.length) return;
+        setCurrentPieceMapIdx((prev) => {
+          if (prev === 0) return prev;
+          return prev - 1;
+        });
+      },
+      goForwardOneMove: () => {
+        if (!pieceMapsRef.current.length) return;
+        setCurrentPieceMapIdx((prev) => {
+          if (prev === pieceMapsRef.current.length - 1) return prev;
+          return prev + 1;
+        });
+      },
+      goToCurrentMove: () => {
+        if (!pieceMapsRef.current.length) return;
+        setCurrentPieceMapIdx(pieceMapsRef.current.length - 1);
+      },
+    };
+  }, []);
 
   return (
     <main className={styles.main}>
@@ -332,6 +273,10 @@ export default function ActiveGame() {
           getLegalMoves={getLegalMoves}
           activePlayer={activePlayerRef.current}
           promotePopupSquare={promotePopupSquare}
+          setPromotePopupSquare={setPromotePopupSquare}
+          checkPromotion={(s: Square) => {
+            return validateMove(s) && checkPromotion(s);
+          }}
           onPromote={(e) => {
             e.stopPropagation();
             makeMove(
@@ -348,27 +293,22 @@ export default function ActiveGame() {
         <Interface
           gameOverDetails={gameOverDetails}
           whiteDetails={{
-            maxTime: timeDetails.current.maxTime,
-            startTime: timeDetails.current.startTime,
+            maxTime: timeDetailsRef.current.maxTime,
+            startTime: timeDetailsRef.current.startTime,
             time: whiteTime,
             setTime: setWhiteTime,
             active: !gameOverDetails && turn === 'white',
           }}
           blackDetails={{
-            maxTime: timeDetails.current.maxTime,
-            startTime: timeDetails.current.startTime,
+            maxTime: timeDetailsRef.current.maxTime,
+            startTime: timeDetailsRef.current.startTime,
             time: blackTime,
             setTime: setBlackTime,
             active: !gameOverDetails && turn === 'black',
           }}
-          turnStart={timeDetails.current.turnStart}
+          turnStart={timeDetailsRef.current.turnStart}
           history={moveHistory}
-          historyControls={{
-            goBackToStart,
-            goBackOneMove,
-            goForwardOneMove,
-            goToCurrentMove,
-          }}
+          historyControls={historyControls}
           view={gameboardView}
           flipBoard={() =>
             setGameboardView((prev) => {
@@ -380,10 +320,3 @@ export default function ActiveGame() {
     </main>
   );
 }
-
-/* what is different if game is over 
-- timers arent active
-- theres a display box which displays game is over + reason
-- cant make a move 
-
-*/

@@ -23,7 +23,9 @@ interface GameboardProps {
   setPieceToMove: React.Dispatch<React.SetStateAction<Square | null>>;
   getLegalMoves: (square: Square) => Moves;
   activePlayer: 'white' | 'black' | null;
+  checkPromotion: (square: Square) => boolean;
   promotePopupSquare: Square | null;
+  setPromotePopupSquare: React.Dispatch<React.SetStateAction<Square | null>>;
   onPromote: (e: MouseEvent<HTMLDivElement>) => void;
 }
 
@@ -35,7 +37,9 @@ export default React.memo(function Gameboard({
   setPieceToMove,
   getLegalMoves,
   activePlayer,
+  checkPromotion,
   promotePopupSquare,
+  setPromotePopupSquare,
   onPromote,
 }: GameboardProps) {
   const [highlightedSquares, setHighlightedSquares] = useState<Moves>([]);
@@ -75,7 +79,10 @@ export default React.memo(function Gameboard({
             {endCol && <div className={`${styles.rank} label`}>{row}</div>}
             {promotePopupSquare === s && (
               <Promotion
-                onPromote={onPromote}
+                onPromote={(e) => {
+                  onPromote(e);
+                  resetPieceToMove();
+                }}
                 square={promotePopupSquare}
                 view={view}
               />
@@ -95,18 +102,23 @@ export default React.memo(function Gameboard({
                 type={p.piece}
                 onClick={
                   !promotePopupSquare
-                    ? function displayLegalMoves() {
+                    ? () => {
                         if (activePlayer !== null && p.color !== activePlayer) {
                           // if player is not spectator and piece doesnt belong to active player
-                          if (pieceToMove) {
-                            resetPieceToMove();
-                            makeMove(p.square);
-                            return;
-                          } else return;
+                          if (!pieceToMove) return; // means its not a capture
+
+                          if (checkPromotion(p.square))
+                            return setPromotePopupSquare(p.square);
+
+                          resetPieceToMove();
+                          makeMove(p.square);
+                          return;
                         }
+
                         if (p.square === pieceToMove) {
                           resetPieceToMove();
                         } else {
+                          // display legal moves
                           setPieceToMove(p.square);
                           setHighlightedSquares(getLegalMoves(p.square));
                         }
