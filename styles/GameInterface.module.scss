@@ -46,3 +46,23 @@ $timer-height: 50px;
 .bottom {
   bottom: -$timer-height;
 }
+
+.game_over_display {
+  position: absolute;
+  background-color: var(--foreground);
+  z-index: 5;
+  bottom: 0;
+  height: 120px;
+  width: 100%;
+  @include mixins.flexCenter(column);
+
+  :global(.close-btn) {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+
+  p:first-of-type {
+    margin-bottom: 10px;
+  }
+}

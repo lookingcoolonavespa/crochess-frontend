@@ -7,6 +7,7 @@ import urls from '../../utils/urls';
 import { GameSeekInterface } from '../../types/interfaces';
 import { setIdToCookie } from '../../utils/misc';
 import { fromMillisecondsToMinutes } from '../../utils/timerStuff';
+import { createGame } from '../../utils/game';
 
 interface GameDoorProps {
   gameSeek: GameSeekInterface;
@@ -29,27 +30,14 @@ export default function GameDoor({ gameSeek }: GameDoorProps) {
       className={rootClasses.join(' ')}
       onClick={async (e) => {
         e.stopPropagation();
-        const oppColor = gameSeek.color === 'white' ? 'black' : 'white';
-
-        const [res] = await Promise.all([
-          axios.post(`${urls.backend}/games`, {
-            [gameSeek.color]: user,
-            [oppColor]: gameSeek.seeker,
-            time: gameSeek.time,
-            increment: gameSeek.increment,
-            seeker: gameSeek.seeker,
-            challenger: user,
-          }),
-          axios.delete(`${urls.backend}/gameSeeks/${gameSeek._id}`),
-        ]);
-
-        if (res.status !== 200 || res.statusText !== 'OK')
-          throw new Error('something went wrong fetching the game');
-
-        const data = await res.data;
-        sessionStorage.setItem(data.gameId, user); // used to identify user once they move into a game, useful for if they refresh or disconnect
-        setIdToCookie(data.gameId, data.color, data.cookieId);
-        router.push(`/${data.gameId}`);
+        try {
+          const game = await createGame(user, gameSeek);
+          sessionStorage.setItem(game.gameId, user); // used to identify user once they move into a game, useful for if they refresh or disconnect
+          setIdToCookie(game.gameId, game.color, game.cookieId);
+          router.push(`/${game.gameId}`);
+        } catch (err) {
+          console.log(err);
+        }
       }}
     >
       {[

@@ -11,7 +11,7 @@ import ListOfGames from '../components/LocalGames/ListOfGames';
 import styles from '../styles/Home.module.scss';
 import Popup from '../components/Popup';
 import useInputValues from '../utils/hooks/useInputValues';
-import { createGame } from '../utils/game';
+import { createGameSeek } from '../utils/game';
 import { GameType } from '../types/types';
 import Modal from '../components/Modal';
 import { toMilliseconds } from '../utils/timerStuff';
@@ -131,7 +131,7 @@ const Home: NextPage = () => {
                     [popupInputValues.time_unit]:
                       popupInputValues.time as number,
                   });
-                  createGame(
+                  createGameSeek(
                     gameTime,
                     popupInputValues.increment as number,
                     popupInputValues.color as 'black' | 'white',

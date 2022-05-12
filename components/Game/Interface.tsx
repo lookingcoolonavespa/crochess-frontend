@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Controls from './Controls';
 import Timer from './Timer';
 import History from './History';
@@ -5,8 +6,11 @@ import styles from '../../styles/GameInterface.module.scss';
 import { createControlBtnObj } from '../../utils/misc';
 import flagIcon from '../../public/icons/flag-fill.svg';
 import TimerBar from './TimerBar';
+import GameStatusDisplay from './GameStatusDisplay';
+import { GameOverDetailsInterface } from '../../types/interfaces';
 
 interface InterfaceProps {
+  activePlayer: 'white' | 'black' | null;
   whiteDetails: colorDetails;
   blackDetails: colorDetails;
   history: string[][];
@@ -19,10 +23,9 @@ interface InterfaceProps {
   view: 'white' | 'black';
   flipBoard: () => void;
   turnStart: number;
-  gameOverDetails?: {
-    winner: 'black' | 'white' | null;
-    reason: string;
-  };
+  gameOverDetails?: GameOverDetailsInterface;
+  offeredDraw?: boolean;
+  claimDraw?: boolean;
 }
 
 interface colorDetails {
@@ -34,6 +37,7 @@ interface colorDetails {
 }
 
 export default function Interface({
+  activePlayer,
   whiteDetails,
   blackDetails,
   view,
@@ -42,9 +46,73 @@ export default function Interface({
   history,
   historyControls,
   gameOverDetails,
+  offeredDraw,
+  claimDraw,
 }: InterfaceProps) {
+  const [status, setStatus] = useState<{
+    type:
+      | 'gameOver'
+      | 'offeredDraw'
+      | 'claimDraw'
+      | 'offerDrawConfirmation'
+      | 'resignConfirmation';
+    payload: GameOverDetailsInterface | undefined;
+  }>();
+  const [resignConfirmation, setResignConfirmation] = useState(false);
+  const [offerDrawConfirmation, setOfferDrawConfirmation] = useState(false);
+
+  useEffect(() => {
+    // each type variable corresponds to typeStr of same index
+    const typeVariables = [
+      !!gameOverDetails,
+      offeredDraw,
+      resignConfirmation,
+      offerDrawConfirmation,
+      claimDraw,
+    ];
+    const typeStr = [
+      'gameOver',
+      'offeredDraw',
+      'resignConfirmation',
+      'offerDrawConfirmation',
+      'claimDraw',
+    ] as (
+      | 'gameOver'
+      | 'offeredDraw'
+      | 'claimDraw'
+      | 'offerDrawConfirmation'
+      | 'resignConfirmation'
+    )[];
+    const activeTypeIdx = typeVariables.indexOf(true);
+
+    if (activeTypeIdx === -1) return;
+    if (!activePlayer && activeTypeIdx > 1) {
+      return;
+    }
+
+    setStatus({
+      type: typeStr[activeTypeIdx],
+      payload: activeTypeIdx === 0 ? gameOverDetails : undefined,
+    });
+  }, [
+    gameOverDetails,
+    resignConfirmation,
+    offerDrawConfirmation,
+    claimDraw,
+    offeredDraw,
+    activePlayer,
+  ]);
+
   const topTimer = view === 'white' ? blackDetails : whiteDetails;
   const bottomTimer = view === 'white' ? whiteDetails : blackDetails;
+
+  function resign() {
+    setResignConfirmation(true);
+  }
+
+  function offerDraw() {
+    setOfferDrawConfirmation(true);
+  }
 
   return (
     <div className={styles.main}>
@@ -54,19 +122,30 @@ export default function Interface({
         {...topTimer}
       />
       <TimerBar maxTime={topTimer.maxTime} time={topTimer.time} />
-      <History
-        moves={history}
-        flipBoard={flipBoard}
-        gameOverDetails={gameOverDetails}
-        historyControls={historyControls}
-      />
-      <Controls
-        className={styles.main_controls}
-        list={[
-          createControlBtnObj(undefined, 'offer a draw', '1/2'),
-          createControlBtnObj(flagIcon, 'resign game'),
-        ]}
-      />
+      <div>
+        {status && (
+          <GameStatusDisplay
+            close={() => setStatus(undefined)}
+            styles={styles}
+            status={status}
+            activePlayer={activePlayer as 'white' | 'black'}
+          />
+        )}
+        <History
+          moves={history}
+          flipBoard={flipBoard}
+          historyControls={historyControls}
+        />
+      </div>
+      {activePlayer && (
+        <Controls
+          className={styles.main_controls}
+          list={[
+            createControlBtnObj(undefined, 'offer a draw', '1/2', offerDraw),
+            createControlBtnObj(flagIcon, 'resign game', undefined, resign),
+          ]}
+        />
+      )}
       <TimerBar maxTime={bottomTimer.maxTime} time={bottomTimer.time} />
       <Timer
         className={`${styles.timer} ${styles.bottom}`}

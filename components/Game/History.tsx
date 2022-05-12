@@ -9,7 +9,7 @@ import flipIcon from '../../public/icons/flip-2.svg';
 
 import styles from '../../styles/History.module.scss';
 import HistoryDisplay from './HistoryDisplay';
-import GameOverDisplay from './GameOverDisplay';
+import GameOverDisplay from './GameStatusDisplay';
 
 interface HistoryProps {
   moves: string[][];
@@ -19,10 +19,6 @@ interface HistoryProps {
     goForwardOneMove: () => void;
     goToCurrentMove: () => void;
   };
-  gameOverDetails?: {
-    winner: 'black' | 'white' | null;
-    reason: string;
-  };
   flipBoard: () => void;
 }
 
@@ -30,10 +26,7 @@ export default function History({
   moves,
   historyControls,
   flipBoard,
-  gameOverDetails,
 }: HistoryProps) {
-  const [gameOverDisplay, setGameOverDisplay] = useState(true);
-
   return (
     <section className={styles.main}>
       <Controls
@@ -67,14 +60,6 @@ export default function History({
         ]}
       />
       <HistoryDisplay moves={moves} styles={styles} />
-      {gameOverDetails && gameOverDisplay && (
-        <GameOverDisplay
-          winner={gameOverDetails.winner}
-          reason={gameOverDetails.reason}
-          styles={styles}
-          close={() => setGameOverDisplay(false)}
-        />
-      )}
     </section>
   );
 }

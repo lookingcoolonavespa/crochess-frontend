@@ -45,7 +45,7 @@ export default function useListOfGames(
         if (mounted.current) setUser(socket.id);
       });
 
-      socket.on('newGame', (game) => {
+      socket.on('newGameSeek', (game) => {
         if (mounted.current)
           setListOfGames((prev) => {
             const newList = [...prev, game].reduce((acc, curr) => {
@@ -65,7 +65,7 @@ export default function useListOfGames(
         router.push(`/${data.gameId}`);
       });
 
-      socket.on('deletedGame', (d) => {
+      socket.on('deletedGameSeek', (d) => {
         if (mounted.current)
           setListOfGames((prev) => prev.filter((g) => g._id !== d._id));
       });

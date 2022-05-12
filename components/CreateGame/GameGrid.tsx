@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { createGame } from '../../utils/game';
+import { createGameSeek } from '../../utils/game';
 
 import TimeControlButton from './TimeControlButton';
 import styles from '../../styles/GameGrid.module.scss';
@@ -47,7 +47,11 @@ const GameGrid = ({ active, className, createCustomGame }: GameGridProps) => {
               }
               setActiveSearch(i);
               const time = toMilliseconds({ minutes: tc.time });
-              createGame(time, tc.increment, 'random', user, tc.type);
+              try {
+                createGameSeek(time, tc.increment, 'random', user, tc.type);
+              } catch (err) {
+                console.log(err);
+              }
             }}
           />
         );

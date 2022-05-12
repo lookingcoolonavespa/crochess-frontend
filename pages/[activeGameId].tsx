@@ -15,8 +15,9 @@ import {
 import { AllPieceMap, CastleObj } from 'crochess-api/dist/types/interfaces';
 import { convertPieceMapToArray, getActivePlayer } from '../utils/misc';
 import styles from '../styles/ActiveGame.module.scss';
-import fetchGame from '../utils/fetchGame';
+import { fetchGame, sendMove } from '../utils/game';
 import updateGameDetails from '../utils/updateGameDetails';
+import { GameOverDetailsInterface } from '../types/interfaces';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
@@ -49,10 +50,8 @@ export default function ActiveGame() {
   const [currentPieceMapIdx, setCurrentPieceMapIdx] = useState(0);
   const pieceMapsRef = useRef<AllPieceMap[]>([]);
   const [moveHistory, setMoveHistory] = useState<string[][]>([]);
-  const [gameOverDetails, setGameOverDetails] = useState<{
-    winner: 'black' | 'white' | null;
-    reason: string;
-  }>();
+  const [gameOverDetails, setGameOverDetails] =
+    useState<GameOverDetailsInterface>();
 
   const [pieceToMove, setPieceToMove] = useState<Square | null>(null);
   const [promotePopupSquare, setPromotePopupSquare] = useState<Square | null>(
@@ -165,7 +164,6 @@ export default function ActiveGame() {
       to: Square,
       promote: 'queen' | 'rook' | 'knight' | 'bishop' | '' = ''
     ) => {
-      /* start of main function */
       const valid = validateMove(to);
       if (!valid) return;
       if (promote && !checkPromotion(to)) return;
@@ -173,34 +171,9 @@ export default function ActiveGame() {
       updatePieceMaps();
 
       try {
-        await sendMove(to, promote);
+        await sendMove(gameId as string, pieceToMove as string, to, promote);
       } catch (err) {
         console.log(err);
-      }
-      /* end of main function */
-
-      // helper functions
-      async function sendMove(
-        to: Square,
-        promote: 'queen' | 'rook' | 'knight' | 'bishop' | '' = ''
-      ) {
-        const res = await axios.put(
-          `${urls.backend}/games/${gameId}`,
-          {
-            gameId,
-            to,
-            promote,
-            from: pieceToMove,
-          },
-          {
-            withCredentials: true,
-          }
-        );
-
-        if (!res || res.status !== 200 || res.statusText !== 'OK')
-          throw new Error('something went wrong fetching game');
-        const elapsed = await res.data;
-        console.log(elapsed);
       }
 
       function updatePieceMaps() {
@@ -291,6 +264,7 @@ export default function ActiveGame() {
           }}
         ></Gameboard>
         <Interface
+          activePlayer={activePlayerRef.current}
           gameOverDetails={gameOverDetails}
           whiteDetails={{
             maxTime: timeDetailsRef.current.maxTime,

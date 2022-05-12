@@ -162,3 +162,8 @@ export interface UpdateGameStateUpdaters {
   setCurrentPieceMapIdx: React.Dispatch<React.SetStateAction<number>>;
   setTurn: React.Dispatch<React.SetStateAction<'white' | 'black'>>;
 }
+
+export interface GameOverDetailsInterface {
+  winner: 'black' | 'white' | null;
+  reason: string;
+}

@@ -1,14 +1,16 @@
 import styles from '../styles/FlatBtn.module.scss';
+import Image from 'next/image';
 
 interface FlatBtnProps {
   className?: string;
   type?: 'button' | 'submit' | 'reset' | undefined;
-  text: string;
+  text?: string;
   underline?: boolean;
   filled?: boolean;
   hollow?: boolean;
   size: 'small' | 'medium';
   onClick?: () => void;
+  icon: { src: string; alt: string };
 }
 
 export default function FlatBtn({
@@ -20,6 +22,7 @@ export default function FlatBtn({
   hollow,
   size,
   onClick,
+  icon,
 }: FlatBtnProps) {
   const classes = [styles.main, styles[size]];
   if (className) classes.push(className);
@@ -32,7 +35,12 @@ export default function FlatBtn({
       className={classes.join(' ')}
       onClick={onClick}
     >
-      <span className={underline ? styles['underline-hover'] : ''}>{text}</span>
+      {text && (
+        <span className={underline ? styles['underline-hover'] : ''}>
+          {text}
+        </span>
+      )}
+      {icon && <Image src={icon.src} alt={icon.alt} />}
     </button>
   );
 }

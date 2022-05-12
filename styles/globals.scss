@@ -141,6 +141,15 @@ ul {
   }
 }
 
+.hover-lighten {
+  transition: all 0.3s ease-out;
+
+  &:hover {
+    filter: brightness(1.2);
+    cursor: pointer;
+  }
+}
+
 .foreground {
   background-color: var(--foreground);
 }

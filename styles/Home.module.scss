@@ -36,6 +36,7 @@
       cursor: pointer;
       padding: 1.5em 1.5em 1em;
       width: 200px;
+      transition: all 0.3s ease-out;
 
       &.inactive {
         z-index: 1;
@@ -58,6 +59,9 @@
       }
       &.inactive:before {
         background-color: #c1c1c1;
+      }
+      &.inactive:hover:before {
+        filter: brightness(1.1);
       }
 
       &:not(first-of-type) {
