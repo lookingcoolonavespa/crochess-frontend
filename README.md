@@ -1,34 +1,38 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# todoist clone
+live demo: https://lookingcoolonavespa.github.io/todoist-clone/dist/
 
-## Getting Started
+## app in action
+![screenshot of home page](https://i.postimg.cc/7P38pMqW/Screenshot-from-2021-12-30-20-33-00.png)
 
-First, run the development server:
+![screenshot of upcoming](https://i.postimg.cc/ncT8LFjK/Screenshot-from-2021-12-30-20-33-31.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+![screenshot of project page](https://i.postimg.cc/wT98HyvT/Screenshot-from-2021-12-30-20-33-43.png)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+![screenshot of comments popup](https://i.postimg.cc/bJjtYDvL/Screenshot-from-2021-12-30-21-01-39.png)
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## features
+- keep track of all your todos in one place
+- set todos to 1 of 4 priority levels
+- edit, make comments on, or delete todos
+- make projects to group together todos
+- edit, make comments on, or delete projects
+- sort todos by due date, alphabetically, or by priority
+- home screen greets you with the todos due that day and any overdue todos you may have
+- check any todos you have due in the upcoming 7 days in the 'upcoming' tab
+- easily find your todos or projects with the search function
+- fully responsive
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## tech stack
+- vanilla js
+- html/css
 
-## Learn More
+## how the code is orgranized
+- every distinct "block" is seperated into its own module (eg. header module, menu module, content module, popups module)
+- the modules would house all its instances (eg. popups module would hold the comment popup, sort popup, and so on; the content module houses the project view, today view, and upcoming view)
+- the modules also house any buttons located inside the "block"
+- dom.js pulls everything together and is where all the events + event listeners are located 
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## challenges i faced
+- **organizing the code** - I should have seperated my dom elements from my logic. I could have written my methods to take in dom elements as arguments. This would have led to more manageable code I think. Feels like code would be more reusable and easier to read had I done it that way.
+- **state management** - Looking back at my code, I think one of the biggest flaws of how I wrote it was how I managed state. I didn't want to have global variables and back then I didn't understand closures that well - which meant I had stored my state in my dom via classes. Real ugly design which led to a lot of extra code. If I were to update my code, this would be on top of my list.
