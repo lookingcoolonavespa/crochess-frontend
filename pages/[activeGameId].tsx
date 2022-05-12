@@ -13,7 +13,11 @@ import {
   Square,
 } from 'crochess-api/dist/types/types';
 import { AllPieceMap, CastleObj } from 'crochess-api/dist/types/interfaces';
-import { convertPieceMapToArray, getActivePlayer } from '../utils/misc';
+import {
+  convertPieceMapToArray,
+  getActivePlayer,
+  getOppColor,
+} from '../utils/misc';
 import styles from '../styles/ActiveGame.module.scss';
 import { fetchGame, sendMove } from '../utils/game';
 import updateGameDetails from '../utils/updateGameDetails';
@@ -243,6 +247,31 @@ export default function ActiveGame() {
     };
   }, []);
 
+  const flipBoard = useCallback(() => {
+    setGameboardView((prev) => {
+      return prev === 'white' ? 'black' : 'white';
+    });
+  }, []);
+
+  const validateAndCheckPromotion = useCallback(
+    (s: Square) => {
+      return validateMove(s) && checkPromotion(s);
+    },
+    [checkPromotion, validateMove]
+  );
+
+  const onPromote = useCallback(
+    (e) => {
+      e.stopPropagation();
+      makeMove(
+        promotePopupSquare as Square,
+        e.currentTarget.dataset.piece as 'queen' | 'rook' | 'knight' | 'bishop'
+      );
+      setPromotePopupSquare(null);
+    },
+    [makeMove, promotePopupSquare]
+  );
+
   return (
     <main className={styles.main}>
       <div className={styles['game-contents']}>
@@ -256,27 +285,19 @@ export default function ActiveGame() {
           activePlayer={activePlayerRef.current}
           promotePopupSquare={promotePopupSquare}
           setPromotePopupSquare={setPromotePopupSquare}
-          checkPromotion={(s: Square) => {
-            return validateMove(s) && checkPromotion(s);
-          }}
-          onPromote={(e) => {
-            e.stopPropagation();
-            makeMove(
-              promotePopupSquare as Square,
-              e.currentTarget.dataset.piece as
-                | 'queen'
-                | 'rook'
-                | 'knight'
-                | 'bishop'
-            );
-            setPromotePopupSquare(null);
-          }}
+          checkPromotion={validateAndCheckPromotion}
+          onPromote={onPromote}
         ></Gameboard>
         <Interface
           activePlayer={activePlayerRef.current}
           claimDraw={
             !!activePlayerRef.current &&
             claimDrawDetails[activePlayerRef.current]
+          }
+          offeredDraw={
+            !!activePlayerRef.current &&
+            !claimDrawDetails[activePlayerRef.current] &&
+            claimDrawDetails[getOppColor(activePlayerRef.current)]
           }
           gameOverDetails={gameOverDetails}
           whiteDetails={{
@@ -297,11 +318,7 @@ export default function ActiveGame() {
           history={moveHistory}
           historyControls={historyControls}
           view={gameboardView}
-          flipBoard={() =>
-            setGameboardView((prev) => {
-              return prev === 'white' ? 'black' : 'white';
-            })
-          }
+          flipBoard={flipBoard}
         />
       </div>
     </main>

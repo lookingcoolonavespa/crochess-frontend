@@ -28,7 +28,7 @@ const updateGameDetails = {
       setTurn,
     } = stateUpdaters;
 
-    if (game.winner) {
+    if (!game.active) {
       setGameOverDetails({
         winner: game.winner,
         reason: game.causeOfDeath,
@@ -88,8 +88,6 @@ const updateGameDetails = {
       setBlackTime(game.black.timeLeft);
     }
 
-    console.log(game.claimDraw);
-
     setClaimDrawDetails(game.claimDraw);
     setTurn(game.turn);
   },
@@ -112,7 +110,7 @@ const updateGameDetails = {
 
     setClaimDrawDetails(game.claimDraw);
 
-    if (game.winner) {
+    if (!game.active) {
       setGameOverDetails({
         winner: game.winner,
         reason: game.causeOfDeath,

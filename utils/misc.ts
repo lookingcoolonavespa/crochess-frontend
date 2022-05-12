@@ -9,9 +9,10 @@ export function createControlBtnObj(
   src?: string,
   alt?: string,
   text?: string,
-  onClick?: () => void
+  onClick?: () => void,
+  className?: string
 ) {
-  return { src, alt, text, onClick };
+  return { src, alt, text, onClick, className };
 }
 
 export function getKeyByValue(
@@ -127,4 +128,8 @@ export function getGameType(ms: number) {
     default:
       return 'classical';
   }
+}
+
+export function getOppColor(color: 'white' | 'black') {
+  return color === 'white' ? 'black' : 'white';
 }

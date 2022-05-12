@@ -24,6 +24,7 @@ export interface ControlBtnObj {
   alt?: string;
   text?: string;
   onClick?: () => void;
+  className?: string;
 }
 
 interface Player {
@@ -177,4 +178,15 @@ export interface GameOverDetailsInterface {
 export interface ClaimDrawDetailsInterface {
   white: boolean;
   black: boolean;
+}
+
+export interface GameStatusInterface {
+  type:
+    | 'gameOver'
+    | 'offeredDraw'
+    | 'claimDraw'
+    | 'offerDrawConfirmation'
+    | 'resignConfirmation';
+  payload: GameOverDetailsInterface | undefined;
+  close: (() => void) | undefined;
 }

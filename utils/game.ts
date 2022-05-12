@@ -130,7 +130,7 @@ export async function claimDraw(gameId: string) {
     {
       active: false,
       winner: null,
-      causeOfDeath: '',
+      causeOfDeath: 'agreement',
     },
     {
       withCredentials: true,

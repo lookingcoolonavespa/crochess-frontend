@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+
 import Controls from './Controls';
 import { createControlBtnObj } from '../../utils/misc';
 import rewindIcon from '../../public/icons/rewind-fill.svg';
@@ -63,3 +64,5 @@ export default function History({
     </section>
   );
 }
+
+export const MemoizedHistory = React.memo(History);

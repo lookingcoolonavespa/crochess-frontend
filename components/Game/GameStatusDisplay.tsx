@@ -2,44 +2,41 @@ import { useRouter } from 'next/router';
 
 import closeSVG from '../../public/icons/close-line.svg';
 import checkSVG from '../../public/icons/check-line.svg';
-import { GameOverDetailsInterface } from '../../types/interfaces';
+import {
+  GameOverDetailsInterface,
+  GameStatusInterface,
+} from '../../types/interfaces';
 import IconBtn from '../IconBtn';
 import FlatBtn from '../FlatBtn';
 import { resign, claimDraw, offerDraw, denyDraw } from '../../utils/game';
+import { SetStateAction } from 'react';
 
 interface GameStatusDisplayProps {
   styles: { [key: string]: string };
-  close: () => void;
-  status: {
-    type:
-      | 'gameOver'
-      | 'offeredDraw'
-      | 'claimDraw'
-      | 'offerDrawConfirmation'
-      | 'resignConfirmation';
-    payload: GameOverDetailsInterface | undefined;
-    close: (() => void) | undefined;
-  };
+  setStatus: React.Dispatch<SetStateAction<GameStatusInterface | undefined>>;
+  status: GameStatusInterface;
   activePlayer: 'white' | 'black';
 }
 
-function asyncErrorHandler(
+async function asyncErrorHandler(
   cb:
-    | ((gameId: string, activePlayer?: 'white' | 'black') => void)
-    | ((gameId: string, activePlayer: 'white' | 'black') => void),
-  params: { gameId: string; activePlayer?: 'white' | 'black' }
+    | ((gameId: string, activePlayer?: 'white' | 'black') => Promise<void>)
+    | ((gameId: string, activePlayer: 'white' | 'black') => Promise<void>),
+  params: { gameId: string; activePlayer?: 'white' | 'black' },
+  close?: () => void
 ) {
   const { gameId, activePlayer } = params;
   try {
-    cb(gameId, activePlayer as 'white' | 'black');
+    await cb(gameId, activePlayer as 'white' | 'black');
+    close && close();
   } catch (err) {
     console.log(err);
   }
 }
 
 export default function GameStatusDisplay({
+  setStatus,
   styles,
-  close,
   status,
   activePlayer,
 }: GameStatusDisplayProps) {
@@ -52,7 +49,7 @@ export default function GameStatusDisplay({
         className="close-btn"
         icon={closeSVG}
         altText="hide game over message"
-        onClick={status.close || close}
+        onClick={status.close || (() => setStatus(undefined))}
       />
       <div>
         {status &&
@@ -104,7 +101,11 @@ export default function GameStatusDisplay({
                     icon={{ src: closeSVG, alt: 'cancel' }}
                     size="small"
                     onClick={() => {
-                      asyncErrorHandler(denyDraw, { gameId: gameId as string });
+                      asyncErrorHandler(
+                        denyDraw,
+                        { gameId: gameId as string },
+                        () => setStatus(undefined)
+                      );
                     }}
                   />
                   <FlatBtn

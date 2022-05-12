@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import Controls from './Controls';
+import { MemoizedControls } from './Controls';
 import Timer from './Timer';
-import History from './History';
+import { MemoizedHistory } from './History';
 import styles from '../../styles/GameInterface.module.scss';
 import { createControlBtnObj } from '../../utils/misc';
 import flagIcon from '../../public/icons/flag-fill.svg';
@@ -27,7 +27,7 @@ interface InterfaceProps {
   flipBoard: () => void;
   turnStart: number;
   gameOverDetails?: GameOverDetailsInterface;
-  offeredDraw?: boolean;
+  offeredDraw: boolean;
   claimDraw: boolean;
 }
 
@@ -65,41 +65,47 @@ export default function Interface({
   const [resignConfirmation, setResignConfirmation] = useState(false);
   const [offerDrawConfirmation, setOfferDrawConfirmation] = useState(false);
 
+  const oldVariablesRef = useRef({
+    gameOver: !!gameOverDetails,
+    offeredDraw,
+    claimDraw,
+    resignConfirmation,
+    offerDrawConfirmation,
+  });
+
   useEffect(() => {
-    // each type variable corresponds to typeStr of same index
-    const typeVariables = [
-      !!gameOverDetails,
+    const currentVariables = {
+      gameOver: !!gameOverDetails,
       offeredDraw,
+      claimDraw,
       resignConfirmation,
       offerDrawConfirmation,
-      claimDraw,
-    ];
-    const typeStr = [
-      'gameOver',
-      'offeredDraw',
-      'resignConfirmation',
-      'offerDrawConfirmation',
-      'claimDraw',
-    ] as (
-      | 'gameOver'
-      | 'offeredDraw'
-      | 'claimDraw'
-      | 'offerDrawConfirmation'
-      | 'resignConfirmation'
-    )[];
-    const activeTypeIdx = typeVariables.indexOf(true);
-    console.log(activeTypeIdx);
-    if (activeTypeIdx === -1) return setStatus(undefined);
-    if (!activePlayer && activeTypeIdx > 1) {
+    };
+
+    function getChangedVariableThatsTruthy() {
+      console.log(oldVariablesRef.current, currentVariables);
+      let key: keyof typeof oldVariablesRef.current;
+      for (key in oldVariablesRef.current) {
+        if (oldVariablesRef.current[key] === currentVariables[key]) continue;
+        if (!currentVariables[key]) continue;
+        return key;
+      }
+    }
+    const statusType = getChangedVariableThatsTruthy();
+
+    oldVariablesRef.current = currentVariables; // need to update before function exits
+
+    if (!statusType) return setStatus(undefined);
+    if (!activePlayer && statusType !== 'gameOver') {
       return;
     }
 
     let close;
-    switch (activeTypeIdx) {
-      case 2:
+    switch (statusType) {
+      case 'resignConfirmation':
         close = cancelResign;
         break;
-      case 3:
+      case 'offerDrawConfirmation':
         close = cancelDraw;
         break;
       default:
@@ -108,8 +114,8 @@ export default function Interface({
 
     setStatus({
       close,
-      type: typeStr[activeTypeIdx],
-      payload: activeTypeIdx === 0 ? gameOverDetails : undefined,
+      type: statusType,
+      payload: statusType === 'gameOver' ? gameOverDetails : undefined,
     });
   }, [
     gameOverDetails,
@@ -119,6 +125,8 @@ export default function Interface({
     offeredDraw,
     activePlayer,
   ]);
+
+  useEffect(() => {});
 
   const topTimer = view === 'white' ? blackDetails : whiteDetails;
   const bottomTimer = view === 'white' ? whiteDetails : blackDetails;
@@ -137,6 +145,20 @@ export default function Interface({
     setOfferDrawConfirmation(false);
   }
 
+  const mainControls = useMemo(
+    () => [
+      createControlBtnObj(
+        undefined,
+        'offer a draw',
+        '1/2',
+        offerDraw,
+        offeredDraw ? 'background-action-secondary no_events' : ''
+      ),
+      createControlBtnObj(flagIcon, 'resign game', undefined, resign),
+    ],
+    [offeredDraw]
+  );
+
   return (
     <div className={styles.main}>
       <Timer
@@ -148,25 +170,22 @@ export default function Interface({
       <div>
         {status && (
           <GameStatusDisplay
-            close={() => setStatus(undefined)}
+            setStatus={setStatus}
             styles={styles}
             status={status}
             activePlayer={activePlayer as 'white' | 'black'}
           />
         )}
-        <History
+        <MemoizedHistory
           moves={history}
           flipBoard={flipBoard}
           historyControls={historyControls}
         />
       </div>
       {activePlayer && (
-        <Controls
+        <MemoizedControls
           className={styles.main_controls}
-          list={[
-            createControlBtnObj(undefined, 'offer a draw', '1/2', offerDraw),
-            createControlBtnObj(flagIcon, 'resign game', undefined, resign),
-          ]}
+          list={mainControls}
         />
       )}
       <TimerBar maxTime={bottomTimer.maxTime} time={bottomTimer.time} />
