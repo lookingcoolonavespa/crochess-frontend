@@ -17,7 +17,10 @@ import { convertPieceMapToArray, getActivePlayer } from '../utils/misc';
 import styles from '../styles/ActiveGame.module.scss';
 import { fetchGame, sendMove } from '../utils/game';
 import updateGameDetails from '../utils/updateGameDetails';
-import { GameOverDetailsInterface } from '../types/interfaces';
+import {
+  ClaimDrawDetailsInterface,
+  GameOverDetailsInterface,
+} from '../types/interfaces';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
@@ -50,6 +53,10 @@ export default function ActiveGame() {
   const [currentPieceMapIdx, setCurrentPieceMapIdx] = useState(0);
   const pieceMapsRef = useRef<AllPieceMap[]>([]);
   const [moveHistory, setMoveHistory] = useState<string[][]>([]);
+  const [claimDrawDetails, setClaimDrawDetails] = useState({
+    white: false,
+    black: false,
+  });
   const [gameOverDetails, setGameOverDetails] =
     useState<GameOverDetailsInterface>();
 
@@ -88,6 +95,7 @@ export default function ActiveGame() {
             setWhiteTime,
             setBlackTime,
             setCurrentPieceMapIdx,
+            setClaimDrawDetails,
             setTurn,
           }
         );
@@ -117,6 +125,7 @@ export default function ActiveGame() {
             setBlackTime,
             setCurrentPieceMapIdx,
             setTurn,
+            setClaimDrawDetails,
           }
         );
       });
@@ -265,6 +274,10 @@ export default function ActiveGame() {
         ></Gameboard>
         <Interface
           activePlayer={activePlayerRef.current}
+          claimDraw={
+            !!activePlayerRef.current &&
+            claimDrawDetails[activePlayerRef.current]
+          }
           gameOverDetails={gameOverDetails}
           whiteDetails={{
             maxTime: timeDetailsRef.current.maxTime,

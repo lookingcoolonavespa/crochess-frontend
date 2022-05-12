@@ -117,6 +117,9 @@ export interface FetchGameStateUpdaters {
   setWhiteTime: React.Dispatch<React.SetStateAction<number>>;
   setBlackTime: React.Dispatch<React.SetStateAction<number>>;
   setCurrentPieceMapIdx: React.Dispatch<React.SetStateAction<number>>;
+  setClaimDrawDetails: React.Dispatch<
+    React.SetStateAction<ClaimDrawDetailsInterface>
+  >;
   setTurn: React.Dispatch<React.SetStateAction<'white' | 'black'>>;
 }
 
@@ -160,10 +163,18 @@ export interface UpdateGameStateUpdaters {
   setWhiteTime: React.Dispatch<React.SetStateAction<number>>;
   setBlackTime: React.Dispatch<React.SetStateAction<number>>;
   setCurrentPieceMapIdx: React.Dispatch<React.SetStateAction<number>>;
+  setClaimDrawDetails: React.Dispatch<
+    React.SetStateAction<ClaimDrawDetailsInterface>
+  >;
   setTurn: React.Dispatch<React.SetStateAction<'white' | 'black'>>;
 }
 
 export interface GameOverDetailsInterface {
   winner: 'black' | 'white' | null;
   reason: string;
+}
+
+export interface ClaimDrawDetailsInterface {
+  white: boolean;
+  black: boolean;
 }

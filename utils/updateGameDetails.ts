@@ -24,6 +24,7 @@ const updateGameDetails = {
       setWhiteTime,
       setBlackTime,
       setCurrentPieceMapIdx,
+      setClaimDrawDetails,
       setTurn,
     } = stateUpdaters;
 
@@ -87,6 +88,9 @@ const updateGameDetails = {
       setBlackTime(game.black.timeLeft);
     }
 
+    console.log(game.claimDraw);
+
+    setClaimDrawDetails(game.claimDraw);
     setTurn(game.turn);
   },
   onUpdate: (
@@ -102,8 +106,11 @@ const updateGameDetails = {
       setWhiteTime,
       setBlackTime,
       setCurrentPieceMapIdx,
+      setClaimDrawDetails,
       setTurn,
     } = stateUpdaters;
+
+    setClaimDrawDetails(game.claimDraw);
 
     if (game.winner) {
       setGameOverDetails({
@@ -112,28 +119,38 @@ const updateGameDetails = {
       });
     }
 
-    setBoardState({
-      board: new Map(Object.entries(game.board)),
-      checks: game.checks,
-      castleRights: game.castle,
+    let sameTurn = false;
+
+    setTurn((prev) => {
+      if (prev === game.turn) sameTurn = true;
+
+      return game.turn;
     });
 
-    pieceMapsRef.current.push(
-      Gameboard(
-        new Map(Object.entries(game.board)),
-        game.checks,
-        game.castle
-      ).get.pieceMap()
-    );
-    setCurrentPieceMapIdx((prev) => {
-      if (prev === pieceMapsRef.current.length - 2)
-        return pieceMapsRef.current.length - 1;
-      else return prev;
-    });
-    setMoveHistory(game.history);
+    if (!sameTurn) {
+      setBoardState({
+        board: new Map(Object.entries(game.board)),
+        checks: game.checks,
+        castleRights: game.castle,
+      });
 
-    setWhiteTime(game.white.timeLeft);
-    setBlackTime(game.black.timeLeft);
+      pieceMapsRef.current.push(
+        Gameboard(
+          new Map(Object.entries(game.board)),
+          game.checks,
+          game.castle
+        ).get.pieceMap()
+      );
+      setCurrentPieceMapIdx((prev) => {
+        if (prev === pieceMapsRef.current.length - 2)
+          return pieceMapsRef.current.length - 1;
+        else return prev;
+      });
+      setMoveHistory(game.history);
+
+      setWhiteTime(game.white.timeLeft);
+      setBlackTime(game.black.timeLeft);
+    }
     if (game.active) {
       const turn = game.turn === 'white' ? 'black' : 'white';
       timeDetailsRef.current = {
@@ -142,7 +159,6 @@ const updateGameDetails = {
         turnStart: game.turnStart as number,
       };
     }
-    setTurn(game.turn);
   },
 };
 

@@ -7,7 +7,10 @@ import { createControlBtnObj } from '../../utils/misc';
 import flagIcon from '../../public/icons/flag-fill.svg';
 import TimerBar from './TimerBar';
 import GameStatusDisplay from './GameStatusDisplay';
-import { GameOverDetailsInterface } from '../../types/interfaces';
+import {
+  ClaimDrawDetailsInterface,
+  GameOverDetailsInterface,
+} from '../../types/interfaces';
 
 interface InterfaceProps {
   activePlayer: 'white' | 'black' | null;
@@ -25,7 +28,7 @@ interface InterfaceProps {
   turnStart: number;
   gameOverDetails?: GameOverDetailsInterface;
   offeredDraw?: boolean;
-  claimDraw?: boolean;
+  claimDraw: boolean;
 }
 
 interface colorDetails {
