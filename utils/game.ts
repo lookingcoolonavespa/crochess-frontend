@@ -126,7 +126,7 @@ export async function denyDraw(gameId: string) {
 
 export async function claimDraw(gameId: string) {
   const res = await axios.patch(
-    `${urls.backend}/games/${gameId}/active`,
+    `${urls.backend}/games/${gameId}/status`,
     {
       active: false,
       winner: null,
@@ -145,7 +145,7 @@ export async function resign(gameId: string, resigning: 'white' | 'black') {
   const winner = resigning === 'white' ? 'black' : 'white';
 
   const res = await axios.patch(
-    `${urls.backend}/games/${gameId}/active`,
+    `${urls.backend}/games/${gameId}/status`,
     {
       winner,
       active: false,

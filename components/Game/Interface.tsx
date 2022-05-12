@@ -57,6 +57,7 @@ export default function Interface({
       | 'offerDrawConfirmation'
       | 'resignConfirmation';
     payload: GameOverDetailsInterface | undefined;
+    close: (() => void) | undefined;
   }>();
   const [resignConfirmation, setResignConfirmation] = useState(false);
   const [offerDrawConfirmation, setOfferDrawConfirmation] = useState(false);
@@ -84,13 +85,26 @@ export default function Interface({
       | 'resignConfirmation'
     )[];
     const activeTypeIdx = typeVariables.indexOf(true);
-
-    if (activeTypeIdx === -1) return;
+    console.log(activeTypeIdx);
+    if (activeTypeIdx === -1) return setStatus(undefined);
     if (!activePlayer && activeTypeIdx > 1) {
       return;
     }
 
+    let close;
+    switch (activeTypeIdx) {
+      case 2:
+        close = cancelResign;
+        break;
+      case 3:
+        close = cancelDraw;
+        break;
+      default:
+        undefined;
+    }
+
     setStatus({
+      close,
       type: typeStr[activeTypeIdx],
       payload: activeTypeIdx === 0 ? gameOverDetails : undefined,
     });
@@ -109,9 +123,15 @@ export default function Interface({
   function resign() {
     setResignConfirmation(true);
   }
+  function cancelResign() {
+    setResignConfirmation(false);
+  }
 
   function offerDraw() {
     setOfferDrawConfirmation(true);
+  }
+  function cancelDraw() {
+    setOfferDrawConfirmation(false);
   }
 
   return (

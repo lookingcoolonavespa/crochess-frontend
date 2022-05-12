@@ -18,6 +18,7 @@ interface GameStatusDisplayProps {
       | 'offerDrawConfirmation'
       | 'resignConfirmation';
     payload: GameOverDetailsInterface | undefined;
+    close: (() => void) | undefined;
   };
   activePlayer: 'white' | 'black';
 }
@@ -51,7 +52,7 @@ export default function GameStatusDisplay({
         className="close-btn"
         icon={closeSVG}
         altText="hide game over message"
-        onClick={close}
+        onClick={status.close || close}
       />
       <div>
         {status &&
@@ -80,7 +81,7 @@ export default function GameStatusDisplay({
                   <FlatBtn
                     icon={{ src: closeSVG, alt: 'cancel' }}
                     size="small"
-                    onClick={close}
+                    onClick={status.close}
                   />
                   <FlatBtn
                     icon={{ src: checkSVG, alt: 'confirm' }}
@@ -126,7 +127,7 @@ export default function GameStatusDisplay({
                   <FlatBtn
                     icon={{ src: closeSVG, alt: 'cancel' }}
                     size="small"
-                    onClick={close}
+                    onClick={status.close}
                   />
                   <FlatBtn
                     icon={{ src: checkSVG, alt: 'confirm' }}
