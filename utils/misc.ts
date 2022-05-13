@@ -64,9 +64,9 @@ export function setIdToCookie(
   color: 'white' | 'black',
   id: string
 ) {
-  document.cookie = `__Secure-${gameId}(${color})=${id}; max-age=${
+  document.cookie = `${gameId}(${color})=${id};max-age=${
     60 * 60 * 24
-  }; samesite=none`;
+  };samesite=none;secure`;
 }
 
 export function parseCookies(cookie: string): { [key: string]: string } {

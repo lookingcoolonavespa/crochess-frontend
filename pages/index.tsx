@@ -37,7 +37,6 @@ const Home: NextPage = () => {
     if (!e.currentTarget.dataset.tab) return;
     setActiveTab(e.currentTarget.dataset.tab);
   }
-  console.log(process.env.NEXT_PUBLIC_URL_BACKEND);
   return (
     <>
       <Layout className={styles.main}>
