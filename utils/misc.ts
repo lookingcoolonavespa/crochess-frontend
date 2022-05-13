@@ -64,8 +64,8 @@ export function setIdToCookie(
   color: 'white' | 'black',
   id: string
 ) {
-  document.cookie = `${gameId}(${color})=${id};max-age=${
-    60 * 60 * 24
+  document.cookie = `${gameId}(${color})=${id};max-age=${60 * 60 * 24};domain=${
+    process.env.NEXT_PUBLIC_URL_BACKEND
   };samesite=none;secure`;
 }
 
