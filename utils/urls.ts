@@ -1,5 +1,5 @@
 const urls = {
-  backend: 'http://localhost:8000',
+  backend: 'https://crochess-backend.herokuapp.com',
 };
 
 export default urls;

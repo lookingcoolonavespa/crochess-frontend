@@ -83,7 +83,6 @@ export default function Interface({
     };
 
     function getChangedVariableThatsTruthy() {
-      console.log(oldVariablesRef.current, currentVariables);
       let key: keyof typeof oldVariablesRef.current;
       for (key in oldVariablesRef.current) {
         if (oldVariablesRef.current[key] === currentVariables[key]) continue;

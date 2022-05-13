@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { dayjs, toMilliseconds, formatTime } from '../../utils/timerStuff';
-import { TimeObjInterface } from '../../types/interfaces';
+import { useEffect } from 'react';
+import { formatTime } from '../../utils/timerStuff';
 
 interface TimerProps {
   startTime: number;
