@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { io } from 'socket.io-client';
-import urls from '../urls';
 import { GameSeekInterface } from '../../types/interfaces';
 import axios from 'axios';
 import { setIdToCookie } from '../misc';
@@ -24,7 +23,9 @@ export default function useListOfGames(
   useEffect(function getGamesOnMount() {
     (async () => {
       try {
-        const res = await axios.get(`${urls.backend}/gameSeeks`);
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_URL_BACKEND}/gameSeeks`
+        );
         if (!res || res.status !== 200 || res.statusText !== 'OK')
           throw new Error('something went wrong fetching games');
 
@@ -39,7 +40,7 @@ export default function useListOfGames(
 
   useEffect(
     function connectToSocket() {
-      const socket = io(`${urls.backend}/games`);
+      const socket = io(`${process.env.NEXT_PUBLIC_URL_BACKEND}/games`);
 
       socket.on('connect', () => {
         if (mounted.current) setUser(socket.id);

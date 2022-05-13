@@ -3,7 +3,6 @@ import { AllPieceMap } from 'crochess-api/dist/types/interfaces';
 import { Board, HistoryType } from 'crochess-api/dist/types/types';
 import { PiecePos } from '../types/types';
 import { toMilliseconds } from './timerStuff';
-import urls from './urls';
 
 export function createControlBtnObj(
   src?: string,

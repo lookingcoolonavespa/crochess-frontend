@@ -17,7 +17,6 @@ export default function IconBtn({
 }: IconBtnProps) {
   const rootClasses = ['icon-btn', 'btn', 'hover-highlight'];
   if (className) rootClasses.push(className);
-  if (className) console.log(className);
 
   return (
     <div className={rootClasses.join(' ')} onClick={onClick}>

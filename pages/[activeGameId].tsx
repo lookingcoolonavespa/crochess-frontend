@@ -4,8 +4,6 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Gameboard from '../components/Game/Gameboard';
 import Interface from '../components/Game/Interface';
 import { io } from 'socket.io-client';
-import urls from '../utils/urls';
-import axios from 'axios';
 import { Gameboard as Board } from 'crochess-api';
 import {
   Board as BoardType,
@@ -21,10 +19,7 @@ import {
 import styles from '../styles/ActiveGame.module.scss';
 import { fetchGame, sendMove } from '../utils/game';
 import updateGameDetails from '../utils/updateGameDetails';
-import {
-  ClaimDrawDetailsInterface,
-  GameOverDetailsInterface,
-} from '../types/interfaces';
+import { GameOverDetailsInterface } from '../types/interfaces';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
@@ -110,7 +105,7 @@ export default function ActiveGame() {
 
   useEffect(
     function connectToSocket() {
-      const socket = io(`${urls.backend}/games`);
+      const socket = io(`${process.env.NEXT_PUBLIC_URL_BACKEND}/games`);
 
       if (gameId) socket.emit('joinRoom', gameId);
 

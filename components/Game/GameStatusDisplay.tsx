@@ -1,11 +1,9 @@
 import { useRouter } from 'next/router';
+import React from 'react';
 
 import closeSVG from '../../public/icons/close-line.svg';
 import checkSVG from '../../public/icons/check-line.svg';
-import {
-  GameOverDetailsInterface,
-  GameStatusInterface,
-} from '../../types/interfaces';
+import { GameStatusInterface } from '../../types/interfaces';
 import IconBtn from '../IconBtn';
 import FlatBtn from '../FlatBtn';
 import { resign, claimDraw, offerDraw, denyDraw } from '../../utils/game';
@@ -148,3 +146,5 @@ export default function GameStatusDisplay({
     </div>
   );
 }
+
+export const MemoizedGameStatusDisplay = React.memo(GameStatusDisplay);

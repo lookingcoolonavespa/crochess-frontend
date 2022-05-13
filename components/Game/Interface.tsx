@@ -6,7 +6,7 @@ import styles from '../../styles/GameInterface.module.scss';
 import { createControlBtnObj } from '../../utils/misc';
 import flagIcon from '../../public/icons/flag-fill.svg';
 import TimerBar from './TimerBar';
-import GameStatusDisplay from './GameStatusDisplay';
+import { MemoizedGameStatusDisplay } from './GameStatusDisplay';
 import {
   ClaimDrawDetailsInterface,
   GameOverDetailsInterface,
@@ -168,7 +168,7 @@ export default function Interface({
       <TimerBar maxTime={topTimer.maxTime} time={topTimer.time} />
       <div>
         {status && (
-          <GameStatusDisplay
+          <MemoizedGameStatusDisplay
             setStatus={setStatus}
             styles={styles}
             status={status}

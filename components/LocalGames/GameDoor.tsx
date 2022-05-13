@@ -2,8 +2,6 @@ import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { UserContext } from '../../utils/contexts/UserContext';
 import styles from '../../styles/GameDoor.module.scss';
-import axios from 'axios';
-import urls from '../../utils/urls';
 import { GameSeekInterface } from '../../types/interfaces';
 import { setIdToCookie } from '../../utils/misc';
 import { fromMillisecondsToMinutes } from '../../utils/timerStuff';

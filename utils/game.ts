@@ -1,6 +1,5 @@
 import { GameType } from '../types/types';
 import axios from 'axios';
-import urls from './urls';
 import { GameSeekInterface } from '../types/interfaces';
 import { Square } from 'crochess-api/dist/types/types';
 import updateGameDetails from './updateGameDetails';
@@ -16,7 +15,7 @@ export function createGameSeek(
   seeker: string,
   gameType: GameType
 ) {
-  fetch(`${urls.backend}/gameSeeks`, {
+  fetch(`${process.env.NEXT_PUBLIC_URL_BACKEND}/gameSeeks`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -29,7 +28,7 @@ export async function createGame(user: string, gameSeek: GameSeekInterface) {
   const oppColor = gameSeek.color === 'white' ? 'black' : 'white';
 
   const [res] = await Promise.all([
-    axios.put(`${urls.backend}/games`, {
+    axios.put(`${process.env.NEXT_PUBLIC_URL_BACKEND}/games`, {
       [gameSeek.color]: user,
       [oppColor]: gameSeek.seeker,
       time: gameSeek.time,
@@ -37,7 +36,9 @@ export async function createGame(user: string, gameSeek: GameSeekInterface) {
       seeker: gameSeek.seeker,
       challenger: user,
     }),
-    axios.delete(`${urls.backend}/gameSeeks/${gameSeek._id}`),
+    axios.delete(
+      `${process.env.NEXT_PUBLIC_URL_BACKEND}/gameSeeks/${gameSeek._id}`
+    ),
   ]);
 
   if (res.status !== 200 || res.statusText !== 'OK')
@@ -52,7 +53,9 @@ export async function fetchGame(
   stateUpdaters: FetchGameStateUpdaters
 ) {
   if (!gameId) return;
-  const res = await axios.get(`${urls.backend}/games/${gameId}`);
+  const res = await axios.get(
+    `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}`
+  );
   if (!res || res.status !== 200 || res.statusText !== 'OK')
     throw new Error('something went wrong fetching game');
 
@@ -68,7 +71,7 @@ export async function sendMove(
   promote: 'queen' | 'rook' | 'knight' | 'bishop' | '' = ''
 ) {
   const res = await axios.patch(
-    `${urls.backend}/games/${gameId}/move`,
+    `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}/move`,
     {
       gameId,
       to,
@@ -90,7 +93,7 @@ export async function offerDraw(gameId: string, offerer: 'white' | 'black') {
   const oppColor = offerer === 'white' ? 'black' : 'white';
 
   const res = await axios.patch(
-    `${urls.backend}/games/${gameId}/draw`,
+    `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}/draw`,
     {
       claimDraw: {
         [offerer]: false,
@@ -108,7 +111,7 @@ export async function offerDraw(gameId: string, offerer: 'white' | 'black') {
 
 export async function denyDraw(gameId: string) {
   const res = await axios.patch(
-    `${urls.backend}/games/${gameId}/draw`,
+    `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}/draw`,
     {
       claimDraw: {
         white: false,
@@ -126,7 +129,7 @@ export async function denyDraw(gameId: string) {
 
 export async function claimDraw(gameId: string) {
   const res = await axios.patch(
-    `${urls.backend}/games/${gameId}/status`,
+    `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}/status`,
     {
       active: false,
       winner: null,
@@ -145,7 +148,7 @@ export async function resign(gameId: string, resigning: 'white' | 'black') {
   const winner = resigning === 'white' ? 'black' : 'white';
 
   const res = await axios.patch(
-    `${urls.backend}/games/${gameId}/status`,
+    `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}/status`,
     {
       winner,
       active: false,
