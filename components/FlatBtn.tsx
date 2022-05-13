@@ -10,7 +10,7 @@ interface FlatBtnProps {
   hollow?: boolean;
   size: 'small' | 'medium';
   onClick?: () => void;
-  icon: { src: string; alt: string };
+  icon?: { src: string; alt: string };
 }
 
 export default function FlatBtn({
