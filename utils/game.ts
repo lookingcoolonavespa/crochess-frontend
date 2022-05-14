@@ -15,6 +15,7 @@ export function createGameSeek(
   seeker: string,
   gameType: GameType
 ) {
+  if (!seeker) return;
   fetch(`${process.env.NEXT_PUBLIC_URL_BACKEND}/gameSeeks`, {
     method: 'PUT',
     headers: {
@@ -97,9 +98,6 @@ export async function offerDraw(gameId: string, offerer: 'white' | 'black') {
         [offerer]: false,
         [oppColor]: true,
       },
-    },
-    {
-      withCredentials: true,
     }
   );
 
