@@ -183,8 +183,8 @@ export default function ActiveGame() {
       const playerId = cookieObj[`${gameId}(${activePlayerRef.current})`];
       try {
         await sendMove(
-          playerId,
           gameId as string,
+          playerId,
           pieceToMove as string,
           to,
           promote

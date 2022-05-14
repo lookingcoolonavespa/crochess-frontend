@@ -15,7 +15,6 @@ export function createGameSeek(
   seeker: string,
   gameType: GameType
 ) {
-  if (!seeker) return;
   fetch(`${process.env.NEXT_PUBLIC_URL_BACKEND}/gameSeeks`, {
     method: 'PUT',
     headers: {
