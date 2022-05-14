@@ -78,9 +78,6 @@ export async function sendMove(
       to,
       promote,
       from: pieceToMove,
-    },
-    {
-      withCredentials: true,
     }
   );
 
@@ -118,9 +115,6 @@ export async function denyDraw(gameId: string) {
         white: false,
         black: false,
       },
-    },
-    {
-      withCredentials: true,
     }
   );
 
@@ -135,9 +129,6 @@ export async function claimDraw(gameId: string) {
       active: false,
       winner: null,
       causeOfDeath: 'agreement',
-    },
-    {
-      withCredentials: true,
     }
   );
 
@@ -154,9 +145,6 @@ export async function resign(gameId: string, resigning: 'white' | 'black') {
       winner,
       active: false,
       causeOfDeath: 'resignation',
-    },
-    {
-      withCredentials: true,
     }
   );
 
