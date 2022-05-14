@@ -15,6 +15,7 @@ import {
   convertPieceMapToArray,
   getActivePlayer,
   getOppColor,
+  parseCookies,
 } from '../utils/misc';
 import styles from '../styles/ActiveGame.module.scss';
 import { fetchGame, sendMove } from '../utils/game';
@@ -178,8 +179,16 @@ export default function ActiveGame() {
 
       updatePieceMaps();
 
+      const cookieObj = parseCookies(document.cookie);
+      const playerId = cookieObj[`${gameId}(${activePlayerRef.current})`];
       try {
-        await sendMove(gameId as string, pieceToMove as string, to, promote);
+        await sendMove(
+          playerId,
+          gameId as string,
+          pieceToMove as string,
+          to,
+          promote
+        );
       } catch (err) {
         console.log(err);
       }

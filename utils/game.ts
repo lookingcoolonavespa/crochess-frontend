@@ -66,6 +66,7 @@ export async function fetchGame(
 
 export async function sendMove(
   gameId: string,
+  playerId: string,
   pieceToMove: Square,
   to: Square,
   promote: 'queen' | 'rook' | 'knight' | 'bishop' | '' = ''
@@ -73,7 +74,7 @@ export async function sendMove(
   const res = await axios.patch(
     `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}/move`,
     {
-      gameId,
+      playerId,
       to,
       promote,
       from: pieceToMove,
