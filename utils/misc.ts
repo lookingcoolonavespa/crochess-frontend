@@ -134,3 +134,8 @@ export function getGameType(ms: number) {
 export function getOppColor(color: 'white' | 'black') {
   return color === 'white' ? 'black' : 'white';
 }
+
+export function getWhiteOrBlack() {
+  const rdm = Math.random();
+  return rdm >= 0.5 ? 'white' : 'black';
+}

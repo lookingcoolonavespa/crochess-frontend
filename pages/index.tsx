@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { UserContext } from '../utils/contexts/UserContext';
 import type { NextPage } from 'next';
-import Head from 'next/head';
-import Image from 'next/image';
 
 import Layout from '../components/Layout';
 import GameGrid from '../components/CreateGame/GameGrid';
@@ -12,10 +10,9 @@ import styles from '../styles/Home.module.scss';
 import Popup from '../components/Popup';
 import useInputValues from '../utils/hooks/useInputValues';
 import { createGameSeek } from '../utils/game';
-import { GameType } from '../types/types';
 import Modal from '../components/Modal';
 import { toMilliseconds } from '../utils/timerStuff';
-import { getGameType } from '../utils/misc';
+import { getGameType, getOppColor } from '../utils/misc';
 
 const Home: NextPage = () => {
   const [user, setUser] = useState('');
@@ -133,7 +130,7 @@ const Home: NextPage = () => {
                   createGameSeek(
                     gameTime,
                     popupInputValues.increment as number,
-                    popupInputValues.color as 'black' | 'white',
+                    getOppColor(popupInputValues.color as 'black' | 'white'),
                     user,
                     getGameType(gameTime)
                   );

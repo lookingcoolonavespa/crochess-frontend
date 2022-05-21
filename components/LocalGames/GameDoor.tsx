@@ -1,9 +1,7 @@
-import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { UserContext } from '../../utils/contexts/UserContext';
 import styles from '../../styles/GameDoor.module.scss';
 import { GameSeekInterface } from '../../types/interfaces';
-import { setIdToCookie } from '../../utils/misc';
 import { fromMillisecondsToMinutes } from '../../utils/timerStuff';
 import { createGame } from '../../utils/game';
 
@@ -13,7 +11,6 @@ interface GameDoorProps {
 
 export default function GameDoor({ gameSeek }: GameDoorProps) {
   const { user } = useContext(UserContext);
-  const router = useRouter();
 
   const rootClasses = [
     styles.main,
@@ -29,10 +26,7 @@ export default function GameDoor({ gameSeek }: GameDoorProps) {
       onClick={async (e) => {
         e.stopPropagation();
         try {
-          const game = await createGame(user, gameSeek);
-          sessionStorage.setItem(game.gameId, user); // used to identify user once they move into a game, useful for if they refresh or disconnect
-          setIdToCookie(game.gameId, game.color, game.cookieId);
-          router.push(`/${game.gameId}`);
+          await createGame(user, gameSeek);
         } catch (err) {
           console.log(err);
         }

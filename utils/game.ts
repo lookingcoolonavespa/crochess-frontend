@@ -7,6 +7,7 @@ import {
   FetchGameGameDetails,
   FetchGameStateUpdaters,
 } from '../types/interfaces';
+import { getOppColor, getWhiteOrBlack } from './misc';
 
 export function createGameSeek(
   time: number,
@@ -24,17 +25,32 @@ export function createGameSeek(
   });
 }
 
-export async function createGame(user: string, gameSeek: GameSeekInterface) {
-  const oppColor = gameSeek.color === 'white' ? 'black' : 'white';
+export async function createGame(
+  challenger: string,
+  gameSeek: GameSeekInterface
+) {
+  if (gameSeek.color === 'random') gameSeek.color = getWhiteOrBlack();
+
+  let whitePlayer, blackPlayer;
+  switch (gameSeek.color) {
+    case 'white':
+      whitePlayer = challenger;
+      blackPlayer = gameSeek.seeker;
+      break;
+    case 'black':
+      whitePlayer = gameSeek.seeker;
+      blackPlayer = challenger;
+      break;
+  }
 
   const [res] = await Promise.all([
     axios.put(`${process.env.NEXT_PUBLIC_URL_BACKEND}/games`, {
-      [gameSeek.color]: user,
-      [oppColor]: gameSeek.seeker,
+      challenger,
+      white: whitePlayer,
+      black: blackPlayer,
       time: gameSeek.time,
       increment: gameSeek.increment,
       seeker: gameSeek.seeker,
-      challenger: user,
     }),
     axios.delete(
       `${process.env.NEXT_PUBLIC_URL_BACKEND}/gameSeeks/${gameSeek._id}`
