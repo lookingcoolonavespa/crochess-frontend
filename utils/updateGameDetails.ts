@@ -28,15 +28,6 @@ const updateGameDetails = {
       setTurn,
     } = stateUpdaters;
 
-    if (!game.active) {
-      setGameOverDetails({
-        winner: game.winner,
-        reason: game.causeOfDeath,
-      });
-    }
-
-    console.log(game);
-
     if (game.active) {
       timeDetailsRef.current[game.turn] = {
         startTime: game[game.turn].timeLeft,
@@ -93,6 +84,14 @@ const updateGameDetails = {
 
     setClaimDrawDetails(game.claimDraw);
     setTurn(game.turn);
+
+    if (!game.active) {
+      // needs to be last state set otherwise the display wont popup
+      setGameOverDetails({
+        winner: game.winner,
+        reason: game.causeOfDeath,
+      });
+    }
   },
   onUpdate: (
     game: GameInterface,
@@ -110,15 +109,6 @@ const updateGameDetails = {
       setClaimDrawDetails,
       setTurn,
     } = stateUpdaters;
-
-    setClaimDrawDetails(game.claimDraw);
-
-    if (!game.active) {
-      setGameOverDetails({
-        winner: game.winner,
-        reason: game.causeOfDeath,
-      });
-    }
 
     if (game.active) {
       timeDetailsRef.current[game.turn] = {
@@ -163,6 +153,15 @@ const updateGameDetails = {
 
       return prev;
     });
+
+    setClaimDrawDetails(game.claimDraw);
+
+    if (!game.active) {
+      setGameOverDetails({
+        winner: game.winner,
+        reason: game.causeOfDeath,
+      });
+    }
   },
 };
 

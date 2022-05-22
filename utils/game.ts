@@ -2,12 +2,7 @@ import { GameType } from '../types/types';
 import axios from 'axios';
 import { GameSeekInterface } from '../types/interfaces';
 import { Square } from 'crochess-api/dist/types/types';
-import updateGameDetails from './updateGameDetails';
-import {
-  FetchGameGameDetails,
-  FetchGameStateUpdaters,
-} from '../types/interfaces';
-import { getOppColor, getWhiteOrBlack } from './misc';
+import { getWhiteOrBlack } from './misc';
 
 export function createGameSeek(
   time: number,
@@ -97,12 +92,17 @@ export async function sendMove(
   console.log(elapsed);
 }
 
-export async function offerDraw(gameId: string, offerer: 'white' | 'black') {
+export async function offerDraw(
+  gameId: string,
+  playerId: string,
+  offerer: 'white' | 'black'
+) {
   const oppColor = offerer === 'white' ? 'black' : 'white';
 
   const res = await axios.patch(
     `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}/draw`,
     {
+      playerId,
       claimDraw: {
         [offerer]: false,
         [oppColor]: true,
@@ -114,10 +114,11 @@ export async function offerDraw(gameId: string, offerer: 'white' | 'black') {
     throw new Error('something went wrong offering draw');
 }
 
-export async function denyDraw(gameId: string) {
+export async function denyDraw(gameId: string, playerId: string) {
   const res = await axios.patch(
     `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}/draw`,
     {
+      playerId,
       claimDraw: {
         white: false,
         black: false,
@@ -129,10 +130,11 @@ export async function denyDraw(gameId: string) {
     throw new Error('something went wrong claiming draw');
 }
 
-export async function claimDraw(gameId: string) {
+export async function claimDraw(gameId: string, playerId: string) {
   const res = await axios.patch(
     `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}/status`,
     {
+      playerId,
       winner: null,
       causeOfDeath: 'agreement',
     }
@@ -142,16 +144,23 @@ export async function claimDraw(gameId: string) {
     throw new Error('something went wrong claiming draw');
 }
 
-export async function resign(gameId: string, resigning: 'white' | 'black') {
+export async function resign(
+  gameId: string,
+  playerId: string,
+  resigning: 'white' | 'black'
+) {
   const winner = resigning === 'white' ? 'black' : 'white';
 
   const res = await axios.patch(
     `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}/status`,
     {
+      playerId,
       winner,
       causeOfDeath: 'resignation',
     }
   );
+
+  console.log(res);
 
   if (!res || res.status !== 200 || res.statusText !== 'OK')
     throw new Error('something went wrong resigning');

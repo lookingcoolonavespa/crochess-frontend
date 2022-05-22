@@ -8,6 +8,7 @@ import IconBtn from '../IconBtn';
 import FlatBtn from '../FlatBtn';
 import { resign, claimDraw, offerDraw, denyDraw } from '../../utils/game';
 import { SetStateAction } from 'react';
+import { parseCookies } from '../../utils/misc';
 
 interface GameStatusDisplayProps {
   styles: { [key: string]: string };
@@ -18,14 +19,22 @@ interface GameStatusDisplayProps {
 
 async function asyncErrorHandler(
   cb:
-    | ((gameId: string, activePlayer?: 'white' | 'black') => Promise<void>)
-    | ((gameId: string, activePlayer: 'white' | 'black') => Promise<void>),
-  params: { gameId: string; activePlayer?: 'white' | 'black' },
+    | ((gameId: string, playerId: string) => Promise<void>)
+    | ((
+        gameId: string,
+        playerId: string,
+        activePlayer: 'white' | 'black'
+      ) => Promise<void>),
+  params: {
+    gameId: string;
+    playerId: string;
+    activePlayer?: 'white' | 'black';
+  },
   close?: () => void
 ) {
-  const { gameId, activePlayer } = params;
+  const { gameId, playerId, activePlayer } = params;
   try {
-    await cb(gameId, activePlayer as 'white' | 'black');
+    await cb(gameId, playerId, activePlayer as 'white' | 'black');
     close && close();
   } catch (err) {
     console.log(err);
@@ -40,6 +49,8 @@ export default function GameStatusDisplay({
 }: GameStatusDisplayProps) {
   const router = useRouter();
   const { activeGameId: gameId } = router.query;
+
+  const playerId = parseCookies(document.cookie)[`${gameId}(${activePlayer})`];
 
   return (
     <div className={styles.game_over_display}>
@@ -84,6 +95,7 @@ export default function GameStatusDisplay({
                     onClick={() =>
                       asyncErrorHandler(resign, {
                         activePlayer,
+                        playerId,
                         gameId: gameId as string,
                       })
                     }
@@ -101,7 +113,7 @@ export default function GameStatusDisplay({
                     onClick={() => {
                       asyncErrorHandler(
                         denyDraw,
-                        { gameId: gameId as string },
+                        { playerId, gameId: gameId as string },
                         () => setStatus(undefined)
                       );
                     }}
@@ -111,6 +123,7 @@ export default function GameStatusDisplay({
                     size="small"
                     onClick={() => {
                       asyncErrorHandler(claimDraw, {
+                        playerId,
                         gameId: gameId as string,
                       });
                     }}
@@ -133,6 +146,7 @@ export default function GameStatusDisplay({
                     size="small"
                     onClick={() => {
                       asyncErrorHandler(offerDraw, {
+                        playerId,
                         activePlayer,
                         gameId: gameId as string,
                       });

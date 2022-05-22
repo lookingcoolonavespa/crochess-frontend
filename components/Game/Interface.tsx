@@ -69,7 +69,6 @@ export default function Interface({
     resignConfirmation,
     offerDrawConfirmation,
   });
-  console.log(status);
   useEffect(() => {
     const currentVariables = {
       gameOver: !!gameOverDetails,
@@ -178,7 +177,7 @@ export default function Interface({
           historyControls={historyControls}
         />
       </div>
-      {activePlayer && (
+      {activePlayer && !gameOverDetails && (
         <MemoizedControls
           className={styles.main_controls}
           list={mainControls}
