@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Gameboard from '../components/Game/Gameboard';
@@ -13,14 +12,13 @@ import {
 import { AllPieceMap, CastleObj } from 'crochess-api/dist/types/interfaces';
 import {
   convertPieceMapToArray,
-  getActivePlayer,
   getOppColor,
   parseCookies,
 } from '../utils/misc';
 import styles from '../styles/ActiveGame.module.scss';
 import { fetchGame, sendMove } from '../utils/game';
 import updateGameDetails from '../utils/updateGameDetails';
-import { GameOverDetailsInterface } from '../types/interfaces';
+import { GameInterface, GameOverDetailsInterface } from '../types/interfaces';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
@@ -78,10 +76,12 @@ export default function ActiveGame() {
 
   useEffect(
     function () {
-      if (!gameId) return;
       (async () => {
-        await fetchGame(
+        if (!gameId) return;
+        const game: GameInterface = await fetchGame(gameId as string);
+        updateGameDetails.onFetch(
           gameId as string,
+          game,
           {
             timeDetailsRef,
             activePlayerRef,

@@ -1,6 +1,5 @@
 import React, { HTMLInputTypeAttribute } from 'react';
 import { FieldsInterface } from '../types/interfaces';
-import Select from './Select';
 
 import styles from '../styles/InputField.module.scss';
 

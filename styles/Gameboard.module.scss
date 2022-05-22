@@ -69,6 +69,15 @@ $square-size: 90px;
   right: 0;
 }
 
-.active {
-  background-color: black !important;
+.active:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 5;
+  background-color: rgba(var(--RGB_action-secondary, 1)) !important;
+  opacity: 0.5;
+  cursor: pointer;
 }

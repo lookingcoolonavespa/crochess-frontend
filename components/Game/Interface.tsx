@@ -7,10 +7,7 @@ import { createControlBtnObj } from '../../utils/misc';
 import flagIcon from '../../public/icons/flag-fill.svg';
 import TimerBar from './TimerBar';
 import { MemoizedGameStatusDisplay } from './GameStatusDisplay';
-import {
-  ClaimDrawDetailsInterface,
-  GameOverDetailsInterface,
-} from '../../types/interfaces';
+import { GameOverDetailsInterface } from '../../types/interfaces';
 
 interface InterfaceProps {
   activePlayer: 'white' | 'black' | null;

@@ -1,10 +1,8 @@
-import { AllPieceMap, GameboardObj } from 'crochess-api/dist/types/interfaces';
 import { Moves, Square } from 'crochess-api/dist/types/types';
 
 import React, { useState, MouseEvent } from 'react';
 import styles from '../../styles/Gameboard.module.scss';
 import { PiecePos } from '../../types/types';
-import { convertPieceMapToArray } from '../../utils/misc';
 import Piece from './Piece';
 import Promotion from './Promotion';
 

@@ -4,12 +4,15 @@ interface TimerBarProps {
 }
 
 export default function TimerBar({ time, maxTime }: TimerBarProps) {
+  let timeLeft = (time / maxTime) * 100;
+  if (isNaN(timeLeft)) timeLeft = 0;
   return (
     <div
       style={{
-        width: `${(time / maxTime) * 100}%`,
+        width: `${timeLeft}%`,
         height: '3px',
         backgroundColor: 'red',
+        maxWidth: '100%',
       }}
     ></div>
   );

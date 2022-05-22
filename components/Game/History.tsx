@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import Controls from './Controls';
 import { createControlBtnObj } from '../../utils/misc';
@@ -10,7 +10,6 @@ import flipIcon from '../../public/icons/flip-2.svg';
 
 import styles from '../../styles/History.module.scss';
 import HistoryDisplay from './HistoryDisplay';
-import GameOverDisplay from './GameStatusDisplay';
 
 interface HistoryProps {
   moves: string[][];

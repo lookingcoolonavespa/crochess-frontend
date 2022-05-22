@@ -63,11 +63,7 @@ export async function createGame(
   return await res.data;
 }
 
-export async function fetchGame(
-  gameId: string,
-  gameDetails: FetchGameGameDetails,
-  stateUpdaters: FetchGameStateUpdaters
-) {
+export async function fetchGame(gameId: string) {
   if (!gameId) return;
   const res = await axios.get(
     `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}`
@@ -75,9 +71,7 @@ export async function fetchGame(
   if (!res || res.status !== 200 || res.statusText !== 'OK')
     throw new Error('something went wrong fetching game');
 
-  const game = await res.data;
-
-  updateGameDetails.onFetch(gameId, game, gameDetails, stateUpdaters);
+  return await res.data;
 }
 
 export async function sendMove(
@@ -139,7 +133,6 @@ export async function claimDraw(gameId: string) {
   const res = await axios.patch(
     `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}/status`,
     {
-      active: false,
       winner: null,
       causeOfDeath: 'agreement',
     }
@@ -156,7 +149,6 @@ export async function resign(gameId: string, resigning: 'white' | 'black') {
     `${process.env.NEXT_PUBLIC_URL_BACKEND}/games/${gameId}/status`,
     {
       winner,
-      active: false,
       causeOfDeath: 'resignation',
     }
   );
