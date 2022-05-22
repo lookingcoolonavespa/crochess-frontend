@@ -86,10 +86,7 @@ export default function ActiveGame() {
       (async () => {
         if (!gameId) return;
         const game: GameInterface = await fetchGame(gameId as string);
-        console.log({
-          whiteTime: formatTime(game.white.timeLeft),
-          blackTime: formatTime(game.black.timeLeft),
-        });
+
         updateGameDetails.onFetch(
           gameId as string,
           game,
@@ -136,19 +133,6 @@ export default function ActiveGame() {
             setClaimDrawDetails,
           }
         );
-        console.log({
-          whiteTime: formatTime(data.white.timeLeft),
-          blackTime: formatTime(data.black.timeLeft),
-        });
-        setWhiteTime((prev) => {
-          console.log(formatTime(prev));
-          return prev;
-        });
-
-        setBlackTime((prev) => {
-          console.log(formatTime(prev));
-          return prev;
-        });
       });
     },
     [gameId]
@@ -194,6 +178,8 @@ export default function ActiveGame() {
       to: Square,
       promote: 'queen' | 'rook' | 'knight' | 'bishop' | '' = ''
     ) => {
+      if (currentPieceMapIdx !== pieceMapsRef.current.length - 1) return;
+
       const valid = validateMove(to);
       if (!valid) return;
       if (promote && !checkPromotion(to)) return;
@@ -230,7 +216,14 @@ export default function ActiveGame() {
         pieceMapsRef.current.pop();
       }
     },
-    [gameId, boardState, validateMove, checkPromotion, pieceToMove]
+    [
+      gameId,
+      boardState,
+      validateMove,
+      checkPromotion,
+      pieceToMove,
+      currentPieceMapIdx,
+    ]
   );
 
   const getLegalMoves = useCallback(
@@ -320,7 +313,7 @@ export default function ActiveGame() {
           setPromotePopupSquare={setPromotePopupSquare}
           checkPromotion={validateAndCheckPromotion}
           onPromote={onPromote}
-        ></Gameboard>
+        />
         <Interface
           activePlayer={activePlayerRef.current}
           claimDraw={

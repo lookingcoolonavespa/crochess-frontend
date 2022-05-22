@@ -121,18 +121,6 @@ const updateGameDetails = {
         turnStart: 0,
         startTime: 0,
       };
-    }
-
-    setTurn((prev) => {
-      const sameTurn = prev === game.turn;
-
-      if (sameTurn) return prev;
-
-      setBoardState({
-        board: new Map(Object.entries(game.board)),
-        checks: game.checks,
-        castleRights: game.castle,
-      });
 
       pieceMapsRef.current.push(
         Gameboard(
@@ -146,12 +134,19 @@ const updateGameDetails = {
           return pieceMapsRef.current.length - 1;
         else return prev;
       });
-      setMoveHistory(game.history);
+    }
 
-      setWhiteTime(game.white.timeLeft);
-      setBlackTime(game.black.timeLeft);
+    setTurn(game.turn);
 
-      return prev;
+    setMoveHistory(game.history);
+
+    setWhiteTime(game.white.timeLeft);
+    setBlackTime(game.black.timeLeft);
+
+    setBoardState({
+      board: new Map(Object.entries(game.board)),
+      checks: game.checks,
+      castleRights: game.castle,
     });
 
     setClaimDrawDetails(game.claimDraw);
