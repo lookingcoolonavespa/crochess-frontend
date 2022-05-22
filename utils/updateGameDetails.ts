@@ -1,4 +1,4 @@
-import { getActivePlayer } from './misc';
+import { getActivePlayer, getOppColor } from './misc';
 import { Gameboard } from 'crochess-api';
 import {
   FetchGameGameDetails,
@@ -35,13 +35,16 @@ const updateGameDetails = {
       });
     }
 
+    console.log(game);
+
     if (game.active) {
-      timeDetailsRef.current = {
+      timeDetailsRef.current[game.turn] = {
         startTime: game[game.turn].timeLeft,
         turnStart: game.turnStart || Date.now(),
-        maxTime: game.time,
       };
     }
+
+    timeDetailsRef.current.maxTime = game.time;
 
     activePlayerRef.current = getActivePlayer(
       gameId,
@@ -117,15 +120,24 @@ const updateGameDetails = {
       });
     }
 
-    let sameTurn = false;
+    if (game.active) {
+      timeDetailsRef.current[game.turn] = {
+        turnStart: game.turnStart || Date.now(),
+        startTime: game[game.turn].timeLeft,
+      };
+
+      timeDetailsRef.current[getOppColor(game.turn)] = {
+        // need to reset to 0 so Timer doesnt use the old values when turn changes
+        turnStart: 0,
+        startTime: 0,
+      };
+    }
 
     setTurn((prev) => {
-      if (prev === game.turn) sameTurn = true;
+      const sameTurn = prev === game.turn;
 
-      return game.turn;
-    });
+      if (sameTurn) return prev;
 
-    if (!sameTurn) {
       setBoardState({
         board: new Map(Object.entries(game.board)),
         checks: game.checks,
@@ -148,15 +160,9 @@ const updateGameDetails = {
 
       setWhiteTime(game.white.timeLeft);
       setBlackTime(game.black.timeLeft);
-    }
-    if (game.active) {
-      const turn = game.turn === 'white' ? 'black' : 'white';
-      timeDetailsRef.current = {
-        ...timeDetailsRef.current,
-        startTime: game[turn].timeLeft,
-        turnStart: game.turnStart as number,
-      };
-    }
+
+      return prev;
+    });
   },
 };
 

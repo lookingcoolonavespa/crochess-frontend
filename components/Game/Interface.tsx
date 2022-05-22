@@ -69,7 +69,7 @@ export default function Interface({
     resignConfirmation,
     offerDrawConfirmation,
   });
-
+  console.log(status);
   useEffect(() => {
     const currentVariables = {
       gameOver: !!gameOverDetails,

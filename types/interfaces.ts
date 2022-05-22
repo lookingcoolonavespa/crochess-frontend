@@ -126,8 +126,14 @@ export interface FetchGameStateUpdaters {
 
 export interface FetchGameGameDetails {
   timeDetailsRef: React.MutableRefObject<{
-    startTime: number;
-    turnStart: number;
+    white: {
+      startTime: number;
+      turnStart: number;
+    };
+    black: {
+      startTime: number;
+      turnStart: number;
+    };
     maxTime: number;
   }>;
   activePlayerRef: React.MutableRefObject<'white' | 'black' | null>;
@@ -136,8 +142,14 @@ export interface FetchGameGameDetails {
 
 export interface UpdateGameGameDetails {
   timeDetailsRef: React.MutableRefObject<{
-    startTime: number;
-    turnStart: number;
+    white: {
+      startTime: number;
+      turnStart: number;
+    };
+    black: {
+      startTime: number;
+      turnStart: number;
+    };
     maxTime: number;
   }>;
   pieceMapsRef: React.MutableRefObject<AllPieceMap[]>;

@@ -19,13 +19,20 @@ import styles from '../styles/ActiveGame.module.scss';
 import { fetchGame, sendMove } from '../utils/game';
 import updateGameDetails from '../utils/updateGameDetails';
 import { GameInterface, GameOverDetailsInterface } from '../types/interfaces';
+import { formatTime } from '../utils/timerStuff';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
 
   const timeDetailsRef = useRef({
-    startTime: 0,
-    turnStart: 0,
+    white: {
+      startTime: 0,
+      turnStart: 0,
+    },
+    black: {
+      startTime: 0,
+      turnStart: 0,
+    },
     maxTime: 0,
   });
   const [whiteTime, setWhiteTime] = useState(0);
@@ -79,6 +86,10 @@ export default function ActiveGame() {
       (async () => {
         if (!gameId) return;
         const game: GameInterface = await fetchGame(gameId as string);
+        console.log({
+          whiteTime: formatTime(game.white.timeLeft),
+          blackTime: formatTime(game.black.timeLeft),
+        });
         updateGameDetails.onFetch(
           gameId as string,
           game,
@@ -113,10 +124,7 @@ export default function ActiveGame() {
       socket.on('update', (data) => {
         updateGameDetails.onUpdate(
           data,
-          {
-            timeDetailsRef,
-            pieceMapsRef,
-          },
+          { timeDetailsRef, pieceMapsRef },
           {
             setGameOverDetails,
             setBoardState,
@@ -128,6 +136,19 @@ export default function ActiveGame() {
             setClaimDrawDetails,
           }
         );
+        console.log({
+          whiteTime: formatTime(data.white.timeLeft),
+          blackTime: formatTime(data.black.timeLeft),
+        });
+        setWhiteTime((prev) => {
+          console.log(formatTime(prev));
+          return prev;
+        });
+
+        setBlackTime((prev) => {
+          console.log(formatTime(prev));
+          return prev;
+        });
       });
     },
     [gameId]
@@ -178,6 +199,7 @@ export default function ActiveGame() {
       if (promote && !checkPromotion(to)) return;
 
       updatePieceMaps();
+      setTurn((prev) => getOppColor(prev)); // changing turn here feels faster
 
       const cookieObj = parseCookies(document.cookie);
       const playerId = cookieObj[`${gameId}(${activePlayerRef.current})`];
@@ -191,6 +213,7 @@ export default function ActiveGame() {
         );
       } catch (err) {
         console.log(err);
+        revertMove();
       }
 
       function updatePieceMaps() {
@@ -199,6 +222,12 @@ export default function ActiveGame() {
         if (promote) gameboard.at(pieceToMove as string).promote(promote);
         pieceMapsRef.current.push(gameboard.get.pieceMap());
         setCurrentPieceMapIdx(pieceMapsRef.current.length - 1);
+      }
+
+      function revertMove() {
+        setTurn((prev) => getOppColor(prev));
+        setCurrentPieceMapIdx(pieceMapsRef.current.length - 1);
+        pieceMapsRef.current.pop();
       }
     },
     [gameId, boardState, validateMove, checkPromotion, pieceToMove]
@@ -306,19 +335,19 @@ export default function ActiveGame() {
           gameOverDetails={gameOverDetails}
           whiteDetails={{
             maxTime: timeDetailsRef.current.maxTime,
-            startTime: timeDetailsRef.current.startTime,
+            startTime: timeDetailsRef.current.white.startTime,
             time: whiteTime,
             setTime: setWhiteTime,
             active: !gameOverDetails && turn === 'white',
           }}
           blackDetails={{
             maxTime: timeDetailsRef.current.maxTime,
-            startTime: timeDetailsRef.current.startTime,
+            startTime: timeDetailsRef.current.black.startTime,
             time: blackTime,
             setTime: setBlackTime,
             active: !gameOverDetails && turn === 'black',
           }}
-          turnStart={timeDetailsRef.current.turnStart}
+          turnStart={timeDetailsRef.current[turn].turnStart}
           history={moveHistory}
           historyControls={historyControls}
           view={gameboardView}
