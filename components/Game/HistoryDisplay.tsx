@@ -1,4 +1,5 @@
 import { HistoryType } from 'crochess-api/dist/types/types';
+import useScrollOnLoad from '../../utils/hooks/useScrollToBottom';
 
 interface HistoryDisplayProps {
   moves: HistoryType;
@@ -6,12 +7,15 @@ interface HistoryDisplayProps {
 }
 
 export default function HistoryDisplay({ moves, styles }: HistoryDisplayProps) {
+  const { scrollEndRef } = useScrollOnLoad(moves);
+
   return (
     <div className={styles.moves_ctn}>
       <ol>
         {moves &&
           moves.map((pair, i) => {
             const [whiteMove, blackMove] = pair;
+
             return (
               <li key={i} className={styles.list_item}>
                 <p className={styles.move_no}>{i + 1}</p>
@@ -23,6 +27,7 @@ export default function HistoryDisplay({ moves, styles }: HistoryDisplayProps) {
             );
           })}
       </ol>
+      <span ref={scrollEndRef}></span>
     </div>
   );
 }
