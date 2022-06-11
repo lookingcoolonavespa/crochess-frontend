@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { io, Socket } from 'socket.io-client';
 import { UserContext } from '../utils/contexts/UserContext';
 import type { NextPage } from 'next';
 
@@ -30,6 +31,18 @@ const Home: NextPage = () => {
   });
   const [activeTab, setActiveTab] = useState('Create a game');
 
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(function connectToSocket() {
+    socketRef.current = io(`${process.env.NEXT_PUBLIC_URL_BACKEND}/games`);
+
+    const socket = socketRef.current;
+    socketRef.current.on('connect', () => {
+      console.log(socket.id);
+      setUser(socket.id);
+    });
+  }, []);
+
   function moveToTab(e: React.MouseEvent<HTMLElement>) {
     if (!e.currentTarget.dataset.tab) return;
     setActiveTab(e.currentTarget.dataset.tab);
@@ -37,7 +50,9 @@ const Home: NextPage = () => {
   return (
     <>
       <Layout className={styles.main}>
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider
+          value={{ user, setUser, socket: socketRef.current }}
+        >
           <div className={styles['tabbed-content']}>
             <nav className={styles.tabs}>
               <ul>

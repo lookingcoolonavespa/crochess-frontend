@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { GameSeekInterface } from '../../types/interfaces';
 import axios from 'axios';
 import { setIdToCookie } from '../misc';
 
-export default function useListOfGames(
-  setUser: React.Dispatch<React.SetStateAction<string>>
-) {
+export default function useListOfGames(socket: Socket) {
   const router = useRouter();
   const [listOfGames, setListOfGames] = useState<GameSeekInterface[]>([]);
 
@@ -40,12 +38,7 @@ export default function useListOfGames(
 
   useEffect(
     function connectToSocket() {
-      const socket = io(`${process.env.NEXT_PUBLIC_URL_BACKEND}/games`);
-
-      socket.on('connect', () => {
-        if (mounted.current) setUser(socket.id);
-      });
-
+      if (!socket) return;
       socket.on('newGameSeek', (game) => {
         if (mounted.current)
           setListOfGames((prev) => {
@@ -71,7 +64,7 @@ export default function useListOfGames(
           setListOfGames((prev) => prev.filter((g) => g._id !== d._id));
       });
     },
-    [setUser, router]
+    [socket, router]
   );
 
   return { listOfGames };
