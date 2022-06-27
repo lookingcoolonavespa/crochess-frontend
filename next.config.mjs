@@ -1,4 +1,4 @@
-import { withPlugins } from 'next-compose-plugins';
+import withPlugins from 'next-compose-plugins';
 import withOptimizedImages from 'next-optimized-images';
 
 const nextConfig = {
