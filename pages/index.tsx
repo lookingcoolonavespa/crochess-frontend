@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { UserContext } from '../utils/contexts/UserContext';
 import type { NextPage } from 'next';
+import Head from 'next/head';
 
 import Layout from '../components/Layout';
 import GameGrid from '../components/CreateGame/GameGrid';
@@ -49,6 +50,9 @@ const Home: NextPage = () => {
   }
   return (
     <>
+      <Head>
+        <title>croChess</title>
+      </Head>
       <Layout className={styles.main}>
         <UserContext.Provider
           value={{ user, setUser, socket: socketRef.current }}

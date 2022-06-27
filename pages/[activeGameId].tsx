@@ -20,6 +20,7 @@ import { fetchGame, sendMove } from '../utils/game';
 import updateGameDetails from '../utils/updateGameDetails';
 import { GameInterface, GameOverDetailsInterface } from '../types/interfaces';
 import { formatTime } from '../utils/timerStuff';
+import Head from 'next/head';
 
 export default function ActiveGame() {
   const mounted = useRef(false);
@@ -300,6 +301,9 @@ export default function ActiveGame() {
 
   return (
     <main className={styles.main}>
+      <Head>
+        <title>croChess</title>
+      </Head>
       <div className={styles['game-contents']}>
         <Gameboard
           view={gameboardView}
