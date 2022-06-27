@@ -12,7 +12,6 @@ import RookWhite from '../../public/icons/chess_pieces/rook-w.svg';
 import BishopWhite from '../../public/icons/chess_pieces/bishop-w.svg';
 import KnightWhite from '../../public/icons/chess_pieces/knight-w.svg';
 import PawnWhite from '../../public/icons/chess_pieces/pawn-w.svg';
-import Image from 'next/image';
 
 const piecesSVG = {
   white: {
@@ -47,7 +46,7 @@ export default function Piece({ type, color, square, onClick }: PieceProps) {
       style={{ gridArea: square }}
       onClick={onClick}
     >
-      <Image src={piecesSVG[color][type]} alt={`${type} ${color}`} />
+      <img src={piecesSVG[color][type]} alt={`${type} ${color}`} />
     </div>
   );
 }

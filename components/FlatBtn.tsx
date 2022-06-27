@@ -1,5 +1,4 @@
 import styles from '../styles/FlatBtn.module.scss';
-import Image from 'next/image';
 
 interface FlatBtnProps {
   className?: string;
@@ -40,7 +39,7 @@ export default function FlatBtn({
           {text}
         </span>
       )}
-      {icon && <Image src={icon.src} alt={icon.alt} />}
+      {icon && <img src={icon.src} alt={icon.alt} />}
     </button>
   );
 }
