@@ -5,6 +5,6 @@ live: https://lookingcoolonavespa.github.io/crochess-frontend/
 ## tech stack
 
 - next js
-- typescript
+- Typescript
 - sass
 - html/css
