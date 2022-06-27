@@ -6,4 +6,4 @@ const nextConfig = withOptimizedImages({
   assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH,
 });
 
-module.exports = nextConfig;
+export default nextConfig;
