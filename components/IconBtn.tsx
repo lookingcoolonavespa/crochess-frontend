@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 interface IconBtnProps {
   className?: string;
   icon?: string;
@@ -20,7 +18,7 @@ export default function IconBtn({
 
   return (
     <div className={rootClasses.join(' ')} onClick={onClick}>
-      {icon && <Image src={icon} alt={altText} />}
+      {icon && <img src={icon} alt={altText} />}
       {btnText && <p>{btnText}</p>}
     </div>
   );
