@@ -1,15 +1,9 @@
-import withPlugins from 'next-compose-plugins';
-import optimizedImages from 'next-optimized-images';
+import withOptimizedImages from 'next-optimized-images';
 
-const nextConfig = withPlugins([
-  [
-    optimizedImages,
-    {
-      reactStrictMode: true,
-      basePath: process.env.NEXT_PUBLIC_BASE_PATH,
-      assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH,
-    },
-  ],
-]);
+const nextConfig = withOptimizedImages({
+  reactStrictMode: true,
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH,
+  assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH,
+});
 
 module.exports = nextConfig;
