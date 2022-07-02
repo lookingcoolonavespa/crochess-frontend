@@ -28,3 +28,18 @@ $grid_gap: 10px;
     font-weight: 300;
   }
 }
+
+@media screen and (max-width: 568px) {
+  .tc-btn {
+    height: 130px;
+
+    :global(.title) {
+      font-size: 25px;
+      margin: 10px 0;
+    }
+
+    :global(.caption) {
+      font-size: 14px;
+    }
+  }
+}

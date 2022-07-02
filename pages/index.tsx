@@ -9,6 +9,7 @@ import GameGrid from '../components/CreateGame/GameGrid';
 import ListOfGames from '../components/LocalGames/ListOfGames';
 
 import styles from '../styles/Home.module.scss';
+
 import Popup from '../components/Popup';
 import useInputValues from '../utils/hooks/useInputValues';
 import { createGameSeek } from '../utils/game';

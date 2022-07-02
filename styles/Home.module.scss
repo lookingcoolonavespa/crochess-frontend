@@ -82,3 +82,18 @@
   padding: 10px;
   height: 570px;
 }
+
+@media screen and (max-width: 568px) {
+  .tabbed-content {
+    width: 100%;
+  }
+  .tabs {
+    width: 100%;
+
+    ul {
+      li {
+        font-size: 14px;
+      }
+    }
+  }
+}
